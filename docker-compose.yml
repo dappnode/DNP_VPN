@@ -3,7 +3,7 @@ version: '3.4'
 services:
   dnp_vpn:
     build: ./build
-    image: dnp_vpn:dev
+    image: dnp_vpn
     container_name: dnp_vpn
     privileged: true
     volumes:
