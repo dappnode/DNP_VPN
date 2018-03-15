@@ -59,7 +59,7 @@ if [ -z "$VPN_IPSEC_PSK" ] && [ -z "$VPN_USER" ] && [ -z "$VPN_PASSWORD" ]; then
     echo
     echo "VPN credentials not set by user. Generating random PSK and password..."
     VPN_IPSEC_PSK="$(LC_CTYPE=C tr -dc 'A-HJ-NPR-Za-km-z2-9' < /dev/urandom | head -c 16)"
-    VPN_USER=dps_vpn_user
+    VPN_USER=dappnode_vpn_user
     VPN_PASSWORD="$(LC_CTYPE=C tr -dc 'A-HJ-NPR-Za-km-z2-9' < /dev/urandom | head -c 16)"
   fi
 fi
