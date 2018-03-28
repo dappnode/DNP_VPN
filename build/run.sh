@@ -141,6 +141,7 @@ conn shared
   left=%defaultroute
   leftid=$PUBLIC_IP
   right=%any
+  rightsubnet=vhost:%priv,%no
   encapsulation=yes
   authby=secret
   pfs=no
