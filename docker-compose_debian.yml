@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   dnp_vpn:
-    build: ./build_alpine
+    build: ./build
     image: dappnode/dnp_vpn
     container_name: dnp_vpn
     privileged: true

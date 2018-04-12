@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>IPSec</key>
+			<dict>
+				<key>AuthenticationMethod</key>
+				<string>SharedSecret</string>
+				<key>LocalIdentifierType</key>
+				<string>KeyID</string>
+				<key>SharedSecret</key>
+				<data>
+				_VPN_IPSEC_PSK_
+				</data>
+			</dict>
+			<key>IPv4</key>
+			<dict>
+				<key>OverridePrimary</key>
+				<integer>1</integer>
+			</dict>
+			<key>PPP</key>
+			<dict>
+				<key>AuthName</key>
+				<string>_VPN_USER_</string>
+				<key>AuthPassword</key>
+				<string>_VPN_PASSWORD_</string>
+				<key>CommRemoteAddress</key>
+				<string>_PUBLIC_IP_</string>
+			</dict>
+			<key>PayloadDescription</key>
+			<string>Configura los ajustes de VPN</string>
+			<key>PayloadDisplayName</key>
+			<string>VPN</string>
+			<key>PayloadIdentifier</key>
+			<string>com.apple.vpn.managed.8A014553-C168-4467-AF1F-B43E8DAE2658</string>
+			<key>PayloadType</key>
+			<string>com.apple.vpn.managed</string>
+			<key>PayloadUUID</key>
+			<string>8A014553-C168-4467-AF1F-B43E8DAE2658</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>Proxies</key>
+			<dict>
+				<key>HTTPEnable</key>
+				<integer>0</integer>
+				<key>HTTPSEnable</key>
+				<integer>0</integer>
+			</dict>
+			<key>UserDefinedName</key>
+			<string>VPN</string>
+			<key>VPNType</key>
+			<string>L2TP</string>
+		</dict>
+	</array>
+	<key>PayloadDisplayName</key>
+	<string>VPN</string>
+	<key>PayloadIdentifier</key>
+	<string>MacBook-Pro-de-Eduardo.118D3145-B90E-473B-9371-2739041E4B1B</string>
+	<key>PayloadRemovalDisallowed</key>
+	<false/>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadUUID</key>
+	<string>326CEF4C-9520-4A33-91FA-EE78F6C3D265</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>
