@@ -16,6 +16,6 @@ ENV CBREALM realm1
 
 EXPOSE 8080:8080
 
-VOLUME ["/lib/modules", "/etc"]
+VOLUME ["/lib/modules", "/etc/"]
 
 CMD ["npm", "start"]
