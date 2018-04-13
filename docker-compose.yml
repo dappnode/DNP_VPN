@@ -11,3 +11,7 @@ services:
     ports:
       - 4500:4500/udp
       - 500:500/udp
+  crossbar:
+    image: crossbario/crossbar
+    ports:
+      - 8080:8080
