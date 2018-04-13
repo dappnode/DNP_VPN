@@ -8,6 +8,7 @@ services:
     privileged: true
     volumes:
       - /lib/modules:/lib/modules:ro
+      - vpn-creds:/etc
     ports:
       - 4500:4500/udp
       - 500:500/udp
@@ -22,6 +23,8 @@ services:
     privileged: true
     volumes:
       - /lib/modules:/lib/modules:ro
-      - /etc
+      - vpn-creds:/etc
     ports:
-      - 8080:8080      
+      - 8080:8080    
+volumes:
+vpn-creds:  
