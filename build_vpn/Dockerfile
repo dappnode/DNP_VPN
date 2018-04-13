@@ -1,4 +1,4 @@
-FROM node:8
+FROM debian:stretch
 
 ENV REFRESHED_AT 2017-12-06
 ENV SWAN_VER 3.22
@@ -35,21 +35,13 @@ RUN apt-get -yqq update \
     && apt-get -y clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && apt-get install -y nano
-COPY package.json package.json
-RUN npm install \
-  && npm cache clean --force
-
 COPY run.sh /usr/sbin/run.sh
 COPY VPN.mobileconfig.tpl /opt/src/
 RUN chmod 755 /usr/sbin/run.sh
   
-COPY client.js client.js
-ENV CBURL ws://crossbar:8080/ws
-ENV CBREALM realm1
 
 EXPOSE 500/udp 4500/udp
 
-VOLUME ["/lib/modules"]
+VOLUME ["/lib/modules", "/etc"]
 
 CMD ["/usr/sbin/run.sh"]

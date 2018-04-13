@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   dnp_vpn:
-    build: ./build
+    build: ./build_vpn
     image: dappnode/dnp_vpn
     container_name: dnp_vpn
     privileged: true
@@ -11,7 +11,17 @@ services:
     ports:
       - 4500:4500/udp
       - 500:500/udp
-  crossbar:
-    image: crossbario/crossbar
+# uncomment for testing the vpn without the rest of DAppNode
+#  crossbar:
+#    image: crossbario/crossbar
+#    ports:
+#      - 8080:8080
+  dnp__vpn_usrmngmt:
+    build: ./build_usrmngmt
+    container_name: dnp_vpn_usrmngmt
+    privileged: true
+    volumes:
+      - /lib/modules:/lib/modules:ro
+      - /etc
     ports:
-      - 8080:8080
+      - 8080:8080      
