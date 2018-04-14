@@ -7,7 +7,7 @@ services:
     container_name: dnp_vpn
     privileged: true
     volumes:
-      - etc:/etc
+      - etc-vpn:/etc
     ports:
       - 4500:4500/udp
       - 500:500/udp
@@ -21,7 +21,7 @@ services:
     container_name: dnp_vpn_mgm
     privileged: true
     volumes:
-      - etc:/etc
+      - etc-vpn:/etc
 
 volumes:
-  etc:
+  etc-vpn:
