@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Public UI</title>
+</head>
+<body>
+  <!-- HEADER -->
+  <header>
+    <div class='container'>
+      <div id='branding'>
+        <h1 id='btn_backHeader'>DAppNode</h1>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="https://github.com/dappnode/DAppNode">About</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <!-- BODY -->
+  <!-- Initial title showcase -->
+  <section>
+    <h2>Setup your DAppNode VPN</h2>
+  </section>
+  <!-- Content container -->
+  <section>
+    <div id='error' class='container'></div>
+  </section>
+  <section id='noGuide'>
+    <div class='container'>
+      <div id='credentials'></div>
+      <div class='HBcontainer'>
+        <button class="btnHighlight" id="btn_guide">I need a guide to install a VPN</button>
+      </div>
+    </div>
+  </section>
+
+  <section id='guide' style="display: none">
+    <div class='container'>
+      <button class="btn" id="btn_back">back</button>
+      <div id='selectorOSContainer' class='header'>
+        <p>Select your operating system</p>
+      </div>
+        <div id='MacOS' style="display:none">
+          <h2>MacOS Automatic setup guide</h2>
+          <div id='downloadLink'></div>
+          <h2>MacOS Manual setup guide</h2>
+          <ol class='ListInstructions'>
+            <li>Open System Preferences and go to the Network section.
+            </li><li>Click the <strong>+</strong> button in the lower-left corner of the window.
+            </li><li>Select <strong>VPN</strong> from the <strong>Interface</strong> drop-down menu.
+            </li><li>Select <strong>L2TP over IPSec</strong> from the <strong>VPN Type</strong> drop-down menu.
+            </li><li>Enter anything you like for the <strong>Service Name</strong>.
+            </li><li>Click <strong>Create</strong>.
+            </li><li>Enter _VPN_SERVER_ for the <strong>Server Address</strong>.
+            </li><li>Enter _VPN_USER_ for the <strong>Account Name</strong>.
+            </li><li>Click the <strong>Authentication Settings</strong> button.
+            </li><li>In the <strong>User Authentication</strong> section, select the <strong>Password</strong> radio button and enter _VPN_PASS_.
+            </li><li>In the <strong>Machine Authentication</strong> section, select the <strong>Shared Secret</strong> radio button and enter _VPN_PSK_.
+            </li><li>Click <strong>OK</strong>.
+            </li><li>Check the <strong>Show VPN status in menu bar</strong> checkbox.
+            </li><li>Click the <strong>Advanced</strong> button and make sure the <strong>Send all traffic over VPN connection</strong> checkbox is checked.
+            </li><li>Click the <strong>TCP/IP</strong> tab, and make sure <strong>Link-local only</strong> is selected in the <strong>Configure IPv6</strong> section.
+            </li><li>Click <strong>OK</strong> to close the Advanced settings, and then click <strong>Apply</strong> to save the VPN connection information.
+            </li>
+          </ol>
+          </div>
+        <div id='Windows' style="display:none">
+          <div id='WindowsOver8'>
+            <h2>Windows 10 and 8.x setup guide</h2>
+            <ol class='ListInstructions'>
+              <li>Right-click on the wireless/network icon in your system tray.
+              </li><li>Select <strong>Open Network and Sharing Center</strong>.
+              </li><li>Click <strong>Set up a new connection or network</strong>.
+              </li><li>Select <strong>Connect to a workplace</strong> and click <strong>Next</strong>.
+              </li><li>Click <strong>Use my Internet connection (VPN)</strong>.
+              </li><li>Enter _VPN_SERVER_ in the <strong>Internet address</strong> field.
+              </li><li>Enter anything you like in the <strong>Destination name</strong> field, and then click <strong>Create</strong>.
+              </li><li>Return to <strong>Network and Sharing Center</strong>. On the left, click <strong>Change adapter settings</strong>.
+              </li><li>Right-click on the new VPN entry and choose <strong>Properties</strong>.
+              </li><li>Click the <strong>Security</strong> tab. Select "Layer 2 Tunneling Protocol with IPsec (L2TP/IPSec)" for the <strong>Type of VPN</strong>.
+              </li><li>Click <strong>Allow these protocols</strong>. Be sure to select the "Challenge Handshake Authentication Protocol (CHAP)" checkbox.
+              </li><li>Click the <strong>Advanced settings</strong> button.
+              </li><li>Select <strong>Use preshared key for authentication</strong> and enter _VPN_PSK_ for the <strong>Key</strong>.
+              </li><li>Click <strong>OK</strong> to close the <strong>Advanced settings</strong>.
+              </li><li>Click <strong>OK</strong> to save the VPN connection details.
+              </li>
+            </ol>
+          </div>
+          <div id="WindowsUnder8">
+            <h2>Windows 7, Vista and XP setup guide</h2>
+            <ol class='ListInstructions'>
+              <li>Click on the Start Menu and go to the Control Panel.
+              </li><li>Go to the <strong>Network and Internet</strong> section.
+              </li><li>Click <strong>Network and Sharing Center</strong>.
+              </li><li>Click <strong>Set up a new connection or network</strong>.
+              </li><li>Select <strong>Connect to a workplace</strong> and click <strong>Next</strong>.
+              </li><li>Click <strong>Use my Internet connection (VPN)</strong>.
+              </li><li>Enter _VPN_SERVER_ in the <strong>Internet address</strong> field.
+              </li><li>Enter anything you like in the <strong>Destination name</strong> field.
+              </li><li>Check the <strong>Don't connect now; just set it up so I can connect later</strong> checkbox.
+              </li><li>Click <strong>Next</strong>.
+              </li><li>Enter _VPN_USER_ in the <strong>User name</strong> field.
+              </li><li>Enter _VPN_PASS_ in the <strong>Password</strong> field.
+              </li><li>Check the <strong>Remember this password</strong> checkbox.
+              </li><li>Click <strong>Create</strong>, and then <strong>Close</strong>.
+              </li><li>Return to <strong>Network and Sharing Center</strong>. On the left, click <strong>Change adapter settings</strong>.
+              </li><li>Right-click on the new VPN entry and choose <strong>Properties</strong>.
+              </li><li>Click the <strong>Options</strong> tab and uncheck <strong>Include Windows logon domain</strong>.
+              </li><li>Click the <strong>Security</strong> tab. Select "Layer 2 Tunneling Protocol with IPsec (L2TP/IPSec)" for the <strong>Type of VPN</strong>.
+              </li><li>Click <strong>Allow these protocols</strong>. Be sure to select the "Challenge Handshake Authentication Protocol (CHAP)" checkbox.
+              </li><li>Click the <strong>Advanced settings</strong> button.
+              </li><li>Select <strong>Use preshared key for authentication</strong> and enter _VPN_PSK_ for the <strong>Key</strong>.
+              </li><li>Click <strong>OK</strong> to close the <strong>Advanced settings</strong>.
+              </li><li>Click <strong>OK</strong> to save the VPN connection details.
+              </li>
+            </ol>
+          </div>
+          <img src="https://www.softether.org/@api/deki/files/366/=02.jpg" alt="Mountain View">
+          </div>
+        <div id='iOS' style="display:none">
+          <h2>iOS setup guide</h2>
+          <ol class='ListInstructions'>
+            <li>Go to Settings -> General -> VPN.
+            </li><li>Tap <strong>Add VPN Configuration...</strong>.
+            </li><li>Tap <strong>Type</strong>. Select <strong>L2TP</strong> and go back.
+            </li><li>Tap <strong>Description</strong> and enter anything you like.
+            </li><li>Tap <strong>Server</strong> and enter _VPN_SERVER_.
+            </li><li>Tap <strong>Account</strong> and enter _VPN_USER_.
+            </li><li>Tap <strong>Password</strong> and enter _VPN_PASS_.
+            </li><li>Tap <strong>Secret</strong> and enter _VPN_PSK_.
+            </li><li>Make sure the <strong>Send All Traffic</strong> switch is ON.
+            </li><li>Tap <strong>Done</strong>.
+            </li><li>Slide the <strong>VPN</strong> switch ON.
+            </li>
+          </ol>
+          </div>
+        <div id='Android' style="display:none">
+          <h2>Android setup guide</h2>
+          <ol class='ListInstructions'>
+            <li>Launch the <strong>Settings</strong> application.
+            </li><li>Tap <strong>More...</strong> in the <strong>Wireless & Networks</strong> section.
+            </li><li>Tap <strong>VPN</strong>.
+            </li><li>Tap <strong>Add VPN Profile</strong> or the <strong>+</strong> icon at top-right of screen.
+            </li><li>Enter anything you like in the <strong>Name</strong> field.
+            </li><li>Select <strong>L2TP/IPSec PSK</strong> in the <strong>Type</strong> drop-down menu.
+            </li><li>Enter _VPN_SERVER_ in the <strong>Server address</strong> field.
+            </li><li>Enter _VPN_PSK_ in the <strong>IPSec pre-shared key</strong> field.
+            </li><li>Tap <strong>Save</strong>.
+            </li><li>Tap the new VPN connection.
+            </li><li>Enter _VPN_USER_ in the <strong>Username</strong> field.
+            </li><li>Enter _VPN_PASS_ in the <strong>Password</strong> field.
+            </li><li>Check the <strong>Save account information</strong> checkbox.
+            </li><li>Tap <strong>Connect</strong>.
+            </li>
+          </ol>
+          </div>
+        <div id='Chromebook' style="display:none">
+          <h2>Chromebook setup guide</h2>
+          <ol class='ListInstructions'>
+            <li>If you haven't already, sign in to your Chromebook.
+            </li><li>Click the status area, where your account picture appears.
+            </li><li>Click <strong>Settings</strong>.
+            </li><li>In the <strong>Internet connection</strong> section, click <strong>Add connection</strong>.
+            </li><li>Click <strong>Add OpenVPN / L2TP</strong>.
+            </li><li>Enter _VPN_SERVER_ for the <strong>Server hostname</strong>.
+            </li><li>Enter anything you like for the <strong>Service name</strong>.
+            </li><li>Make sure <strong>Provider type</strong> is <strong>L2TP/IPSec + pre-shared key</strong>.
+            </li><li>Enter _VPN_PSK_ for the <strong>Pre-shared key</strong>.
+            </li><li>Enter _VPN_USER_ for the <strong>Username</strong>.
+            </li><li>Enter _VPN_PASS_ for the <strong>Password</strong>.
+            </li><li>Click <strong>Connect</strong>.
+            </li>
+          </ol>
+        </div>
+        <div id='Others' style="display:none">
+          <h2>Please, connect with us to request support for your device</h2>
+        </div>
+    </div>
+  </section>
+  <section id='footer'>
+  </section>
+</body>
+
+</html>

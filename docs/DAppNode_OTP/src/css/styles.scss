@@ -1,0 +1,176 @@
+$main: #FFF;
+$secondary: #323545;
+$toneDark: #3C457D;
+$toneMid: #536ADE;
+/* Colours */
+$white: #f9f9f9;
+$black: #0F121A;
+$highlightColor: #2979ff;
+$highlightColorHover: #1555c1;
+$highlightGrey: #333333;
+$highlightGreyHover: #111111;
+/* Dimensions */
+$borderRadius: 5px;
+$spacingBig: 30px;
+$spacingSmall: 5px;
+$spacingHeader: 20px;
+
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* Global */
+body {
+  font-family: 'Helvetica', sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  background-color: $white;
+  color: $black;
+}
+
+h2 {
+  font-size: 250%;
+  text-align: center;
+  margin: $spacingBig 0 $spacingSmall 0;
+}
+
+table {
+  text-align: center;
+  margin: auto;
+}
+
+ol {
+  margin-left: 2em;
+}
+ol li {
+  list-style-type: decimal-leading-zero;
+  list-style-position: outside;
+}
+
+tr {
+  vertical-align: middle;
+}
+
+input, button {
+  padding: 7px;
+  vertical-align: top;
+}
+.input-group {
+  margin: 2px;
+  display: inline-block;
+}
+input {
+  font-family: Consolas, monaco, monospace;
+  background-color: #E8E8E8;
+  color: inherit;
+  border-top-left-radius: $borderRadius;
+  border-bottom-left-radius: $borderRadius;
+}
+/* General button sizes */
+button {
+  display: inline-block;
+}
+
+/* Colored highlight button */
+.btnHighlight {
+  background-color: $highlightColor;
+  border-radius: $borderRadius;
+  font-size: inherit;
+  color: $white;
+}
+.btnHighlight:hover {
+  background-color: $highlightColorHover;
+}
+/* Copy button next to input fields */
+.copyButton {
+  border-top-right-radius: $borderRadius;
+  border-bottom-right-radius: $borderRadius;
+  background-color: $highlightGrey;
+  color: $white;
+}
+.copyButton:hover {
+  background-color: $highlightGreyHover;
+}
+
+.container{
+  max-width: 600px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.HBcontainer {
+  text-align: center;
+
+}
+.HBbox {
+  display: inline-block;
+  margin: $spacingSmall;
+}
+.active {
+  background-color: $highlightColor;
+}
+
+.btnOS {
+  background-color: $highlightGrey;
+  border-radius: $borderRadius;
+  font-size: inherit;
+  color: $white;
+}
+
+/* Specifics - Initial "I need a guide button"*/
+#btn_guide{
+  margin: $spacingBig;
+}
+#btn_back{
+  background-color: $white;
+}
+
+ul{
+  margin: 0;
+  padding: 0;
+}
+
+p {
+  text-align: center;
+}
+
+/* Header */
+header{
+  background: $black;
+  color: $white;
+  padding: $spacingHeader 0 $spacingHeader 0;
+}
+
+header a{
+  color: $white;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 16px;
+}
+
+header li{
+  float: left;
+  display: inline;
+  padding: 0 20px 0 20px;
+}
+
+header #branding{
+  float: left;
+}
+
+header #branding h1{
+  margin: 0;
+}
+
+header nav {
+  float: right;
+  margin-top: 10px;
+}
+
+/* Footer */
+#footer {
+  height: 100px;
+}
