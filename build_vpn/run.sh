@@ -185,6 +185,7 @@ cat > /etc/ipsec.secrets <<EOF
 %any  %any  : PSK "$VPN_IPSEC_PSK"
 EOF
 
+touch /etc/vpn_env
 cat > /etc/vpn_env <<EOF
 $vpn_env
 EOF
