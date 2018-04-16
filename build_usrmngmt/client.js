@@ -3,6 +3,7 @@
 // AutobahnJS, the WAMP client library to connect and talk to Crossbar.io:
 var autobahn = require('autobahn');
 var fs = require('file-system');
+var generator = require('generate-password');
 
 console.log("Running AutobahnJS " + autobahn.version);
 // Produccion url: ws://my.wamp.dnp.dappnode.eth:8080/ws
@@ -38,68 +39,82 @@ connection.onopen = function (session, details) {
 
    // REGISTER a procedure for remote calling
    //
-  function addDevice (args) {
+  async function addDevice (args) {
     let newDeviceName = args[0];
-
-    verifyDeviceUniqueness(newDeviceName)
-    .then(generateCredentials)
-    .then(addDeviceToCredentialsFile)
-    .then(function(credentials) {
-    console.log('Success: ',credentials)
-    return {
-       "result": "OK",
-       "resultStr": "",
-       "otp": credentials.otp,
-       "id": credentials.id
-     };
-    })
-    .catch(function(error) {
-    console.log(error)
-    return {
-       "result": "ERR",
-       "resultStr": error,
-     };
-    })
+    try {
+      // Fetch data from the chap_secrets file
+      let credentialsArray = await fetchCredentialsFile();
+      let deviceNamesArray = credentialsArray.map(credentials => credentials.name)
+      let deviceIPsArray = credentialsArray.map(credentials => credentials.ip)
+      // Check if device name is unique
+      if (deviceNamesArray.includes(newDeviceName)) {
+        throw 'Device name exists: '+newDeviceName;
+      }
+      // Generate credentials
+      let ip = await generateDeviceIP(deviceIPsArray)
+      let password = await generateDevicePassword()
+      let credentials = {
+        name: newDeviceName,
+        password: password,
+        ip: ip
+      }
+      // Appending credentials to the chap_secrets file
+      credentialsArray.push(credentials)
+      await writeCredentialsFile(credentialsArray);
+      console.log('Success adding device:'+
+        ' NAME: '+credentials.name+
+        ' PASS: '+credentials.password+
+        ' IP: '+credentials.ip)
+      return {
+        "result": "OK",
+        "resultStr": ""
+      };
+    } catch(e) {
+      console.log(e)
+      return {
+         "result": "ERR",
+         "resultStr": JSON.stringify(e)
+      };
+    }
   }
 
-
-  function removeDevice (args) {
+  async function removeDevice (args) {
     let deviceName = args[0];
-    removeDeviceFromCredentialsFile(deviceName)
-    .then(writeStringToCredentialsFile)
-    .then(function() {
-      console.log('Success removing: '+deviceName)
-      return {
-        "result": "OK",
-        "resultStr": "",
-      };
-    })
-    .catch(function(error) {
-      console.log(error)
+    try {
+      let credentialsArray = await fetchCredentialsFile();
+      let deviceNameFound = false;
+      for (i = 0; i < credentialsArray.length; i++) {
+        if (deviceName == credentialsArray[i].name) {
+          deviceNameFound = true;
+          credentialsArray.splice(i, 1);
+        }
+      }
+      if (deviceNameFound) {
+        await writeCredentialsFile(credentialsArray);
+        return {
+          "result": "OK",
+          "resultStr": ""
+        };
+      } else {
+        throw 'Device name does not exist: '+deviceName;
+      }
+    } catch(e) {
+      console.log(e)
       return {
          "result": "ERR",
-         "resultStr": error,
+         "resultStr": JSON.stringify(e)
       };
-    })
+    }
   }
 
-  function listDevices (args) {
-    fetchCredentialsFile()
-    .then(function(deviceList) {
-      console.log('Listing devices, current count: '+deviceList.length)
-      return {
-        "result": "OK",
-        "resultStr": "",
-        "devices": deviceList
-      };
-    })
-    .catch(function(error) {
-      console.log(error)
-      return {
-         "result": "ERR",
-         "resultStr": error,
-      };
-    })
+  async function listDevices (args) {
+    let deviceList = await fetchCredentialsFile()
+    console.log('Listing devices, current count: '+deviceList.length)
+    return {
+      "result": "OK",
+      "resultStr": "",
+      "devices": deviceList
+    };
   }
 
    // We register this as a shared registration, i.e. multiple
@@ -163,73 +178,14 @@ connection.open();
 // Helper functions
 //
 
-function verifyDeviceUniqueness(newDeviceName) {
+function writeCredentialsFile(credentialsArray) {
   // Return new promise
   return new Promise(function(resolve, reject) {
-    fs.readFile(credentialsFilename, 'utf-8', (err, fileContent) => {
-      if (err) throw err;
-      let deviceCredentialsArray = fileContent.split(/\r?\n/)
-      deviceCredentialsArray.forEach(function(deviceCredentials) {
-        let deviceName = deviceCredentials.split(' ')[0]
-        if (deviceName == newDeviceName) {
-          reject('Device name exists: '+newDeviceName);
-        }
-      });
-      resolve(newDeviceName);
-    });
-  });
-}
-
-function generateCredentials(newDeviceName) {
-  return new Promise(function(resolve, reject) {
-    resolve({
-      name: newDeviceName,
-      password: 'sample_password',
-      otp: 'sample_otp',
-      id: 'sample_ID'
+    let credentialsArrayString = credentialsArray.map(credentials => {
+      return '"'+credentials.name+'" l2tpd "'+credentials.password+'" '+credentials.ip;
     })
-  });
-}
-
-function addDeviceToCredentialsFile(credentials) {
-  return new Promise(function(resolve, reject) {
-    let newData = '"'+credentials.name+'" l2tpd "'+credentials.password+'" *\n';
-    fs.appendFile(credentialsFilename, newData, function(err){
-      if (err) reject('ERROR')
-      else resolve(credentials)
-    });
-  });
-}
-
-function removeDeviceFromCredentialsFile(_deviceName) {
-  // Return new promise
-  return new Promise(function(resolve, reject) {
-    let deviceNameFound = false;
-    fs.readFile(credentialsFilename, 'utf-8', (err, fileContent) => {
-      if (err) throw err;
-      let deviceCredentialsArray = fileContent.split(/\r?\n/)
-      for (i = 0; i < deviceCredentialsArray.length; i++) {
-        let deviceCredentials = deviceCredentialsArray[i];
-        let deviceName = deviceCredentials.split(' ')[0];
-        if (deviceName == _deviceName) {
-          deviceNameFound = true;
-          deviceCredentialsArray.splice(i, 1);
-        }
-      }
-      if (deviceNameFound) {
-        let newCredentialsFileString = deviceCredentialsArray.join('\n')
-        resolve(newCredentialsFileString);
-      } else {
-        reject('Device not found: '+_deviceName);
-      }
-    });
-  });
-}
-
-function writeStringToCredentialsFile(string) {
-  // Return new promise
-  return new Promise(function(resolve, reject) {
-    fs.writeFile(credentialsFilename, string, (err) => {
+    let credentialsFileString = credentialsArrayString.join('\n')
+    fs.writeFile(credentialsFilename, credentialsFileString, (err) => {
       if (err) throw err;
       resolve();
     });
@@ -251,11 +207,57 @@ function fetchCredentialsFile() {
       let deviceCredentialsArrayParsed = deviceCredentialsArray.map(credentialsString => {
         let credentialsArray = credentialsString.split(' ');
         return {
-          name: credentialsArray[0],
-          password: credentialsArray[2]
+          name: credentialsArray[0].replace(/['"]+/g, ''),
+          password: credentialsArray[2].replace(/['"]+/g, ''),
+          ip: credentialsArray[3]
         }
       });
       resolve(deviceCredentialsArrayParsed);
     });
   });
 }
+
+function generateDeviceIP(deviceIPsArray) {
+  let ipPrefix = '192.168.44.';
+  let firstOctet = 2;
+  let lastOctet = 250;
+  return new Promise(function(resolve, reject) {
+    // Get the list of used octets
+    let usedIpOctets = deviceIPsArray.reduce((usedIpOctets, ip) => {
+      if (ip.includes(ipPrefix)) {
+        usedIpOctets.push(parseFloat(ip.split(ipPrefix)[1]));
+      }
+      return usedIpOctets;
+    }, []);
+    // Compute a consecutive list of integers from firstOctet to lastOctet
+    let possibleIpOctets = fillRange(firstOctet, lastOctet);
+    // Compute the available octets by computing the difference
+    let availableOctets = possibleIpOctets.diff( usedIpOctets );
+    // Alert the user if there are no available octets
+    if (availableOctets.length < 1) {
+      throw 'No available IP addresses. Consider deleting old or unused devices';
+    }
+    // Chose the smallest available octet
+    let chosenOctet = Math.min.apply(null, availableOctets)
+    resolve( ipPrefix+chosenOctet )
+  });
+}
+
+function generateDevicePassword() {
+  return new Promise(function(resolve, reject) {
+    let password = generator.generate({
+      length: 20,
+      numbers: true
+    });
+    resolve(password)
+  });
+}
+
+// Utility tools
+Array.prototype.diff = function(a) {
+    return this.filter(function(i) {return a.indexOf(i) < 0;});
+};
+
+const fillRange = (start, end) => {
+  return Array(end - start + 1).fill().map((item, index) => start + index);
+};
