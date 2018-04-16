@@ -186,9 +186,8 @@ cat > /etc/ipsec.secrets <<EOF
 EOF
 
 touch /etc/vpn_env
-cat > /etc/vpn_env <<EOF
-$vpn_env
-EOF
+echo "$PUBLIC_IP" > /etc/vpn_env
+echo "$VPN_IPSEC_PSK" > /etc/vpn_env
 
 # Create xl2tpd config
 cat > /etc/xl2tpd/xl2tpd.conf <<EOF
