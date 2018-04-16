@@ -11,7 +11,7 @@ services:
     ports:
       - 4500:4500/udp
       - 500:500/udp
-# comment for production when the vpn is run with the rest of DAppNode
+# uncomment for testing the vpn without the rest of DAppNode
   crossbar:
     image: crossbario/crossbar
     ports:
