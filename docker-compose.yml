@@ -12,10 +12,10 @@ services:
       - 4500:4500/udp
       - 500:500/udp
 # uncomment for testing the vpn without the rest of DAppNode
-#  crossbar:
-#    image: crossbario/crossbar
-#    ports:
-#      - 8080:8080
+  crossbar:
+    image: crossbario/crossbar
+    ports:
+      - 8080:8080
   dnp__vpn_mgm:
     build: ./build_usrmngmt
     container_name: dnp_vpn_mgm
