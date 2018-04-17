@@ -4,6 +4,7 @@
 var autobahn = require('autobahn');
 var fs = require('file-system');
 var generator = require('generate-password');
+var base64url = require('base64url')
 
 console.log("Running AutobahnJS " + autobahn.version);
 // Produccion url: ws://my.wamp.dnp.dappnode.eth:8080/ws
@@ -11,6 +12,10 @@ console.log("Running AutobahnJS " + autobahn.version);
 // We read the connection parameters from the command line in this example:
 const url = process.env.CBURL;
 const realm = process.env.CBREALM;
+var SERVER_IP;
+var SERVER_PSK;
+var SERVER_IP_FILE = '/etc/server-ip';
+var SERVER_PSK_FILE = '/etc/server-psk';
 
 console.log("connecting to.... \n   url: "+url+"\n   realm: "+realm)
 
@@ -28,7 +33,7 @@ let session;
 //
 connection.onopen = function (session, details) {
 
-   console.log("Connected: ", session, details);
+   console.log("Connected!!! ");
 
    var componentId = details.authid;
    var componentType = "JavaScript/NodeJS";
@@ -53,10 +58,14 @@ connection.onopen = function (session, details) {
       // Generate credentials
       let ip = await generateDeviceIP(deviceIPsArray)
       let password = await generateDevicePassword()
+      let serverIP = await fetchServerIP()
+      let serverPSK = await fetchServerPSK()
+      let otp = await generateDeviceOTP(newDeviceName, password, serverIP, serverPSK)
       let credentials = {
         name: newDeviceName,
         password: password,
-        ip: ip
+        ip: ip,
+        otp: otp
       }
       // Appending credentials to the chap_secrets file
       credentialsArray.push(credentials)
@@ -64,7 +73,9 @@ connection.onopen = function (session, details) {
       console.log('Success adding device:'+
         ' NAME: '+credentials.name+
         ' PASS: '+credentials.password+
-        ' IP: '+credentials.ip)
+        ' IP: '+credentials.ip+
+        ' OTP: '+credentials.otp
+      )
       return {
         "result": "OK",
         "resultStr": ""
@@ -250,6 +261,44 @@ function generateDevicePassword() {
       numbers: true
     });
     resolve(password)
+  });
+}
+
+function generateDeviceOTP(deviceName, password, serverIP, serverPSK) {
+  return new Promise(function(resolve, reject) {
+    let DAppNode_OTP = 'https://dappnode.github.io/DNP_VPN/DAppNode_OTP.html';
+    let otpCredentials = {
+      "server": serverIP,
+      "name": "DAppNode-Server",
+      "user": deviceName,
+      "pass": password,
+      "psk": serverPSK
+    };
+    let otpCredentialsEncoded = base64url.encode(JSON.stringify(otpCredentials));
+    let url = DAppNode_OTP + '#otp=' + otpCredentialsEncoded;
+    resolve(url)
+  });
+}
+
+function fetchServerIP() {
+  return new Promise(function(resolve, reject) {
+    fs.readFile(SERVER_IP_FILE, 'utf-8', (err, fileContent) => {
+      if (err) throw err;
+      let serverIP = String(fileContent).trim()
+      console.log('#### SERVER-IP: '+serverIP)
+      resolve(serverIP)
+    });
+  });
+}
+
+function fetchServerPSK() {
+  return new Promise(function(resolve, reject) {
+    fs.readFile(SERVER_PSK_FILE, 'utf-8', (err, fileContent) => {
+      if (err) throw err;
+      let serverPSK = String(fileContent).trim()
+      console.log('#### SERVER-PSK: '+serverPSK)
+      resolve(serverPSK)
+    });
   });
 }
 
