@@ -13,6 +13,7 @@
   "dependencies": {
     "autobahn": "^18.3.2",
     "file-system": "^2.2.2",
-    "generate-password": "^1.4.0"
+    "generate-password": "^1.4.0",
+    "base64url": "^2.0.0"
   }
 }
