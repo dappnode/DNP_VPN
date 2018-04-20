@@ -28,7 +28,7 @@ RUN chmod 755 init.sh
 
 # Installing node dependencies + setting envs for crossbar communication
 RUN npm install
-ENV CBURL ws://crossbar:8080/ws
+ENV CBURL ws://my.wamp.dnp.dappnode:8080/ws
 ENV CBREALM realm1
 
 # Exposing necessary ports for the VPN
