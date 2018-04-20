@@ -19,7 +19,7 @@ services:
             network:
   crossbar:
     image: crossbario/crossbar
-    container_name: crossbar
+    container_name: my.wamp.dnp.dappnode
     ports:
       - 8080:8080
     networks:
