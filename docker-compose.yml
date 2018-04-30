@@ -17,10 +17,3 @@ services:
       - 500:500/udp
     networks:
             network:
-  crossbar:
-    image: crossbario/crossbar
-    container_name: my.wamp.dnp.dappnode
-    ports:
-      - 8080:8080
-    networks:
-            network:
