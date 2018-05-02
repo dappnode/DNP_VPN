@@ -1,14 +1,13 @@
 {
-  "name": "VPNcrossbar",
+  "name": "DNP_VPN_API",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "client.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node client.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "dappLion",
   "license": "ISC",
   "dependencies": {
     "autobahn": "^18.3.2",
