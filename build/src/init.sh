@@ -56,27 +56,27 @@ export PUBLIC_IP
 
 # Create IPsec (Libreswan) config
 #   ${L2TP_NET}  ${XAUTH_NET}  ${XAUTH_POOL}  ${DNS_SRV1}  ${DNS_SRV2}  ${PUBLIC_IP}
-envsubst < "ipsec.conf" > "/etc/ipsec.conf"
+envsubst < "templates/ipsec.conf" > "/etc/ipsec.conf"
 # Specify IPsec PSK
 #   ${VPN_IPSEC_PSK}
-envsubst < "ipsec.secrets" > "/etc/ipsec.secrets"
+envsubst < "templates/ipsec.secrets" > "/etc/ipsec.secrets"
 # Create xl2tpd config
 #   ${L2TP_POOL}  ${L2TP_LOCAL}
-envsubst < "xl2tpd.conf" > "/etc/xl2tpd/xl2tpd.conf"
+envsubst < "templates/xl2tpd.conf" > "/etc/xl2tpd/xl2tpd.conf"
 # Set xl2tpd options
 #   ${DNS_SRV1}  ${DNS_SRV2}
-envsubst < "options.xl2tpd" > "/etc/ppp/options.xl2tpd"
+envsubst < "templates/options.xl2tpd" > "/etc/ppp/options.xl2tpd"
 # Create VPN credentials
 #   ${VPN_USER}  ${VPN_PASSWORD}
-envsubst < "chap-secrets" > "/etc/ppp/chap-secrets"
+envsubst < "templates/chap-secrets" > "/etc/ppp/chap-secrets"
 # Create passwd
 #   ${VPN_USER}  ${VPN_PASSWORD_ENC}
-envsubst < "passwd" > "/etc/ipsec.d/passwd"
+envsubst < "templates/passwd" > "/etc/ipsec.d/passwd"
 # Output the IP for the user managment UI
 echo "WRITING PUBLIC IP TO SERVER-IP"
-echo "$PUBLIC_IP" > "/etc/server-ip"
+echo "$PUBLIC_IP" > $VPN_IP_FILE_PATH
 echo "WRITING PSK TO SERVER-PSK"
-echo "$VPN_IPSEC_PSK" > "/etc/server-psk"
+echo "$VPN_IPSEC_PSK" > $VPN_PSK_FILE_PATH
 
 # Update sysctl settings
 SYST='/sbin/sysctl -e -q -w'
@@ -126,25 +126,6 @@ iptables -t nat -I POSTROUTING -s "$L2TP_NET" -o eth+ -j MASQUERADE
 # Update file attributes
 chmod 600 /etc/ipsec.secrets /etc/ppp/chap-secrets /etc/ipsec.d/passwd
 
-cat <<EOF
-
-================================================
-
-IPsec VPN server is now ready for use!
-
-Connect to your new VPN with these details:
-
-Server IP: $PUBLIC_IP
-IPsec PSK: $VPN_IPSEC_PSK
-Username: $VPN_USER
-Password: $VPN_PASSWORD
-
-Write these down. You'll need them to connect!
-
-================================================
-
-EOF
-
 # Load IPsec NETKEY kernel module
 modprobe af_key
 
@@ -155,8 +136,5 @@ rm -f /var/run/pluto/pluto.pid /var/run/xl2tpd.pid
 ipsec start --config /etc/ipsec.conf
 
 # Initialize xl2tpd in the background
-echo "#### EXECUTING LIBRESWAN"
+echo "EXECUTING LIBRESWAN"
 exec /usr/sbin/xl2tpd -D -c /etc/xl2tpd/xl2tpd.conf
-
-
-

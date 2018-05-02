@@ -1,318 +1,432 @@
-// Example WAMP client for AutobahnJS connecting to a Crossbar.io WAMP router.
+const autobahn = require('autobahn')
+const fs = require('file-system')
+const generator = require('generate-password')
+const base64url = require('base64url')
+const createError = require('create-error');
 
-// AutobahnJS, the WAMP client library to connect and talk to Crossbar.io:
-var autobahn = require('autobahn');
-var fs = require('file-system');
-var generator = require('generate-password');
-var base64url = require('base64url')
+const url = process.env.CBURL
+const realm = process.env.CBREALM
+const DAPPNODE_OTP_URL = process.env.DAPPNODE_OTP_URL
+const VPN_IP_FILE_PATH = process.env.VPN_IP_FILE_PATH
+const VPN_PSK_FILE_PATH = process.env.VPN_PSK_FILE_PATH
+const CREDENTIALS_FILE_PATH = '/etc/ppp/chap-secrets'
+const COMPONENT_TYPE = 'JavaScript/NodeJS'
 
-console.log("Running AutobahnJS " + autobahn.version);
-// Produccion url: ws://my.wamp.dnp.dappnode.eth:8080/ws
+const VPN_PASSWORD_LENGTH = 20
+const VPN_SERVER_NAME = 'DAppNode-Server'
 
-// We read the connection parameters from the command line in this example:
-const url = process.env.CBURL;
-const realm = process.env.CBREALM;
-var SERVER_IP;
-var SERVER_PSK;
-var SERVER_IP_FILE = '/etc/server-ip';
-var SERVER_PSK_FILE = '/etc/server-psk';
+const USER_STATIC_IP_PREFIX = '192.168.44.'
+const USER_STATIC_IP_FIRST_OCTET = 2
+const USER_STATIC_IP_LAST_OCTET = 250
 
-console.log("connecting to.... \n   url: "+url+"\n   realm: "+realm)
+let VPN_IP
+let VPN_PSK
 
-const credentialsFilename = '/etc/ppp/chap-secrets'
+const VPNError = createError('MyCustomError');
 
-// Make us a new connection ..
-var connection = new autobahn.Connection({
-   url: url,
-   realm: realm
-});
-let session;
+start()
 
-let database = {};
+async function start () {
+
+  console.log('Waiting for credentials files to exist')
+  await fetchVPNparameters()
+  console.log('VPN credentials fetched, VPN_IP: ' + VPN_IP + ' VPN_PSK: ' + VPN_PSK)
+
+  logAdminCredentials(VPN_IP, VPN_PSK)
+
+  connection.open()
+  console.log('Attempting to connect to.... \n'
+    +'   url: '+connection._options.url+'\n'
+    +'   realm: '+connection._options.realm)
+
+}
 
 
-// fired when connection is established and session attached
-//
+///////////////////////////////
+// Setup crossbar connection //
+///////////////////////////////
+
+
+const connection = new autobahn.Connection({ url, realm })
+const SUCCESS_MESSAGE = '---------------------- \n procedure registered'
+const ERROR_MESSAGE = '------------------------------ \n failed to register procedure '
+
 connection.onopen = function (session, details) {
 
-   console.log("Connected!!! ");
+   console.log('Successfully connected to '+url
+    +'\n  Component ID:   '+details.authid
+    +'\n  Component type: '+COMPONENT_TYPE)
 
-   var componentId = details.authid;
-   var componentType = "JavaScript/NodeJS";
+   session.register('addDevice.vpn.repo.dappnode.eth', addDevice).then(
+      function (reg) { console.log(SUCCESS_MESSAGE) },
+      function (err) { console.log(ERROR_MESSAGE, err) }
+   )
+   session.register('removeDevice.vpn.repo.dappnode.eth', removeDevice).then(
+      function (reg) { console.log(SUCCESS_MESSAGE) },
+      function (err) { console.log(ERROR_MESSAGE, err) }
+   )
+   session.register('listDevices.vpn.repo.dappnode.eth', listDevices).then(
+      function (reg) { console.log(SUCCESS_MESSAGE) },
+      function (err) { console.log(ERROR_MESSAGE, err) }
+   )
 
-   console.log("Component ID is ", componentId);
-   console.log("Component tpye is ", componentType);
+}
 
-
-   // REGISTER a procedure for remote calling
-   //
-  async function addDevice (args) {
-    let newDeviceName = args[0];
-    try {
-      // Fetch data from the chap_secrets file
-      let credentialsArray = await fetchCredentialsFile();
-      let deviceNamesArray = credentialsArray.map(credentials => credentials.name)
-      let deviceIPsArray = credentialsArray.map(credentials => credentials.ip)
-      // Check if device name is unique
-      if (deviceNamesArray.includes(newDeviceName)) {
-        throw 'Device name exists: '+newDeviceName;
-      }
-      // Generate credentials
-      let ip = await generateDeviceIP(deviceIPsArray)
-      let password = await generateDevicePassword()
-      let serverIP = await fetchServerIP()
-      let serverPSK = await fetchServerPSK()
-      let otp = await generateDeviceOTP(newDeviceName, password, serverIP, serverPSK)
-      let credentials = {
-        name: newDeviceName,
-        password: password,
-        ip: ip,
-        otp: otp
-      }
-      database[credentials.name] = credentials.otp
-      // Appending credentials to the chap_secrets file
-      credentialsArray.push(credentials)
-      await writeCredentialsFile(credentialsArray);
-      console.log('Success adding device:'+
-        ' NAME: '+credentials.name+
-        ' PASS: '+credentials.password+
-        ' IP: '+credentials.ip+
-        ' OTP: '+credentials.otp
-      )
-      return {
-        "result": "OK",
-        "resultStr": ""
-      };
-    } catch(e) {
-      console.log(e)
-      return {
-         "result": "ERR",
-         "resultStr": JSON.stringify(e)
-      };
-    }
-  }
-
-  async function removeDevice (args) {
-    let deviceName = args[0];
-    try {
-      let credentialsArray = await fetchCredentialsFile();
-      let deviceNameFound = false;
-      for (i = 0; i < credentialsArray.length; i++) {
-        if (deviceName == credentialsArray[i].name) {
-          deviceNameFound = true;
-          credentialsArray.splice(i, 1);
-        }
-      }
-      if (deviceNameFound) {
-        await writeCredentialsFile(credentialsArray);
-        return {
-          "result": "OK",
-          "resultStr": ""
-        };
-      } else {
-        throw 'Device name does not exist: '+deviceName;
-      }
-    } catch(e) {
-      console.log(e)
-      return {
-         "result": "ERR",
-         "resultStr": JSON.stringify(e)
-      };
-    }
-  }
-
-  async function listDevices (args) {
-    let deviceList = await fetchCredentialsFile()
-    deviceList.forEach(function(credentials) {
-      credentials.otp = database[credentials.name]
-    });
-    console.log('Listing devices, current count: '+deviceList.length)
-    return {
-      "result": "OK",
-      "resultStr": "",
-      "devices": deviceList
-    };
-  }
-
-   // We register this as a shared registration, i.e. multiple
-   // registrations for the same procedure URI are possible.
-   // With "roundrobin" these are invoked in turn by Crossbar.io
-   // on calls to the procedure URI.
-
-   /* ********** */
-   /*  DEVICES   */
-   /* ********** */
-
-   session.register('addDevice.vpn.repo.dappnode.eth', addDevice, { invoke: "roundrobin"}).then(
-      function (reg) {
-         console.log("-----------------------");
-         console.log('procedure registered');
-      },
-      function (err) {
-         console.log("-----------------------");
-         console.log('failed to register procedure', err);
-      }
-   );
-   session.register('removeDevice.vpn.repo.dappnode.eth', removeDevice, { invoke: "roundrobin"}).then(
-      function (reg) {
-         console.log("-----------------------");
-         console.log('procedure registered');
-      },
-      function (err) {
-         console.log("-----------------------");
-         console.log('failed to register procedure', err);
-      }
-   );
-   session.register('listDevices.vpn.repo.dappnode.eth', listDevices, { invoke: "roundrobin"}).then(
-      function (reg) {
-         console.log("-----------------------");
-         console.log('procedure registered');
-      },
-      function (err) {
-         console.log("-----------------------");
-         console.log('failed to register procedure', err);
-      }
-   );
-
-};
-
-
-// fired when connection was lost (or could not be established)
-//
 connection.onclose = function (reason, details) {
 
-   console.log("Connection lost: " + reason);
+   console.log('Connection lost: ' + reason)
 
 }
 
 
-// now actually open the connection
-//
-connection.open();
+////////////////////
+// Define methods //
+////////////////////
 
 
+async function addDevice (args) {
 
-// Helper functions
-//
+  let newDeviceName = args[0]
+
+  try {
+
+    // Fetch devices data from the chap_secrets file
+    let credentialsArray = await fetchCredentialsFile(CREDENTIALS_FILE_PATH)
+    let deviceNamesArray = credentialsArray.map(credentials => credentials.name)
+    let deviceIPsArray = credentialsArray.map(credentials => credentials.ip)
+
+    // Check if device name is unique
+    if (deviceNamesArray.includes(newDeviceName)) {
+      throw new VPNError('Device name exists: '+newDeviceName)
+    }
+
+    // Generate credentials
+    let ip = await generateDeviceIP(deviceIPsArray)
+    let password = generatePassword(VPN_PASSWORD_LENGTH)
+
+    // Append credentials to the chap_secrets file
+    credentialsArray.push({
+      name: newDeviceName,
+      password: password,
+      ip: ip
+    })
+    await writeCredentialsFile(credentialsArray)
+    console.log('Success adding device:'        + '\n'
+      + '  NAME      : ' + credentials.name     + '\n'
+      + '  PASS      : ' + credentials.password + '\n'
+      + '  STATIC_IP : ' + credentials.ip       + '\n'
+      + '  OTP       : ' + credentials.otp)
+
+    return JSON.stringify({
+      result: 'OK',
+      resultStr: ''
+    })
+
+  } catch(e) {
+
+    console.log(e)
+    return JSON.stringify({
+      result: 'ERR',
+      resultStr: JSON.stringify(e)
+    })
+
+  }
+}
+
+
+async function removeDevice (args) {
+
+  let deviceName = args[0]
+
+  try {
+
+    // Fetch devices data from the chap_secrets file
+    let credentialsArray = await fetchCredentialsFile(CREDENTIALS_FILE_PATH)
+
+    // Find the requested name in the device object array
+    // if found: splice the device's object,
+    // else: throw error
+    let deviceNameFound = false
+    for (i = 0; i < credentialsArray.length; i++) {
+      if (deviceName == credentialsArray[i].name) {
+        deviceNameFound = true
+        credentialsArray.splice(i, 1)
+      }
+    }
+
+    // Write back the device object array
+    // Log results to the UI
+    if (deviceNameFound) {
+      await writeCredentialsFile(credentialsArray)
+      return JSON.stringify({
+        result: 'OK',
+        resultStr: ''
+      })
+    } else {
+      throw new VPNError('Device name does not exist: '+deviceName)
+    }
+
+  } catch(e) {
+
+    console.log(e)
+    return JSON.stringify({
+      result: 'ERR',
+      resultStr: JSON.stringify(e)
+    })
+
+  }
+}
+
+
+async function listDevices (args) {
+
+  try {
+
+    // Fetch devices data from the chap_secrets file
+    let deviceList = await fetchCredentialsFile(CREDENTIALS_FILE_PATH)
+    deviceList.forEach(function(credentials) {
+      credentials.otp = generateDeviceOTP(credentials.name, credentials.password, VPN_IP, VPN_PSK)
+    })
+
+    console.log('Listing devices, current count: '+deviceList.length)
+    return JSON.stringify({
+      result: 'OK',
+      resultStr: '',
+      devices: deviceList
+    })
+
+  } catch(e) {
+
+    console.log(e)
+    return JSON.stringify({
+      result: 'ERR',
+      resultStr: JSON.stringify(e)
+    })
+
+  }
+}
+
+
+//////////////////////
+// Helper functions //
+//////////////////////
+
 
 function writeCredentialsFile(credentialsArray) {
-  // Return new promise
+
   return new Promise(function(resolve, reject) {
-    let credentialsArrayString = credentialsArray.map(credentials => {
-      return '"'+credentials.name+'" l2tpd "'+credentials.password+'" '+credentials.ip;
+
+    // Receives an array of credential objects, xl2tpd format
+    const credentialsFileContent = chap_secretsFileFormat(credentialsArray)
+
+    fs.writeFile(CREDENTIALS_FILE_PATH, credentialsFileContent, (err) => {
+      if (err) throw err
+      resolve()
     })
-    let credentialsFileString = credentialsArrayString.join('\n')
-    fs.writeFile(credentialsFilename, credentialsFileString, (err) => {
-      if (err) throw err;
-      resolve();
-    });
-  });
+
+  })
 }
 
-function fetchCredentialsFile() {
+
+function chap_secretsFileFormat(credentialsArray) {
+
+  const chap_secretsLineFormat = (credentials) => {
+    return '"'+credentials.name+'" l2tpd "'+credentials.password+'" '+credentials.ip
+  }
+
+  return credentialsArray
+    .map(chap_secretsLineFormat)
+    .join('\n')
+
+}
+
+
+function fetchCredentialsFile(CREDENTIALS_FILE_PATH) {
+
   return new Promise(function(resolve, reject) {
-    fs.readFile(credentialsFilename, 'utf-8', (err, fileContent) => {
-      if (err) throw err;
+
+    fs.readFile(CREDENTIALS_FILE_PATH, 'utf-8', (err, fileContent) => {
+
+      if (err) throw err
+
+      // Split by line breaks
       let deviceCredentialsArray = fileContent.split(/\r?\n/)
       // Clean empty lines if any
       for (i = 0; i < deviceCredentialsArray.length; i++) {
         if (deviceCredentialsArray[i] == '') {
-          deviceCredentialsArray.splice(i, 1);
+          deviceCredentialsArray.splice(i, 1)
         }
       }
-      // Convert each line to an object
+      // Convert each line to an object + strip quotation marks
       let deviceCredentialsArrayParsed = deviceCredentialsArray.map(credentialsString => {
-        let credentialsArray = credentialsString.split(' ');
+        let credentialsArray = credentialsString.split(' ')
         return {
           name: credentialsArray[0].replace(/['"]+/g, ''),
           password: credentialsArray[2].replace(/['"]+/g, ''),
           ip: credentialsArray[3]
         }
-      });
-      resolve(deviceCredentialsArrayParsed);
-    });
-  });
+      })
+
+      resolve(deviceCredentialsArrayParsed)
+
+    })
+  })
 }
 
 function generateDeviceIP(deviceIPsArray) {
-  let ipPrefix = '192.168.44.';
-  let firstOctet = 2;
-  let lastOctet = 250;
-  return new Promise(function(resolve, reject) {
-    // Get the list of used octets
-    let usedIpOctets = deviceIPsArray.reduce((usedIpOctets, ip) => {
-      if (ip.includes(ipPrefix)) {
-        usedIpOctets.push(parseFloat(ip.split(ipPrefix)[1]));
-      }
-      return usedIpOctets;
-    }, []);
-    // Compute a consecutive list of integers from firstOctet to lastOctet
-    let possibleIpOctets = fillRange(firstOctet, lastOctet);
-    // Compute the available octets by computing the difference
-    let availableOctets = possibleIpOctets.diff( usedIpOctets );
-    // Alert the user if there are no available octets
-    if (availableOctets.length < 1) {
-      throw 'No available IP addresses. Consider deleting old or unused devices';
+
+  const ipPrefix = USER_STATIC_IP_PREFIX
+  const firstOctet = USER_STATIC_IP_FIRST_OCTET
+  const lastOctet = USER_STATIC_IP_LAST_OCTET
+
+  // Get the list of used octets
+  let usedIpOctets = deviceIPsArray.reduce((usedIpOctets, ip) => {
+    if (ip.includes(ipPrefix)) {
+      usedIpOctets.push(parseFloat(ip.split(ipPrefix)[1]))
     }
-    // Chose the smallest available octet
-    let chosenOctet = Math.min.apply(null, availableOctets)
-    resolve( ipPrefix+chosenOctet )
-  });
+    return usedIpOctets
+  }, [])
+  // Compute a consecutive list of integers from firstOctet to lastOctet
+  let possibleIpOctets = fillRange(firstOctet, lastOctet)
+  // Compute the available octets by computing the difference
+  let availableOctets = possibleIpOctets.diff( usedIpOctets )
+  // Alert the user if there are no available octets
+  if (availableOctets.length < 1) {
+    throw new VPNError('No available IP addresses. Consider deleting old or unused devices')
+  }
+  // Chose the smallest available octet
+  let chosenOctet = Math.min.apply(null, availableOctets)
+
+  return ipPrefix+chosenOctet
+
 }
 
-function generateDevicePassword() {
-  return new Promise(function(resolve, reject) {
-    let password = generator.generate({
-      length: 20,
-      numbers: true
-    });
-    resolve(password)
-  });
+
+function generateDevicePassword(passwordLength) {
+
+  return generator.generate({
+    length: passwordLength,
+    numbers: true
+  })
+
 }
 
-function generateDeviceOTP(deviceName, password, serverIP, serverPSK) {
-  return new Promise(function(resolve, reject) {
-    let DAppNode_OTP = 'https://dappnode.github.io/DNP_VPN/DAppNode_OTP.html';
+
+function generateDeviceOTP(deviceName, password, VPN_IP, VPN_PSK) {
+
     let otpCredentials = {
-      "server": serverIP,
-      "name": "DAppNode-Server",
-      "user": deviceName,
-      "pass": password,
-      "psk": serverPSK
-    };
-    let otpCredentialsEncoded = base64url.encode(JSON.stringify(otpCredentials));
-    let url = DAppNode_OTP + '#otp=' + otpCredentialsEncoded;
-    resolve(url)
-  });
+      'server': VPN_IP,
+      'name': VPN_SERVER_NAME,
+      'user': deviceName,
+      'pass': password,
+      'psk': VPN_PSK
+    }
+
+    let otpCredentialsEncoded = base64url.encode(JSON.stringify(otpCredentials))
+    return DAPPNODE_OTP_URL + '#otp=' + otpCredentialsEncoded
+
 }
 
-function fetchServerIP() {
+
+async function logAdminCredentials(VPN_IP, VPN_PSK) {
+
+  let deviceList = await fetchCredentialsFile(CREDENTIALS_FILE_PATH)
+  let adminDevice = deviceList[0]
+  let adminOtp = generateDeviceOTP(adminDevice.name, adminDevice.password, VPN_IP, VPN_PSK)
+
+  // Prepare output
+  let headerString = '';
+  for (let i = 0; i < 10; i++) {
+    headerString += '================================================\n'
+  }
+  let output = ''
+  + '\n'
+  + headerString
+  + '\n'
+  + 'Connect to your new DAppNode following this link:' + '\n'
+  + '\n'
+  + adminOtp + '\n'
+  + '\n'
+  + 'or use your VPN credentials' + '\n'
+  + '\n'
+  + 'Server IP : ' + VPN_IP + '\n'
+  + 'PSK       : ' + VPN_PSK + '\n'
+  + 'name      : ' + adminDevice.name + '\n'
+  + 'password  : ' + adminDevice.password + '\n'
+  + '\n'
+  + headerString
+  + '\n'
+
+  console.log(output)
+
+}
+
+
+async function fetchVPNparameters() {
+
+  await fileToExist(VPN_IP_FILE_PATH)
+  await fileToExist(VPN_PSK_FILE_PATH)
+
+  VPN_IP = await fetchVPN_PARAMETER(VPN_IP_FILE_PATH)
+  VPN_PSK = await fetchVPN_PARAMETER(VPN_PSK_FILE_PATH)
+
+}
+
+
+function pauseSync(ms) {
   return new Promise(function(resolve, reject) {
-    fs.readFile(SERVER_IP_FILE, 'utf-8', (err, fileContent) => {
-      if (err) throw err;
-      let serverIP = String(fileContent).trim()
-      console.log('#### SERVER-IP: '+serverIP)
-      resolve(serverIP)
-    });
-  });
+    setTimeout(function(){
+      resolve()
+    }, ms);
+  })
 }
 
-function fetchServerPSK() {
+
+function fileToExist(FILE_PATH) {
+
+  let maxAttempts = 120;
+
+  return new Promise(async function(resolve, reject) {
+    for (let i = 0; i < maxAttempts; i++) {
+      if (fs.existsSync(FILE_PATH)) {
+        return resolve()
+      }
+      await pauseSync(500)
+    }
+    throw 'File not existent after #' + maxAttempts + ' attempts, path: ' + FILE_PATH
+  })
+
+}
+
+
+function fetchVPN_PARAMETER(VPN_PARAMETER_FILE_PATH) {
+
   return new Promise(function(resolve, reject) {
-    fs.readFile(SERVER_PSK_FILE, 'utf-8', (err, fileContent) => {
-      if (err) throw err;
-      let serverPSK = String(fileContent).trim()
-      console.log('#### SERVER-PSK: '+serverPSK)
-      resolve(serverPSK)
-    });
-  });
+
+    fs.readFile(VPN_PARAMETER_FILE_PATH, 'utf-8', (err, fileContent) => {
+      if (err) throw err
+      let VPN_PARAMETER = String(fileContent).trim()
+      resolve(VPN_PARAMETER)
+    })
+
+  })
 }
 
-// Utility tools
+
+///////////////////////
+// Utility functions //
+///////////////////////
+
+
 Array.prototype.diff = function(a) {
-    return this.filter(function(i) {return a.indexOf(i) < 0;});
-};
+
+    return this.filter(function(i) {return a.indexOf(i) < 0})
+
+}
+
 
 const fillRange = (start, end) => {
-  return Array(end - start + 1).fill().map((item, index) => start + index);
-};
+
+  return Array(end - start + 1).fill().map((item, index) => start + index)
+
+}

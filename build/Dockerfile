@@ -9,35 +9,42 @@ RUN apk add --update --no-cache \
     openssl \
     openrc \
     bind-tools \
+    # gettext package contains envsubst, template engine for the VPN files
     gettext \
     supervisor \
     nodejs \
     && rm -rf /var/cache/apk/* \
-    && rc-status \
+    && rc-status \0
     && touch /run/openrc/softlevel \
     && rc-update add ipsec
 
 # Copying source contents:
 # - supervisord.conf
-# - VPN templates
-# - package.json, client.js
+# - ipsec
+# - VPN setup shell: init.sh, templates/
+# - node files: package.json, client.js
 COPY src .
 COPY src/ipsec /etc/init.d/ipsec
 
 RUN chmod 755 init.sh
 
-# Installing node dependencies + setting envs for crossbar communication
+# Installing node dependencies
 RUN npm install
+# envs for crossbar communication
 ENV CBURL ws://my.wamp.dnp.dappnode.eth:8080/ws
 ENV CBREALM realm1
+# envs for init.sh -> node communication
+ENV VPN_IP_FILE_PATH /etc/server-ip
+ENV VPN_PSK_FILE_PATH /etc/server-psk
+# location of the OTP parsing tool
+ENV DAPPNODE_OTP_URL https://dappnode.github.io/DNP_VPN/DAppNode_OTP.html
 
 # Exposing necessary ports for the VPN
 EXPOSE 500/udp 4500/udp
 
-# ???
 VOLUME ["/lib/modules"]
 
-# Supervisord is a process manager that would run two commands:
-# > /usr/src/app/init.sh
-# > node client.js
+# Supervisord processes:
+# > /usr/src/app/init.sh (libreswan VPN, executes xl2tpd)
+# > node client.js (VPN user managment API)
 CMD ["supervisord"]
