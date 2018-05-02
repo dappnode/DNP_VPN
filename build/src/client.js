@@ -9,11 +9,11 @@ const realm = process.env.CBREALM
 const DAPPNODE_OTP_URL = process.env.DAPPNODE_OTP_URL
 const VPN_IP_FILE_PATH = process.env.VPN_IP_FILE_PATH
 const VPN_PSK_FILE_PATH = process.env.VPN_PSK_FILE_PATH
+const VPN_NAME_FILE_PATH = process.env.VPN_NAME_FILE_PATH
 const CREDENTIALS_FILE_PATH = '/etc/ppp/chap-secrets'
 const COMPONENT_TYPE = 'JavaScript/NodeJS'
 
 const VPN_PASSWORD_LENGTH = 20
-const VPN_SERVER_NAME = 'DAppNode-Server'
 
 const USER_STATIC_IP_PREFIX = '192.168.44.'
 const USER_STATIC_IP_FIRST_OCTET = 2
@@ -21,6 +21,7 @@ const USER_STATIC_IP_LAST_OCTET = 250
 
 let VPN_IP
 let VPN_PSK
+let VPN_NAME
 
 const VPNError = createError('MyCustomError');
 
@@ -316,7 +317,7 @@ function generateDeviceOTP(deviceName, password, VPN_IP, VPN_PSK) {
 
     let otpCredentials = {
       'server': VPN_IP,
-      'name': VPN_SERVER_NAME,
+      'name': VPN_NAME,
       'user': deviceName,
       'pass': password,
       'psk': VPN_PSK
@@ -369,6 +370,14 @@ async function fetchVPNparameters() {
 
   VPN_IP = await fetchVPN_PARAMETER(VPN_IP_FILE_PATH)
   VPN_PSK = await fetchVPN_PARAMETER(VPN_PSK_FILE_PATH)
+
+  // The existence of this file is not crucial to the system
+  // It it doesn't exist fallback to a default name
+  if (fs.existsSync(VPN_NAME_FILE_PATH)) {
+    VPN_NAME = await fetchVPN_PARAMETER(VPN_NAME_FILE_PATH)
+  } else {
+    VPN_NAME = 'DAppNode_server'
+  }
 
 }
 

@@ -11,6 +11,7 @@ services:
     container_name: dnp_vpn
     privileged: true
     volumes:
+      - /etc/hostname:/etc/vpnname:ro
       - /lib/modules:/lib/modules:ro
     ports:
       - 4500:4500/udp

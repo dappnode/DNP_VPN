@@ -14,7 +14,7 @@ RUN apk add --update --no-cache \
     supervisor \
     nodejs \
     && rm -rf /var/cache/apk/* \
-    && rc-status \0
+    && rc-status \
     && touch /run/openrc/softlevel \
     && rc-update add ipsec
 
@@ -36,6 +36,7 @@ ENV CBREALM realm1
 # envs for init.sh -> node communication
 ENV VPN_IP_FILE_PATH /etc/server-ip
 ENV VPN_PSK_FILE_PATH /etc/server-psk
+ENV VPN_NAME_FILE_PATH /etc/vpnname
 # location of the OTP parsing tool
 ENV DAPPNODE_OTP_URL https://dappnode.github.io/DNP_VPN/DAppNode_OTP.html
 
