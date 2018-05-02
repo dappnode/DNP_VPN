@@ -1,8 +1,6 @@
 const autobahn = require('autobahn')
 const fs = require('file-system')
-const generator = require('generate-password')
 const base64url = require('base64url')
-const createError = require('create-error');
 
 const url = process.env.CBURL
 const realm = process.env.CBREALM
