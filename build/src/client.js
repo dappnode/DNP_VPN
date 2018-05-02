@@ -28,6 +28,8 @@ var connection = new autobahn.Connection({
 });
 let session;
 
+let database = {};
+
 
 // fired when connection is established and session attached
 //
@@ -67,6 +69,7 @@ connection.onopen = function (session, details) {
         ip: ip,
         otp: otp
       }
+      database[credentials.name] = credentials.otp
       // Appending credentials to the chap_secrets file
       credentialsArray.push(credentials)
       await writeCredentialsFile(credentialsArray);
@@ -120,6 +123,9 @@ connection.onopen = function (session, details) {
 
   async function listDevices (args) {
     let deviceList = await fetchCredentialsFile()
+    deviceList.forEach(function(credentials) {
+      credentials.otp = database[credentials.name]
+    });
     console.log('Listing devices, current count: '+deviceList.length)
     return {
       "result": "OK",
