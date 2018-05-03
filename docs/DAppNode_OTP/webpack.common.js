@@ -35,21 +35,6 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
-        exclude: /(node_modules|bower_components)/,
-        loader: 'babel-loader',
-        query: {
-          presets: ['react', 'es2015', 'stage-0'],
-          plugins: ['react-html-attrs', 'transform-decorators-legacy', 'transform-class-properties'],
-        }
-      },
-      {
-        test: /\.scss$/,
-        use: extractPlugin.extract({
-          use: ['css-loader', 'sass-loader'],
-        })
-      },
-      {
         test: /\.css$/,
         use: extractPlugin.extract({
           use: ['css-loader']
@@ -75,6 +60,10 @@ module.exports = {
             }
           }
         ]
+      },
+      {
+        test: /\.txt$/,
+        use: 'raw-loader'
       }
     ]
   },
@@ -88,7 +77,7 @@ module.exports = {
     // You can do both at the beggining and then reference the var
     extractPlugin,
     new HtmlWebpackPlugin({
-      template: 'src/index.html'
+      template: 'src/template.html'
     }),
     // This will clean the dist folder before building, so all files are fresh and new
     new CleanWebpackPlugin(['dist'])

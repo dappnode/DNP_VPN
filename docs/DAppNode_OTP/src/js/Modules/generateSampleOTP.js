@@ -1,13 +1,18 @@
 import base64url from 'base64url';
 
 window.generateSampleOTP = function() {
-  let test = {
+
+  var test = {
   "server": "127.0.0.1",
-  "name": "dappnode-giveth",
+  "name": "Sample DAppNode Server",
   "user": "vpn_user",
-  "pass": "MC4xO2VkdTtwYXNz",
-  "psk": "TI3LjAuMC4x" };
-  let otpEncoded = base64url.encode(JSON.stringify(test));
-  let url = window.location.href + '#otp=' + otpEncoded;
+  "pass": "MC4xORandomPass",
+  "psk": "TI3LjRandomPSK" };
+
+  var decodedOTP = JSON.stringify(test);
+  var otpEncoded = base64url.encode(decodedOTP);
+  console.log(window.location)
+  var url = window.location.origin + '/' + '#otp=' + otpEncoded;
   console.log(url)
+
 }

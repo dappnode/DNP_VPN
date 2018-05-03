@@ -1,19 +1,23 @@
-$main: #FFF;
-$secondary: #323545;
-$toneDark: #3C457D;
-$toneMid: #536ADE;
+
+
 /* Colours */
-$white: #f9f9f9;
-$black: #0F121A;
-$highlightColor: #2979ff;
-$highlightColorHover: #1555c1;
-$highlightGrey: #333333;
-$highlightGreyHover: #111111;
+:root {
+  --white: #f9f9f9;
+  --black: #0F121A;
+  --highlightColor: #2979ff;
+  --highlightColorHover: #1555c1;
+  --highlightGrey: #333333;
+  --highlightGreyHover: #111111;
+}
+
 /* Dimensions */
-$borderRadius: 5px;
-$spacingBig: 30px;
-$spacingSmall: 5px;
-$spacingHeader: 20px;
+:root {
+  --borderRadius: 5px;
+  --spacingBig: 30px;
+  --spacingSmall: 5px;
+  --spacingHeader: 20px;
+}
+
 
 /* Reset */
 * {
@@ -27,14 +31,14 @@ body {
   font-family: 'Helvetica', sans-serif;
   font-size: 15px;
   line-height: 1.5;
-  background-color: $white;
-  color: $black;
+  background-color: var(--white);
+  color: var(--black);
 }
 
 h2 {
   font-size: 250%;
   text-align: center;
-  margin: $spacingBig 0 $spacingSmall 0;
+  margin: var(--spacingBig) 0 var(--spacingSmall) 0;
 }
 
 table {
@@ -66,8 +70,8 @@ input {
   font-family: Consolas, monaco, monospace;
   background-color: #E8E8E8;
   color: inherit;
-  border-top-left-radius: $borderRadius;
-  border-bottom-left-radius: $borderRadius;
+  border-top-left-radius: var(--borderRadius);
+  border-bottom-left-radius: var(--borderRadius);
 }
 /* General button sizes */
 button {
@@ -76,23 +80,23 @@ button {
 
 /* Colored highlight button */
 .btnHighlight {
-  background-color: $highlightColor;
-  border-radius: $borderRadius;
+  background-color: var(--highlightColor);
+  border-radius: var(--borderRadius);
   font-size: inherit;
-  color: $white;
+  color: var(--white);
 }
 .btnHighlight:hover {
-  background-color: $highlightColorHover;
+  background-color: var(--highlightColorHover);
 }
 /* Copy button next to input fields */
 .copyButton {
-  border-top-right-radius: $borderRadius;
-  border-bottom-right-radius: $borderRadius;
-  background-color: $highlightGrey;
-  color: $white;
+  border-top-right-radius: var(--borderRadius);
+  border-bottom-right-radius: var(--borderRadius);
+  background-color: var(--highlightGrey);
+  color: var(--white);
 }
 .copyButton:hover {
-  background-color: $highlightGreyHover;
+  background-color: var(--highlightGreyHover);
 }
 
 .container{
@@ -107,25 +111,25 @@ button {
 }
 .HBbox {
   display: inline-block;
-  margin: $spacingSmall;
+  margin: var(--spacingSmall);
 }
 .active {
-  background-color: $highlightColor;
+  background-color: var(--highlightColor);
 }
 
 .btnOS {
-  background-color: $highlightGrey;
-  border-radius: $borderRadius;
+  background-color: var(--highlightGrey);
+  border-radius: var(--borderRadius);
   font-size: inherit;
-  color: $white;
+  color: var(--white);
 }
 
 /* Specifics - Initial "I need a guide button"*/
 #btn_guide{
-  margin: $spacingBig;
+  margin: var(--spacingBig);
 }
 #btn_back{
-  background-color: $white;
+  background-color: var(--white);
 }
 
 ul{
@@ -139,13 +143,13 @@ p {
 
 /* Header */
 header{
-  background: $black;
-  color: $white;
-  padding: $spacingHeader 0 $spacingHeader 0;
+  background: var(--black);
+  color: var(--white);
+  padding: var(--spacingHeader) 0 var(--spacingHeader) 0;
 }
 
 header a{
-  color: $white;
+  color: var(--white);
   text-decoration: none;
   text-transform: uppercase;
   font-size: 16px;
