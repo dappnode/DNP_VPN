@@ -1,0 +1,19 @@
+{
+  "name": "DNP_VPN_API",
+  "version": "1.0.0",
+  "description": "",
+  "main": "client.js",
+  "scripts": {
+    "start": "node client.js"
+  },
+  "keywords": [],
+  "author": "dappLion",
+  "license": "ISC",
+  "dependencies": {
+    "autobahn": "^18.3.2",
+    "base64url": "^2.0.0",
+    "create-error": "^0.3.1",
+    "file-system": "^2.2.2",
+    "generate-password": "^1.4.0"
+  }
+}
