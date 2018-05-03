@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const autobahn = require('autobahn')
 const fs = require('file-system')
 const base64url = require('base64url')

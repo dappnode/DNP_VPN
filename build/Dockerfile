@@ -40,6 +40,9 @@ ENV VPN_NAME_FILE_PATH /etc/vpnname
 # location of the OTP parsing tool
 ENV DAPPNODE_OTP_URL https://dappnode.github.io/DNP_VPN/DAppNode_OTP.html
 
+RUN ln -s /usr/src/app/getAdminCredentials.js /usr/bin/getAdminCredentials
+RUN chmod +x /usr/src/app/getAdminCredentials.js
+
 # Exposing necessary ports for the VPN
 EXPOSE 500/udp 4500/udp
 
