@@ -33,9 +33,11 @@ RUN chmod 755 init.sh
 RUN npm install
 
 # envs for init.sh -> node communication
-ENV VPN_IP_FILE_PATH /etc/server-ip
-ENV VPN_PSK_FILE_PATH /etc/server-psk
-ENV VPN_NAME_FILE_PATH /etc/vpnname
+ENV VPN_IP_FILE_PATH /usr/src/app/secrets/server-ip
+ENV VPN_PSK_FILE_PATH /usr/src/app/secrets/server-psk
+ENV VPN_NAME_FILE_PATH /usr/src/app/secrets/vpnname
+ENV VPN_ADMIN_PASS_FILE_PATH /usr/src/app/secrets/admin-pass
+
 # location of the OTP parsing tool
 ENV DAPPNODE_OTP_URL https://dappnode.github.io/DNP_VPN/DAppNode_OTP.html
 

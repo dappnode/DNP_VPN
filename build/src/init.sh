@@ -41,37 +41,48 @@ check_ip "$PUBLIC_IP" || exiterr "Cannot detect this server's public IP. Define 
 
 # Export variables for use in templates
 echo "Generating VPN credentials: PSK and password..."
-export VPN_USER=dappnode_admin
-export VPN_PASSWORD="$(LC_CTYPE=C tr -dc 'A-HJ-NPR-Za-km-z2-9' < /dev/urandom | head -c 16)"
-export VPN_IPSEC_PSK="$(LC_CTYPE=C tr -dc 'A-HJ-NPR-Za-km-z2-9' < /dev/urandom | head -c 16)"
-export VPN_PASSWORD_ENC=$(openssl passwd -1 "$VPN_PASSWORD")
 export L2TP_NET=${VPN_L2TP_NET:-'172.33.0.0/16'}
 export L2TP_LOCAL=${VPN_L2TP_LOCAL:-'172.33.11.1'}
 export L2TP_POOL=${VPN_L2TP_POOL:-'172.33.100.1-172.33.255.254'}
-export XAUTH_NET=${VPN_XAUTH_NET:-'192.168.43.0/24'}
-export XAUTH_POOL=${VPN_XAUTH_POOL:-'192.168.43.10-192.168.43.250'}
 export DNS_SRV1=${VPN_DNS_SRV1:-'8.8.8.8'}
 export DNS_SRV2=${VPN_DNS_SRV2:-'8.8.4.4'}
 export PUBLIC_IP
 
+export VPN_USER=dappnode_admin
+export VPN_PASSWORD="$([ -f ${VPN_ADMIN_PASS_FILE_PATH} ] && cat ${VPN_ADMIN_PASS_FILE_PATH} || echo $(LC_CTYPE=C tr -dc 'A-HJ-NPR-Za-km-z2-9' < /dev/urandom | head -c 20))"
+export VPN_IPSEC_PSK="$([ -f ${VPN_PSK_FILE_PATH} ] && cat ${VPN_PSK_FILE_PATH} || echo $(LC_CTYPE=C tr -dc 'A-HJ-NPR-Za-km-z2-9' < /dev/urandom | head -c 20))"
+export VPN_PASSWORD_ENC=$(openssl passwd -1 "$VPN_PASSWORD")
+
+# Output the IP for the user managment UI
+echo "WRITING PUBLIC IP TO SERVER-IP"
+echo "$PUBLIC_IP" > $VPN_IP_FILE_PATH
+echo "WRITING PSK TO SERVER-PSK"
+echo "$VPN_IPSEC_PSK" > $VPN_PSK_FILE_PATH
+echo "WRITING VPN_PASSWORD TO ADMIN_PASS"
+echo "$VPN_PASSWORD" > $VPN_ADMIN_PASS_FILE_PATH
+
 # Create IPsec (Libreswan) config
 #   ${L2TP_NET}  ${XAUTH_NET}  ${XAUTH_POOL}  ${DNS_SRV1}  ${DNS_SRV2}  ${PUBLIC_IP}
 envsubst < "templates/ipsec.conf" > "/etc/ipsec.conf"
-# Specify IPsec PSK
-#   ${VPN_IPSEC_PSK}
-envsubst < "templates/ipsec.secrets" > "/etc/ipsec.secrets"
+
 # Create xl2tpd config
 #   ${L2TP_POOL}  ${L2TP_LOCAL}
 envsubst < "templates/xl2tpd.conf" > "/etc/xl2tpd/xl2tpd.conf"
+
 # Set xl2tpd options
 #   ${DNS_SRV1}  ${DNS_SRV2}
 envsubst < "templates/options.xl2tpd" > "/etc/ppp/options.xl2tpd"
+
+# Specify IPsec PSK
+#   ${VPN_IPSEC_PSK}
+![ -f ${VPN_ADMIN_PASS_FILE_PATH} ] && envsubst < "templates/ipsec.secrets" > "/etc/ipsec.secret"
+ln -s ${PWD}/secrets/ipsec.secret /etc/ipsec.secret
+
 # Create VPN credentials
 #   ${VPN_USER}  ${VPN_PASSWORD}
-envsubst < "templates/chap-secrets" > "/etc/ppp/chap-secrets"
-# Create passwd
-#   ${VPN_USER}  ${VPN_PASSWORD_ENC}
-envsubst < "templates/passwd" > "/etc/ipsec.d/passwd"
+![ -f ${VPN_ADMIN_PASS_FILE_PATH} ] &&  envsubst < "templates/chap-secrets" > "/etc/ppp/chap-secrets"
+ln -s ${PWD}/secrets/chap-secrets /etc/ppp/chap-secrets
+
 # Output the IP for the user managment UI
 echo "WRITING PUBLIC IP TO SERVER-IP"
 echo "$PUBLIC_IP" > $VPN_IP_FILE_PATH
