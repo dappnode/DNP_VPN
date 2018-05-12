@@ -9,6 +9,7 @@ RUN apk add --update --no-cache \
     openssl \
     openrc \
     bind-tools \
+    build-base \
     # gettext package contains envsubst, template engine for the VPN files
     gettext \
     supervisor \
