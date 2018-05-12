@@ -30,9 +30,7 @@ RUN chmod 755 init.sh
 
 # Installing node dependencies
 RUN npm install
-# envs for crossbar communication
-ENV CBURL ws://my.wamp.dnp.dappnode.eth:8080/ws
-ENV CBREALM realm1
+
 # envs for init.sh -> node communication
 ENV VPN_IP_FILE_PATH /etc/server-ip
 ENV VPN_PSK_FILE_PATH /etc/server-psk

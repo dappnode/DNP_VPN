@@ -4,8 +4,8 @@ const generator = require('generate-password')
 const base64url = require('base64url')
 const createError = require('create-error');
 
-const url = process.env.CBURL
-const realm = process.env.CBREALM
+const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws'
+const REALM = 'dappnode_admin'
 const DAPPNODE_OTP_URL = process.env.DAPPNODE_OTP_URL
 const VPN_IP_FILE_PATH = process.env.VPN_IP_FILE_PATH
 const VPN_PSK_FILE_PATH = process.env.VPN_PSK_FILE_PATH
@@ -48,13 +48,13 @@ async function start () {
 ///////////////////////////////
 
 
-const connection = new autobahn.Connection({ url, realm })
+const connection = new autobahn.Connection({ URL, REALM })
 const SUCCESS_MESSAGE = '---------------------- \n procedure registered'
 const ERROR_MESSAGE = '------------------------------ \n failed to register procedure '
 
 connection.onopen = function (session, details) {
 
-   console.log('Successfully connected to '+url
+   console.log('Successfully connected to '+URL
     +'\n  Component ID:   '+details.authid
     +'\n  Component type: '+COMPONENT_TYPE)
 
