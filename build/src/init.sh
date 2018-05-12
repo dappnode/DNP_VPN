@@ -75,12 +75,14 @@ envsubst < "templates/options.xl2tpd" > "/etc/ppp/options.xl2tpd"
 
 # Specify IPsec PSK
 #   ${VPN_IPSEC_PSK}
-![ -f ${VPN_ADMIN_PASS_FILE_PATH} ] && envsubst < "templates/ipsec.secrets" > "/etc/ipsec.secret"
+[ -f ${VPN_ADMIN_PASS_FILE_PATH} ] && envsubst < "templates/ipsec.secrets" > "${PWD}/secrets/ipsec.secret"
+rm /etc/ipsec.secret
 ln -s ${PWD}/secrets/ipsec.secret /etc/ipsec.secret
 
 # Create VPN credentials
 #   ${VPN_USER}  ${VPN_PASSWORD}
-![ -f ${VPN_ADMIN_PASS_FILE_PATH} ] &&  envsubst < "templates/chap-secrets" > "/etc/ppp/chap-secrets"
+[ -f ${VPN_ADMIN_PASS_FILE_PATH} ] &&  envsubst < "templates/chap-secrets" > "${PWD}/secrets/chap-secrets"
+rm /etc/ppp/chap-secrets
 ln -s ${PWD}/secrets/chap-secrets /etc/ppp/chap-secrets
 
 # Output the IP for the user managment UI
@@ -125,13 +127,10 @@ iptables -I FORWARD 1 -m conntrack --ctstate INVALID -j DROP
 iptables -I FORWARD 2 -i eth+ -o ppp+ -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 iptables -I FORWARD 3 -i ppp+ -o eth+ -j ACCEPT
 iptables -I FORWARD 4 -i ppp+ -o ppp+ -s "$L2TP_NET" -d "$L2TP_NET" -j ACCEPT
-iptables -I FORWARD 5 -i eth+ -d "$XAUTH_NET" -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-iptables -I FORWARD 6 -s "$XAUTH_NET" -o eth+ -j ACCEPT
 # Uncomment if you wish to disallow traffic between VPN clients themselves
 # iptables -I FORWARD 2 -i ppp+ -o ppp+ -s "$L2TP_NET" -d "$L2TP_NET" -j DROP
 # iptables -I FORWARD 3 -s "$XAUTH_NET" -d "$XAUTH_NET" -j DROP
 iptables -A FORWARD -j DROP
-iptables -t nat -I POSTROUTING -s "$XAUTH_NET" -o eth+ -m policy --dir out --pol none -j MASQUERADE
 iptables -t nat -I POSTROUTING -s "$L2TP_NET" -o eth+ -j MASQUERADE
 
 # Update file attributes
