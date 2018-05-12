@@ -48,7 +48,7 @@ async function start () {
 ///////////////////////////////
 
 
-const connection = new autobahn.Connection({ URL, REALM })
+const connection = new autobahn.Connection({ url: URL, realm: REALM })
 const SUCCESS_MESSAGE = '---------------------- \n procedure registered'
 const ERROR_MESSAGE = '------------------------------ \n failed to register procedure '
 
