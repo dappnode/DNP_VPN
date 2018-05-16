@@ -75,9 +75,9 @@ envsubst < "templates/options.xl2tpd" > "/etc/ppp/options.xl2tpd"
 
 # Specify IPsec PSK
 #   ${VPN_IPSEC_PSK}
-[ -f ${VPN_ADMIN_PASS_FILE_PATH} ] && envsubst < "templates/ipsec.secrets" > "${PWD}/secrets/ipsec.secret"
-rm /etc/ipsec.secret
-ln -s ${PWD}/secrets/ipsec.secret /etc/ipsec.secret
+[ -f ${VPN_ADMIN_PASS_FILE_PATH} ] && envsubst < "templates/ipsec.secrets" > "${PWD}/secrets/ipsec.secrets"
+rm /etc/ipsec.secrets
+ln -s ${PWD}/secrets/ipsec.secrets /etc/ipsec.secrets
 
 # Create VPN credentials
 #   ${VPN_USER}  ${VPN_PASSWORD}
