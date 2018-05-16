@@ -1,7 +1,7 @@
 +mschap-v2
 ipcp-accept-local
 ipcp-accept-remote
-ms-dns 10.17.0.2
+ms-dns 172.33.1.2
 noccp
 auth
 mtu 1280

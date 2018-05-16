@@ -9,6 +9,7 @@ RUN apk add --update --no-cache \
     openssl \
     openrc \
     bind-tools \
+    build-base \
     # gettext package contains envsubst, template engine for the VPN files
     gettext \
     supervisor \
@@ -30,13 +31,14 @@ RUN chmod 755 init.sh
 
 # Installing node dependencies
 RUN npm install
-# envs for crossbar communication
-ENV CBURL ws://my.wamp.dnp.dappnode.eth:8080/ws
-ENV CBREALM realm1
+
+RUN mkdir -p /usr/src/app/secrets
 # envs for init.sh -> node communication
-ENV VPN_IP_FILE_PATH /etc/server-ip
-ENV VPN_PSK_FILE_PATH /etc/server-psk
-ENV VPN_NAME_FILE_PATH /etc/vpnname
+ENV VPN_IP_FILE_PATH /usr/src/app/secrets/server-ip
+ENV VPN_PSK_FILE_PATH /usr/src/app/secrets/server-psk
+ENV VPN_NAME_FILE_PATH /usr/src/app/secrets/vpnname
+ENV VPN_ADMIN_PASS_FILE_PATH /usr/src/app/secrets/admin-pass
+
 # location of the OTP parsing tool
 ENV DAPPNODE_OTP_URL https://dappnode.github.io/DNP_VPN/DAppNode_OTP.html
 
@@ -52,4 +54,3 @@ VOLUME ["/lib/modules"]
 # > /usr/src/app/init.sh (libreswan VPN, executes xl2tpd)
 # > node client.js (VPN user managment API)
 CMD ["supervisord"]
-
