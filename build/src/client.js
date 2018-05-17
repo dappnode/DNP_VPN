@@ -2,8 +2,7 @@ const autobahn = require('autobahn')
 const fs = require('file-system')
 const generator = require('generate-password')
 const base64url = require('base64url')
-const createError = require('create-error')
-const fetch = require('node-fetch')
+const createError = require('create-error');
 
 const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws'
 const REALM = 'dappnode_admin'
@@ -36,53 +35,6 @@ async function start () {
 
   logAdminCredentials(VPN_IP, VPN_PSK)
 
-
-  ///////////////////////////////
-  // Setup crossbar connection //
-  ///////////////////////////////
-
-
-  const credentials = await getCredentials('core')
-  console.log('Successfully fetched credentials for: '+credentials.id)
-  const onchallenge = createOnchallenge(credentials.key)
-
-  const connection = new autobahn.Connection({
-    url: URL,
-    realm: REALM,
-    authmethods: ["wampcra"],
-    authid: 'coredappnode',
-    onchallenge: onchallenge
-  })
-  const SUCCESS_MESSAGE = '---------------------- \n procedure registered'
-  const ERROR_MESSAGE = '------------------------------ \n failed to register procedure '
-
-  connection.onopen = function (session, details) {
-
-     console.log('Successfully connected to '+URL
-      +'\n  Component ID:   '+details.authid
-      +'\n  Component type: '+COMPONENT_TYPE)
-
-     session.register('addDevice.vpn.repo.dappnode.eth', addDevice).then(
-        function (reg) { console.log(SUCCESS_MESSAGE) },
-        function (err) { console.log(ERROR_MESSAGE, err) }
-     )
-     session.register('removeDevice.vpn.repo.dappnode.eth', removeDevice).then(
-        function (reg) { console.log(SUCCESS_MESSAGE) },
-        function (err) { console.log(ERROR_MESSAGE, err) }
-     )
-     session.register('listDevices.vpn.repo.dappnode.eth', listDevices).then(
-        function (reg) { console.log(SUCCESS_MESSAGE) },
-        function (err) { console.log(ERROR_MESSAGE, err) }
-     )
-
-  }
-
-  connection.onclose = function (reason, details) {
-
-     console.log('Connection lost: ' + reason)
-
-  }
-
   connection.open()
   console.log('Attempting to connect to.... \n'
     +'   url: '+connection._options.url+'\n'
@@ -92,51 +44,39 @@ async function start () {
 
 
 ///////////////////////////////
-// Connection helper functions
+// Setup crossbar connection //
+///////////////////////////////
 
 
-async function getCredentials(type) {
+const connection = new autobahn.Connection({ url: URL, realm: REALM })
+const SUCCESS_MESSAGE = '---------------------- \n procedure registered'
+const ERROR_MESSAGE = '------------------------------ \n failed to register procedure '
 
-  let url, id
-  switch (type) {
-    case 'core':
-      url = 'http://my.wamp.dnp.dappnode.eth:8080/core'
-      id = 'coredappnode'
-      break
-    case 'admin':
-      url = 'http://my.wamp.dnp.dappnode.eth:8080/admin'
-      id = 'dappnodeadmin'
-      break
-    default:
-      throw Error('Unkown user type')
-  }
+connection.onopen = function (session, details) {
 
-  const res = await fetch(url, {
-    method: 'POST',
-    body: '{"procedure": "authenticate.wamp.dnp.dappnode.eth", "args": [{},{},{}]}',
-    headers: { 'Content-Type': 'application/json' }
-  })
+   console.log('Successfully connected to '+URL
+    +'\n  Component ID:   '+details.authid
+    +'\n  Component type: '+COMPONENT_TYPE)
 
-  const resParsed = await res.json()
-  const key = resParsed.args[0]
-  return {
-    id,
-    key
-  }
+   session.register('addDevice.vpn.repo.dappnode.eth', addDevice).then(
+      function (reg) { console.log(SUCCESS_MESSAGE) },
+      function (err) { console.log(ERROR_MESSAGE, err) }
+   )
+   session.register('removeDevice.vpn.repo.dappnode.eth', removeDevice).then(
+      function (reg) { console.log(SUCCESS_MESSAGE) },
+      function (err) { console.log(ERROR_MESSAGE, err) }
+   )
+   session.register('listDevices.vpn.repo.dappnode.eth', listDevices).then(
+      function (reg) { console.log(SUCCESS_MESSAGE) },
+      function (err) { console.log(ERROR_MESSAGE, err) }
+   )
+
 }
 
+connection.onclose = function (reason, details) {
 
-function createOnchallenge(key) {
+   console.log('Connection lost: ' + reason)
 
-  return function(session, method, extra) {
-    console.log("onchallenge", method, extra);
-    if (method === "wampcra") {
-       console.log("authenticating via '" + method + "' and challenge '" + extra.challenge + "'");
-       return autobahn.auth_cra.sign(key, extra.challenge);
-    } else {
-       throw "don't know how to authenticate using '" + method + "'";
-    }
-  }
 }
 
 
