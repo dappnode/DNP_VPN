@@ -16,7 +16,7 @@ const COMPONENT_TYPE = 'JavaScript/NodeJS'
 
 const VPN_PASSWORD_LENGTH = 20
 
-const USER_STATIC_IP_PREFIX = '192.168.44.'
+const USER_STATIC_IP_PREFIX = '172.33.100.'
 const USER_STATIC_IP_FIRST_OCTET = 2
 const USER_STATIC_IP_LAST_OCTET = 250
 
@@ -163,7 +163,7 @@ async function addDevice (args) {
 
     // Generate credentials
     let ip = await generateDeviceIP(deviceIPsArray)
-    let password = generatePassword(VPN_PASSWORD_LENGTH)
+    let password = generateDevicePassword(VPN_PASSWORD_LENGTH)
 
     // Append credentials to the chap_secrets file
     credentialsArray.push({
@@ -172,11 +172,6 @@ async function addDevice (args) {
       ip: ip
     })
     await writeCredentialsFile(credentialsArray)
-    console.log('Success adding device:'        + '\n'
-      + '  NAME      : ' + credentials.name     + '\n'
-      + '  PASS      : ' + credentials.password + '\n'
-      + '  STATIC_IP : ' + credentials.ip       + '\n'
-      + '  OTP       : ' + credentials.otp)
 
     return JSON.stringify({
       result: 'OK',
