@@ -16,7 +16,7 @@ module.exports = {
   entry: './src/js/app.js',
   output: {
     // The path module helps you write absolute paths easier
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, '../docs'),
     filename: 'bundle.js',
   },
   // resolve module
