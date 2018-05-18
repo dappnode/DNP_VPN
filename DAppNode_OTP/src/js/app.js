@@ -10,9 +10,6 @@ import credentialsDisplay from './Modules/credentialsDisplay';
 import errorDisplay from './Modules/errorDisplay';
 import downloadLink from './Modules/downloadLink';
 import generateMobileConfigFile from './Modules/generateMobileConfigFile';
-// BELOW delete for production
-import './Modules/generateSampleOTP';
-
 
 (function() {
 
