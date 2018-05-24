@@ -40,7 +40,7 @@ ENV VPN_NAME_FILE_PATH /usr/src/app/secrets/vpnname
 ENV VPN_ADMIN_PASS_FILE_PATH /usr/src/app/secrets/admin-pass
 
 # location of the OTP parsing tool
-ENV DAPPNODE_OTP_URL https://dappnode.github.io/DNP_VPN/DAppNode_OTP.html
+ENV DAPPNODE_OTP_URL https://dappnode.github.io/DAppNode_OTP/
 
 RUN ln -s /usr/src/app/getAdminCredentials.js /usr/bin/getAdminCredentials
 RUN chmod +x /usr/src/app/getAdminCredentials.js
