@@ -114,16 +114,17 @@ async function addDevice (args) {
     await writeCredentialsFile(credentialsArray)
 
     return JSON.stringify({
-      result: 'OK',
-      resultStr: ''
+      success: true,
+      message: 'Added device '+newDeviceName,
+      result: {}
     })
 
   } catch(e) {
 
     console.log(e)
     return JSON.stringify({
-      result: 'ERR',
-      resultStr: JSON.stringify(e)
+      success: false,
+      message: e.message
     })
 
   }
@@ -155,8 +156,9 @@ async function removeDevice (args) {
     if (deviceNameFound) {
       await writeCredentialsFile(credentialsArray)
       return JSON.stringify({
-        result: 'OK',
-        resultStr: ''
+        success: true,
+        message: 'Removed device '+deviceName,
+        result: {}
       })
     } else {
       throw new VPNError('Device name does not exist: '+deviceName)
@@ -166,8 +168,8 @@ async function removeDevice (args) {
 
     console.log(e)
     return JSON.stringify({
-      result: 'ERR',
-      resultStr: JSON.stringify(e)
+      success: false,
+      message: e.message
     })
 
   }
@@ -186,17 +188,17 @@ async function listDevices (args) {
 
     console.log('Listing devices, current count: '+deviceList.length)
     return JSON.stringify({
-      result: 'OK',
-      resultStr: '',
-      devices: deviceList
+      success: true,
+      message: 'Listed devices',
+      result: deviceList
     })
 
   } catch(e) {
 
     console.log(e)
     return JSON.stringify({
-      result: 'ERR',
-      resultStr: JSON.stringify(e)
+      success: false,
+      message: e.message
     })
 
   }
