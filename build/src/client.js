@@ -152,7 +152,7 @@ async function removeDevice (args) {
 
         // Prevent the user from deleting admins
         if (credentialsArray[i].ip.includes(ADMIN_STATIC_IP_PREFIX)) {
-          throw new VPNError('You cannot an admin user, it would broke dappnode usability')
+          throw new VPNError('You cannot remove an admin user, it would broke dappnode usability')
 
         } else {
           deviceNameFound = true
