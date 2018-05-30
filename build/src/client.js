@@ -16,6 +16,7 @@ const COMPONENT_TYPE = 'JavaScript/NodeJS'
 const VPN_PASSWORD_LENGTH = 20
 
 const USER_STATIC_IP_PREFIX = '172.33.100.'
+const ADMIN_STATIC_IP_PREFIX = '172.33.10.'
 const USER_STATIC_IP_FIRST_OCTET = 2
 const USER_STATIC_IP_LAST_OCTET = 250
 
@@ -140,14 +141,23 @@ async function removeDevice (args) {
     // Fetch devices data from the chap_secrets file
     let credentialsArray = await fetchCredentialsFile(CREDENTIALS_FILE_PATH)
 
+    // Do not allow the user to remove all
+
     // Find the requested name in the device object array
     // if found: splice the device's object,
     // else: throw error
     let deviceNameFound = false
     for (i = 0; i < credentialsArray.length; i++) {
       if (deviceName == credentialsArray[i].name) {
-        deviceNameFound = true
-        credentialsArray.splice(i, 1)
+
+        // Prevent the user from deleting admins
+        if (credentialsArray[i].ip.includes(ADMIN_STATIC_IP_PREFIX)) {
+          throw new VPNError('You cannot an admin user, it would broke dappnode usability')
+
+        } else {
+          deviceNameFound = true
+          credentialsArray.splice(i, 1)
+        }
       }
     }
 
