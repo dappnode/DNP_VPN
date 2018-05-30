@@ -73,7 +73,7 @@ $docker load -i dnp_vpn.tar.xz
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://github.com/dappnode) for details on our code of conduct, and the process for submitting pull requests to us.
+Please read [CONTRIBUTING.md](https://github.com/dappnode/DAppNode/blob/master/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Versioning
 
@@ -82,6 +82,8 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 ## Authors
 
 * **Eduardo Antuña Díez** - *Initial work* - [eduadiez](https://github.com/eduadiez)
+* **DAppLion** - *API* - [dapplion](https://github.com/dapplion)
+* **Alex Floyd** - *Improvements and review* - [mex20](https://github.com/mex20)
 
 See also the list of [contributors](https://github.com/dappnode/DNP_VPN/contributors) who participated in this project.
 
