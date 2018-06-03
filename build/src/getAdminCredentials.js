@@ -20,9 +20,9 @@ start()
 
 async function start () {
 
-  console.log('Waiting for credentials files to exist')
+  //console.log('Waiting for credentials files to exist')
   await fetchVPNparameters()
-  console.log('VPN credentials fetched, VPN_IP: ' + VPN_IP + ' VPN_PSK: ' + VPN_PSK)
+  //console.log('VPN credentials fetched, VPN_IP: ' + VPN_IP + ' VPN_PSK: ' + VPN_PSK)
 
   logAdminCredentials(VPN_IP, VPN_PSK)
 

@@ -75,6 +75,8 @@ ENV VPN_IP_FILE_PATH /usr/src/app/secrets/server-ip
 ENV VPN_PSK_FILE_PATH /usr/src/app/secrets/server-psk
 ENV VPN_NAME_FILE_PATH /usr/src/app/secrets/vpnname
 ENV VPN_ADMIN_PASS_FILE_PATH /usr/src/app/secrets/admin-pass
+ENV VPN_DNS_SRV1 172.33.1.2
+ENV VPN_DNS_SRV2 8.8.8.8
 
 # location of the OTP parsing tool
 ENV DAPPNODE_OTP_URL https://dappnode.github.io/DAppNode_OTP/

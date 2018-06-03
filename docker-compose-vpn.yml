@@ -7,22 +7,23 @@ networks:
             config:
                 - subnet: 172.33.0.0/16
 
+volumes:
+  vpndnpdappnodeeth_data: {}  
+
 services:
   vpn.dnp.dappnode.eth:
     build: ./build
-    image: vpn.dnp.dappnode.eth:0.1.0
+    image: vpn.dnp.dappnode.eth:0.1.1
     container_name: DAppNodeCore-vpn.dnp.dappnode.eth
     privileged: true
     restart: always
     volumes:
       - /etc/hostname:/etc/vpnname:ro
       - /lib/modules:/lib/modules:ro
+      - vpndnpdappnodeeth_data:/usr/src/app/secrets
     ports:
       - 4500:4500/udp
       - 500:500/udp
-    environment:
-      - VPN_DNS_SRV1=172.33.1.2
-      - VPN_DNS_SRV2=8.8.8.8
     dns: 172.33.1.2
     networks:
       network:
