@@ -98,6 +98,7 @@ async function logAdminCredentials(VPN_IP, VPN_PSK) {
   + '\n'
   + 'or use your VPN credentials' + '\n'
   + '\n'
+  + 'VPN type  : ' + 'L2TP/IPSec' + '\n'
   + 'Server IP : ' + VPN_IP + '\n'
   + 'PSK       : ' + VPN_PSK + '\n'
   + 'name      : ' + adminDevice.name + '\n'
