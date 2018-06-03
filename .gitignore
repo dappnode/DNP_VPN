@@ -1,2 +1,4 @@
-.DS_Store
-build/src/node_modules
+build_*
+.vscode
+uploader
+.gitignore

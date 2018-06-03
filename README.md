@@ -1,6 +1,19 @@
-# DNP_VPN
+# DAppNode Package VPN (Core)
+
+<p align="left">
+  <img src="VPN-min.png" width="100"/>
+</p>
+
+[![Website dappnode.io](https://img.shields.io/badge/Website-dappnode.io-brightgreen.svg)](https://dappnode.io/)
+[![Documentation Wiki](https://img.shields.io/badge/Documentation-Wiki-brightgreen.svg)](https://github.com/dappnode/DAppNode/wiki)
+[![GIVETH Campaign](https://img.shields.io/badge/GIVETH-Campaign-1e083c.svg)](https://alpha.giveth.io/campaigns/OcKJryNwjeidMXi9)
+[![RIOT DAppNode](https://img.shields.io/badge/RIOT-DAppNode-blue.svg)](https://riot.im/app/#/room/#DAppNode:matrix.org)
+[![Twitter Follow](https://img.shields.io/twitter/follow/espadrine.svg?style=social&label=Follow)](https://twitter.com/DAppNODE?lang=es)
 
 Dappnode package responsible for providing the VPN connection
+
+It is an AragonApp whose repo is deployed at this address: [0xe27438944187b49ef0005554a15b913b11baa08c](https://etherscan.io/address/0xe27438944187b49ef0005554a15b913b11baa08c) and whose ENS address is: [vpn.dnp.dappnode.eth](https://etherscan.io/enslookup?q=vpn.dnp.dappnode.eth])
+
 
 ## Getting Started
 
@@ -29,7 +42,7 @@ $ git clone https://github.com/dappnode/DNP_VPN.git
 ```
 
 ```
-$ docker-compose build
+$ docker-compose -f docker-compose-vpn.yml build
 or 
 $ docker build --rm -f build/Dockerfile -t dnp_vpn:dev build 
 ```
@@ -38,29 +51,27 @@ $ docker build --rm -f build/Dockerfile -t dnp_vpn:dev build
 
 ### Start
 ```
-$ docker-compose up -d
+$ docker-compose -f docker-compose-vpn.yml up -d
 ```
 ### Stop
 ```
-$ docker-compose down
+$ docker-compose -f docker-compose-vpn.yml down
 ```
 ### Status
 ```
-$ docker-compose ps
+$ docker-compose -f docker-compose-vpn.yml ps
 ```
 ### Logs
 ```
-$ docker-compose logs -f
+$ docker-compose -f docker-compose-vpn.yml logs -f
 ```
-
-**Note**: In case of having the port 8080 occupied, you should change them in the file docker-compose.yml by other.
 
 ## Generating a tar.xz image
 
 [xz](https://tukaani.org/xz/) is required 
 
 ```
-$ docker save dnp_vpn:dev | xz -9 > dnp_vpn.tar.xz
+$ docker save dnp_vpn:dev | xz -e9vT0 > dnp_vpn.tar.xz
 ```
 
 You can download the latest tar.xz version from here [releases](https://github.com/dappnode/DNP_VPN/releases).
@@ -73,7 +84,7 @@ $docker load -i dnp_vpn.tar.xz
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://github.com/dappnode) for details on our code of conduct, and the process for submitting pull requests to us.
+Please read [CONTRIBUTING.md](https://github.com/dappnode/DAppNode/blob/master/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Versioning
 
@@ -82,12 +93,14 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 ## Authors
 
 * **Eduardo Antuña Díez** - *Initial work* - [eduadiez](https://github.com/eduadiez)
+* **DAppLion** - *API* - [dapplion](https://github.com/dapplion)
+* **Alex Floyd** - *Improvements and review* - [mex20](https://github.com/mex20)
 
 See also the list of [contributors](https://github.com/dappnode/DNP_VPN/contributors) who participated in this project.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+This project is licensed under the GPLv3 License - see the [LICENSE](LICENSE) file for details
 
 ## References
 
