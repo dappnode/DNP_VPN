@@ -1,4 +1,5 @@
 build_*
+build/src/node_modules/
 .vscode
 uploader
 .gitignore

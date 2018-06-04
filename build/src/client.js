@@ -2,7 +2,8 @@ const autobahn = require('autobahn')
 const fs = require('file-system')
 const generator = require('generate-password')
 const base64url = require('base64url')
-const createError = require('create-error');
+const createError = require('create-error')
+const qrcode = require('qrcode-terminal')
 
 const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws'
 const REALM = 'dappnode_admin'
@@ -342,31 +343,18 @@ async function logAdminCredentials(VPN_IP, VPN_PSK) {
   let adminDevice = deviceList[0]
   let adminOtp = generateDeviceOTP(adminDevice.name, adminDevice.password, VPN_IP, VPN_PSK)
 
-  // Prepare output
-  let headerString = '';
-  for (let i = 0; i < 10; i++) {
-    headerString += '================================================\n'
-  }
-  let output = ''
-  + '\n'
-  + headerString
-  + '\n'
-  + 'Connect to your new DAppNode following this link:' + '\n'
-  + '\n'
-  + adminOtp + '\n'
-  + '\n'
-  + 'or use your VPN credentials' + '\n'
-  + '\n'
-  + 'VPN type  : ' + 'L2TP/IPSec' + '\n'
-  + 'Server IP : ' + VPN_IP + '\n'
-  + 'PSK       : ' + VPN_PSK + '\n'
-  + 'name      : ' + adminDevice.name + '\n'
-  + 'password  : ' + adminDevice.password + '\n'
-  + '\n'
-  + headerString
-  + '\n'
+  // Show the QR code
+  qrcode.setErrorLevel('S');
+  qrcode.generate(adminOtp);
 
-  console.log(output)
+  // Show credentials
+  console.log(`
+To connect to your DAppNode scan the QR above, copy/paste link below into your browser or use VPN credentials:
+
+${adminOtp}
+
+ VPN-Type         IP               PSK                name             password
+L2TP/IPSec  ${VPN_IP}  ${VPN_PSK}  ${adminDevice.name}  ${adminDevice.password}`)
 
 }
 
