@@ -60,15 +60,19 @@ connection.onopen = function (session, details) {
     +'\n  Component ID:   '+details.authid
     +'\n  Component type: '+COMPONENT_TYPE)
 
-   session.register('addDevice.vpn.repo.dappnode.eth', addDevice).then(
+   session.register('ping.vpn.dnp.dappnode.eth', x => x).then(
       function (reg) { console.log(SUCCESS_MESSAGE) },
       function (err) { console.log(ERROR_MESSAGE, err) }
    )
-   session.register('removeDevice.vpn.repo.dappnode.eth', removeDevice).then(
+   session.register('addDevice.vpn.dnp.dappnode.eth', addDevice).then(
       function (reg) { console.log(SUCCESS_MESSAGE) },
       function (err) { console.log(ERROR_MESSAGE, err) }
    )
-   session.register('listDevices.vpn.repo.dappnode.eth', listDevices).then(
+   session.register('removeDevice.vpn.dnp.dappnode.eth', removeDevice).then(
+      function (reg) { console.log(SUCCESS_MESSAGE) },
+      function (err) { console.log(ERROR_MESSAGE, err) }
+   )
+   session.register('listDevices.vpn.dnp.dappnode.eth', listDevices).then(
       function (reg) { console.log(SUCCESS_MESSAGE) },
       function (err) { console.log(ERROR_MESSAGE, err) }
    )
