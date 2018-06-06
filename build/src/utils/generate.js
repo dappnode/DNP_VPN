@@ -2,7 +2,7 @@ const base64url = require('base64url')
 const generator = require('generate-password')
 
 
-const DAPPNODE_OTP_URL = process.env.DEV ? 'https://localhost:3000/' : process.env.DAPPNODE_OTP_URL
+const DAPPNODE_OTP_URL = process.env.DAPPNODE_OTP_URL
 const COMMON_STATIC_IP_PREFIX = '172.33.'
 const USER_STATIC_IP_FIRST_OCTET = 2
 const USER_STATIC_IP_LAST_OCTET = 250

@@ -4,7 +4,8 @@
   "description": "",
   "main": "client.js",
   "scripts": {
-    "start": "DEV=true node client.js"
+    "start": "node client.js",
+    "dev": "DEV=true DAPPNODE_OTP_URL=https://dappnode.github.io/DAppNode_OTP/ node client.js"
   },
   "keywords": [],
   "author": "dappLion",
