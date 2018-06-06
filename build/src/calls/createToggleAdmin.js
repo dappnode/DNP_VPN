@@ -32,10 +32,10 @@ function createToggleAdmin(credentialsFile) {
 
         } else if (credentialsArray[i].ip.includes(ADMIN_STATIC_IP_PREFIX)) {
           isAdmin = true
-          credentialsArray[i].ip.replace(ADMIN_STATIC_IP_PREFIX, USER_STATIC_IP_PREFIX)
+          credentialsArray[i].ip = credentialsArray[i].ip.replace(ADMIN_STATIC_IP_PREFIX, USER_STATIC_IP_PREFIX)
 
         } else if (credentialsArray[i].ip.includes(USER_STATIC_IP_PREFIX)) {
-          credentialsArray[i].ip.replace(USER_STATIC_IP_PREFIX, ADMIN_STATIC_IP_PREFIX)
+          credentialsArray[i].ip = credentialsArray[i].ip.replace(USER_STATIC_IP_PREFIX, ADMIN_STATIC_IP_PREFIX)
         }
         // Raise found flag
         deviceNameFound = true
@@ -51,7 +51,8 @@ function createToggleAdmin(credentialsFile) {
     // Write back the device object array
     await credentialsFile.write(credentialsArray)
 
-    res.success(isAdmin ? 'removed admin credentials from '+deviceName : 'given admin credentials to '+deviceName)
+    let msg = isAdmin ? 'Removed admin credentials from '+deviceName : 'Given admin credentials to '+deviceName
+    return res.success(msg)
 
   }
 }

@@ -4,19 +4,19 @@ const generator = require('generate-password')
 
 const DAPPNODE_OTP_URL = process.env.DAPPNODE_OTP_URL
 const COMMON_STATIC_IP_PREFIX = '172.33.'
+const USER_STATIC_IP_PREFIX = '172.33.100.'
 const USER_STATIC_IP_FIRST_OCTET = 2
 const USER_STATIC_IP_LAST_OCTET = 250
 
 
 function ip(deviceIPsArray) {
 
-  const ipPrefix = COMMON_STATIC_IP_PREFIX
   const firstOctet = USER_STATIC_IP_FIRST_OCTET
   const lastOctet = USER_STATIC_IP_LAST_OCTET
 
   // Get the list of used octets
   let usedIpOctets = deviceIPsArray.reduce((usedIpOctets, ip) => {
-    if (ip.includes(ipPrefix)) {
+    if (ip.includes(COMMON_STATIC_IP_PREFIX)) {
       let octetArray = ip.trim().split('.')
       let endingOctet = octetArray[octetArray.length - 1]
       usedIpOctets.push(parseFloat(endingOctet))
@@ -34,7 +34,7 @@ function ip(deviceIPsArray) {
   // Chose the smallest available octet
   let chosenOctet = Math.min.apply(null, availableOctets)
 
-  return ipPrefix+chosenOctet
+  return USER_STATIC_IP_PREFIX + chosenOctet
 
 }
 
