@@ -18,6 +18,7 @@ const VPN_PASSWORD_LENGTH = 20
 
 const USER_STATIC_IP_PREFIX = '172.33.100.'
 const ADMIN_STATIC_IP_PREFIX = '172.33.10.'
+const MASTER_ADMIN_IP = '172.33.10.1'
 const USER_STATIC_IP_FIRST_OCTET = 2
 const USER_STATIC_IP_LAST_OCTET = 250
 
@@ -69,6 +70,10 @@ connection.onopen = function (session, details) {
       function (err) { console.log(ERROR_MESSAGE, err) }
    )
    session.register('removeDevice.vpn.dnp.dappnode.eth', removeDevice).then(
+      function (reg) { console.log(SUCCESS_MESSAGE) },
+      function (err) { console.log(ERROR_MESSAGE, err) }
+   )
+   session.register('toggleAdmin.vpn.dnp.dappnode.eth', toggleAdmin).then(
       function (reg) { console.log(SUCCESS_MESSAGE) },
       function (err) { console.log(ERROR_MESSAGE, err) }
    )
@@ -157,7 +162,7 @@ async function removeDevice (args) {
 
         // Prevent the user from deleting admins
         if (credentialsArray[i].ip.includes(ADMIN_STATIC_IP_PREFIX)) {
-          throw new VPNError('You cannot remove an admin user, it would broke dappnode usability')
+          throw new VPNError('You cannot remove an admin user')
 
         } else {
           deviceNameFound = true
@@ -173,6 +178,66 @@ async function removeDevice (args) {
       return JSON.stringify({
         success: true,
         message: 'Removed device '+deviceName,
+        result: {}
+      })
+    } else {
+      throw new VPNError('Device name does not exist: '+deviceName)
+    }
+
+  } catch(e) {
+
+    console.log(e)
+    return JSON.stringify({
+      success: false,
+      message: e.message
+    })
+
+  }
+}
+
+
+async function toggleAdmin (args) {
+
+  let deviceName = args[0]
+
+  try {
+
+    // Fetch devices data from the chap_secrets file
+    let credentialsArray = await fetchCredentialsFile(CREDENTIALS_FILE_PATH)
+
+    // Do not allow the user to remove all
+
+    // Find the requested name in the device object array
+    // if found: splice the device's object,
+    // else: throw error
+    let deviceNameFound = false
+    let isAdmin
+    for (i = 0; i < credentialsArray.length; i++) {
+      if (deviceName == credentialsArray[i].name) {
+
+        // Prevent the user from deleting admins
+        if (credentialsArray[i].ip.includes(MASTER_ADMIN_IP)) {
+          throw new VPNError('You cannot remove the master admin user')
+
+        } else if (credentialsArray[i].ip.includes(ADMIN_STATIC_IP_PREFIX)) {
+          isAdmin = true
+          credentialsArray[i].ip.replace(ADMIN_STATIC_IP_PREFIX, USER_STATIC_IP_PREFIX)
+
+        } else if (credentialsArray[i].ip.includes(USER_STATIC_IP_PREFIX)) {
+          credentialsArray[i].ip.replace(USER_STATIC_IP_PREFIX, ADMIN_STATIC_IP_PREFIX)
+        }
+        // Raise found flag
+        deviceNameFound = true
+      }
+    }
+
+    // Write back the device object array
+    // Log results to the UI
+    if (deviceNameFound) {
+      await writeCredentialsFile(credentialsArray)
+      return JSON.stringify({
+        success: true,
+        message: (isAdmin) ? ('removed admin credentials from '+deviceName) : ('given admin credentials to '+deviceName),
         result: {}
       })
     } else {
