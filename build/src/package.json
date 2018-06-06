@@ -4,7 +4,7 @@
   "description": "",
   "main": "client.js",
   "scripts": {
-    "start": "node client.js"
+    "start": "DEV=true node client.js"
   },
   "keywords": [],
   "author": "dappLion",
