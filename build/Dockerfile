@@ -3,7 +3,7 @@ FROM node:alpine as build
 WORKDIR /usr/src/app
 
 RUN apk add --update --no-cache \
-    build-base 
+    build-base
 
 COPY src .
 
@@ -73,7 +73,7 @@ RUN mkdir -p /usr/src/app/secrets
 # envs for init.sh -> node communication
 ENV VPN_IP_FILE_PATH /usr/src/app/secrets/server-ip
 ENV VPN_PSK_FILE_PATH /usr/src/app/secrets/server-psk
-ENV VPN_NAME_FILE_PATH /usr/src/app/secrets/vpnname
+ENV VPN_NAME_FILE_PATH /etc/vpnname
 ENV VPN_ADMIN_PASS_FILE_PATH /usr/src/app/secrets/admin-pass
 ENV VPN_DNS_SRV1 172.33.1.2
 ENV VPN_DNS_SRV2 8.8.8.8
