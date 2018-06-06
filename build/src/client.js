@@ -16,6 +16,7 @@ const COMPONENT_TYPE = 'JavaScript/NodeJS'
 
 const VPN_PASSWORD_LENGTH = 20
 
+const COMMON_STATIC_IP_PREFIX = '172.33.'
 const USER_STATIC_IP_PREFIX = '172.33.100.'
 const ADMIN_STATIC_IP_PREFIX = '172.33.10.'
 const MASTER_ADMIN_IP = '172.33.10.1'
@@ -353,14 +354,16 @@ function fetchCredentialsFile(CREDENTIALS_FILE_PATH) {
 
 function generateDeviceIP(deviceIPsArray) {
 
-  const ipPrefix = USER_STATIC_IP_PREFIX
+  const ipPrefix = COMMON_STATIC_IP_PREFIX
   const firstOctet = USER_STATIC_IP_FIRST_OCTET
   const lastOctet = USER_STATIC_IP_LAST_OCTET
 
   // Get the list of used octets
   let usedIpOctets = deviceIPsArray.reduce((usedIpOctets, ip) => {
     if (ip.includes(ipPrefix)) {
-      usedIpOctets.push(parseFloat(ip.split(ipPrefix)[1]))
+      let octetArray = ip.trim().split('.')
+      let endingOctet = octetArray[octetArray.length - 1]
+      usedIpOctets.push(parseFloat(endingOctet))
     }
     return usedIpOctets
   }, [])
