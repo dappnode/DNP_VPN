@@ -9,6 +9,7 @@ function createAddDevice(credentialsFile, generate) {
   return async function addDevice (args) {
 
     let newDeviceName = args[0]
+    validateName(newDeviceName)
 
     // Fetch devices data from the chap_secrets file
     let credentialsArray = await credentialsFile.fetch()
@@ -36,6 +37,11 @@ function createAddDevice(credentialsFile, generate) {
     return res.success('Added device '+newDeviceName)
 
   }
+}
+
+
+function validateName(newDeviceName) {
+  if (newDeviceName == '') throw Error('The new device name cannot be empty')
 }
 
 
