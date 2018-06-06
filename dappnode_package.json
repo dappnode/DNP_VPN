@@ -1,13 +1,13 @@
 {
   "name": "vpn.dnp.dappnode.eth",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Dappnode package responsible for providing the VPN (L2TP/IPSec) connection",
   "avatar": "/ipfs/QmWwMb3XhuCH6JnCF6m6EQzA4mW9pHHtg7rqAfhDr2ofi8",
   "type": "dncore",
   "image": {
-    "path": "vpn.dnp.dappnode.eth_0.1.1.tar.xz",
-    "hash": "/ipfs/QmVDxpEtRYyhhf5uKdgJrqT7vNNRp3W8wZBHsWLnoKr34h",
-    "size": 31504548,
+    "path": "vpn.dnp.dappnode.eth_0.1.2.tar.xz",
+    "hash": "/ipfs/QmeVfNPRbz8zXASB2s745g7zgmx9ya5PBKpBb9jX9xJFR7",
+    "size": 31935522,
     "volumes": [
       "/etc/hostname:/etc/vpnname:ro",
       "/lib/modules:/lib/modules:ro",
