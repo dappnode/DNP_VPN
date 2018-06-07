@@ -75,13 +75,13 @@ envsubst < "templates/options.xl2tpd" > "/etc/ppp/options.xl2tpd"
 
 # Specify IPsec PSK
 #   ${VPN_IPSEC_PSK}
-[ ! -f ${VPN_ADMIN_PASS_FILE_PATH} ] && envsubst < "templates/ipsec.secrets" > "${PWD}/secrets/ipsec.secrets"
+[ ! -f "${PWD}/secrets/ipsec.secrets" ] && envsubst < "templates/ipsec.secrets" > "${PWD}/secrets/ipsec.secrets"
 rm /etc/ipsec.secrets
 ln -s ${PWD}/secrets/ipsec.secrets /etc/ipsec.secrets
 
 # Create VPN credentials
 #   ${VPN_USER}  ${VPN_PASSWORD}
-[ ! -f ${VPN_ADMIN_PASS_FILE_PATH} ] &&  envsubst < "templates/chap-secrets" > "${PWD}/secrets/chap-secrets"
+[ ! -f "${PWD}/secrets/chap-secrets" ] &&  envsubst < "templates/chap-secrets" > "${PWD}/secrets/chap-secrets"
 rm /etc/ppp/chap-secrets
 ln -s ${PWD}/secrets/chap-secrets /etc/ppp/chap-secrets
 
@@ -134,7 +134,7 @@ iptables -A FORWARD -j DROP
 #iptables -t nat -I POSTROUTING -s "$L2TP_NET" -o eth+ -j MASQUERADE
 
 # Update file attributes
-chmod 600 /etc/ipsec.secrets /etc/ppp/chap-secrets /etc/ipsec.d/passwd
+chmod 600 /etc/ipsec.secrets /etc/ppp/chap-secrets
 
 # Load IPsec NETKEY kernel module
 modprobe af_key
