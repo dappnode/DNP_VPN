@@ -143,7 +143,9 @@ modprobe af_key
 mkdir -p /var/run/pluto /var/run/xl2tpd
 rm -f /var/run/pluto/pluto.pid /var/run/xl2tpd.pid
 
-ipsec start --config /etc/ipsec.conf
+touch /var/run/dnp_vpn 
+ 
+ipsec restart --config /etc/ipsec.conf
 
 # Initialize xl2tpd in the background
 echo "EXECUTING LIBRESWAN"
