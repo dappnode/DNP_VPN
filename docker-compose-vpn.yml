@@ -18,6 +18,7 @@ services:
     privileged: true
     restart: always
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
       - /etc/hostname:/etc/vpnname:ro
       - /lib/modules:/lib/modules:ro
       - vpndnpdappnodeeth_data:/usr/src/app/secrets
