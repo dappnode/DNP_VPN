@@ -3,7 +3,8 @@ FROM node:alpine as build
 WORKDIR /usr/src/app
 
 RUN apk add --update --no-cache \
-    build-base
+    build-base \
+    python
 
 COPY src .
 
