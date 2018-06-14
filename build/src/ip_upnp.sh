@@ -6,7 +6,6 @@ export InternalIP=$(docker run --rm --net=host ${IMAGE} ip route get 1 | awk '/s
 
 #DIG checkin in the future we want to remove this centralization point 
 export DIG_IP=$(dig @resolver1.opendns.com -t A -4 myip.opendns.com +short)
-export DIG_IP="123.123.123.123"
 
 if [ -z "$DIG_IP" ]; then
     if [ -z "$ExternalIP" ]; then
