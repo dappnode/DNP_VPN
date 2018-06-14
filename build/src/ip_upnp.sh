@@ -1,8 +1,8 @@
 #!/bin/sh
 
 export IMAGE=$(docker inspect DAppNodeCore-vpn.dnp.dappnode.eth -f '{{.Config.Image}}')
-export ExternalIP=$(docker run --rm --net=host -ti ${IMAGE} upnpc -l | awk -F'= '  '/ExternalIPAddress/{print $2}')
-export InternalIP=$(docker run --rm --net=host -ti ${IMAGE} ip route get 1 | awk '/src/{print $NF;exit}')
+export ExternalIP=$(docker run --rm --net=host ${IMAGE} upnpc -l | awk -F'= '  '/ExternalIPAddress/{print $2}')
+export InternalIP=$(docker run --rm --net=host ${IMAGE} ip route get 1 | awk '/src/{print $NF;exit}')
 
 #DIG checkin in the future we want to remove this centralization point 
 export DIG_IP=$(dig @resolver1.opendns.com -t A -4 myip.opendns.com +short)
@@ -33,9 +33,9 @@ fi
 
 #UPNP Device
 if [ ! -z "$ExternalIP" ]; then 
-    docker run --rm --net=host -ti ${IMAGE} upnpc -e DAppNode -r 500 udp
-    docker run --rm --net=host -ti ${IMAGE} upnpc -e DAppNode -r 4500 udp
-    docker run --rm --net=host -ti ${IMAGE} upnpc -e DAppNode -r 22 tcp
-    docker run --rm --net=host -ti ${IMAGE} upnpc -e DAppNode -r 80 tcp
+    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 500 udp
+    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 4500 udp
+    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 22 tcp
+    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 80 tcp
 fi
 
