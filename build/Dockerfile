@@ -3,7 +3,8 @@ FROM node:alpine as build
 WORKDIR /usr/src/app
 
 RUN apk add --update --no-cache \
-    build-base
+    build-base \
+    python
 
 COPY src .
 
@@ -85,8 +86,8 @@ ENV DAPPNODE_OTP_URL https://dappnode.github.io/DAppNode_OTP/
 RUN ln -s /usr/src/app/getAdminCredentials.js /usr/bin/getAdminCredentials
 RUN chmod +x /usr/src/app/getAdminCredentials.js
 
-
 # Supervisord processes:
 # > /usr/src/app/init.sh (libreswan VPN, executes xl2tpd)
+# > /usr/src/app/ipsec.sh (ipsec)
 # > node client.js (VPN user managment API)
 CMD ["supervisord"]
