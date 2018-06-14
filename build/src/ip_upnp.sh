@@ -17,13 +17,13 @@ if [ -z "$DIG_IP" ]; then
 elif [ -z "$ExternalIP" ]; then
     # If interal and dig is the same directly exposed to internet
     # If is different we use the dig resolution
-    if [ "$InternalIP" ==  "$DIG_IP" ]; then
+    if [ "$InternalIP" == "$DIG_IP" ]; then
         export PUBLIC_IP=$InternalIP
     else
         export PUBLIC_IP=$DIG_IP
     fi
 # If both IP are the same every thing is OK
-elif [ "$InternalIP" ==  "$DIG_IP" ]; then 
+elif [ "$InternalIP" == "$DIG_IP" ]; then 
     export PUBLIC_IP=$ExternalIP
 # In case of doubt we use the IP resolution through dig
 else
@@ -34,7 +34,6 @@ fi
 if [ ! -z "$ExternalIP" ]; then 
     docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 500 udp
     docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 4500 udp
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 22 tcp
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 80 tcp
+    #docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 22 tcp
+    #docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 80 tcp
 fi
-
