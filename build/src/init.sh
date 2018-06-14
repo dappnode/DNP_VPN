@@ -145,8 +145,6 @@ rm -f /var/run/pluto/pluto.pid /var/run/xl2tpd.pid
 
 touch /var/run/dnp_vpn 
  
-ipsec restart --config /etc/ipsec.conf
-
 # Initialize xl2tpd in the background
 echo "EXECUTING LIBRESWAN"
 exec /usr/sbin/xl2tpd -D -c /etc/xl2tpd/xl2tpd.conf

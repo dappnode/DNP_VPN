@@ -1,6 +1,6 @@
 {
   "name": "vpn.dnp.dappnode.eth",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Dappnode package responsible for providing the VPN (L2TP/IPSec) connection",
   "avatar": "VPN-min.png",
   "type": "dncore",
