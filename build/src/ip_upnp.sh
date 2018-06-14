@@ -33,9 +33,9 @@ fi
 
 #UPNP Device
 if [ ! -z "$ExternalIP" ]; then 
-    docker run --rm --net=host -ti ${IMAGE} upnpc -r 500 udp
-    docker run --rm --net=host -ti ${IMAGE} upnpc -r 4500 udp
-    #docker run --rm --net=host -ti ${IMAGE} upnpc -r 22 tcp
-    #docker run --rm --net=host -ti ${IMAGE} upnpc -r 80 tcp
+    docker run --rm --net=host -ti ${IMAGE} upnpc -e DAppNode -r 500 udp
+    docker run --rm --net=host -ti ${IMAGE} upnpc -e DAppNode -r 4500 udp
+    docker run --rm --net=host -ti ${IMAGE} upnpc -e DAppNode -r 22 tcp
+    docker run --rm --net=host -ti ${IMAGE} upnpc -e DAppNode -r 80 tcp
 fi
 
