@@ -26,14 +26,12 @@ check_ip() {
   printf '%s' "$1" | tr -d '\n' | grep -Eq "$IP_REGEX"
 }
 
-echo 'Trying to auto discover IP of this server...'
-
-# In case auto IP discovery fails, manually define the public IP
-# of this server in your 'env' file, as variable 'VPN_PUBLIC_IP'.
-PUBLIC_IP=${VPN_PUBLIC_IP:-''}
+echo 'Trying to auto discover IP of this server and redirect the ports...'
 
 # Try to auto discover IP of this server
-[ -z "$PUBLIC_IP" ] && PUBLIC_IP=$(dig @resolver1.opendns.com -t A -4 myip.opendns.com +short)
+#[ -z "$PUBLIC_IP" ] && PUBLIC_IP=$(dig @resolver1.opendns.com -t A -4 myip.opendns.com +short)
+
+source /usr/src/app/ip_upnp.sh
 
 # Check IP for correct format
 check_ip "$PUBLIC_IP" || PUBLIC_IP=$(wget -t 3 -T 15 -qO- http://ipv4.icanhazip.com)
