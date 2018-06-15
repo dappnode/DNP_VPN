@@ -4,7 +4,8 @@ WORKDIR /usr/src/app
 
 RUN apk add --update --no-cache \
     build-base \
-    python
+    python \
+    docker
 
 COPY src .
 
@@ -16,6 +17,7 @@ WORKDIR /usr/src/app
 
 COPY --from=build /usr/local/bin/node /usr/local/bin/node
 COPY --from=build /usr/src/app /usr/src/app
+COPY --from=build /usr/bin/docker /usr/bin/docker
 
 RUN apk add --update --no-cache \
     libreswan \
@@ -24,8 +26,10 @@ RUN apk add --update --no-cache \
     openssl \
     openrc \
     bind-tools \
+    miniupnpc \ 
     # gettext package contains envsubst, template engine for the VPN files
     gettext \
+    libltdl \
     supervisor \
     && rc-status \
     && touch /run/openrc/softlevel \
@@ -69,6 +73,7 @@ RUN apk add --update --no-cache \
 COPY src/ipsec /etc/init.d/ipsec
 
 RUN chmod 755 init.sh
+RUN chmod 755 ip_upnp.sh
 
 RUN mkdir -p /usr/src/app/secrets
 # envs for init.sh -> node communication

@@ -1,17 +1,18 @@
 {
   "name": "vpn.dnp.dappnode.eth",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Dappnode package responsible for providing the VPN (L2TP/IPSec) connection",
   "avatar": "/ipfs/QmWwMb3XhuCH6JnCF6m6EQzA4mW9pHHtg7rqAfhDr2ofi8",
   "type": "dncore",
   "image": {
-    "path": "vpn.dnp.dappnode.eth_0.1.4.tar.xz",
-    "hash": "/ipfs/QmXhZy99uxWdgu8krcdWcVcTdL99y29uCVvKHWq9RyxfSf",
-    "size": 32131000,
+    "path": "vpn.dnp.dappnode.eth_0.1.5.tar.xz",
+    "hash": "/ipfs/Qmd7ELchi9MJ8mL8watdhhcBo7CLNHy5iwcnwK1iFkvFgy",
+    "size": 36999594,
     "volumes": [
       "/etc/hostname:/etc/vpnname:ro",
       "/lib/modules:/lib/modules:ro",
-      "vpndnpdappnodeeth_data:/usr/src/app/secrets"
+      "vpndnpdappnodeeth_data:/usr/src/app/secrets",
+      "/var/run/docker.sock:/var/run/docker.sock"
     ],
     "ports": [
       "4500:4500/udp",
