@@ -59,6 +59,8 @@ echo "$VPN_IPSEC_PSK" > $VPN_PSK_FILE_PATH
 echo "WRITING VPN_PASSWORD TO ADMIN_PASS"
 echo "$VPN_PASSWORD" > $VPN_ADMIN_PASS_FILE_PATH
 
+mkdir -p /etc/xl2tpd
+
 # Create IPsec (Libreswan) config
 #   ${L2TP_NET}  ${XAUTH_NET}  ${XAUTH_POOL}  ${DNS_SRV1}  ${DNS_SRV2}  ${PUBLIC_IP}
 envsubst < "templates/ipsec.conf" > "/etc/ipsec.conf"
