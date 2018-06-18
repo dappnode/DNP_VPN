@@ -1,11 +1,16 @@
 FROM node:alpine as build
 
-WORKDIR /usr/src/app
-
 RUN apk add --update --no-cache \
     build-base \
     python \
-    docker
+    docker \
+    git \
+    libpcap-dev \
+    linux-headers
+
+RUN git clone https://github.com/xelerance/xl2tpd.git && cd xl2tpd && make
+
+WORKDIR /usr/src/app
 
 COPY src .
 
@@ -18,11 +23,11 @@ WORKDIR /usr/src/app
 COPY --from=build /usr/local/bin/node /usr/local/bin/node
 COPY --from=build /usr/src/app /usr/src/app
 COPY --from=build /usr/bin/docker /usr/bin/docker
+COPY --from=build /xl2tpd/xl2tpd /usr/sbin/xl2tpd
 
 RUN apk add --update --no-cache \
     libreswan \
     ppp \
-    xl2tpd \
     openssl \
     openrc \
     bind-tools \
