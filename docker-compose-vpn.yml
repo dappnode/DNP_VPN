@@ -13,7 +13,7 @@ volumes:
 services:
   vpn.dnp.dappnode.eth:
     build: ./build
-    image: vpn.dnp.dappnode.eth:0.1.5
+    image: vpn.dnp.dappnode.eth:0.1.6
     container_name: DAppNodeCore-vpn.dnp.dappnode.eth
     privileged: true
     restart: always
