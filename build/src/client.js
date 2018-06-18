@@ -44,6 +44,7 @@ connection.onopen = function (session, details) {
       "\n   session ID: "+details.authid)
 
   register(session, 'ping.vpn.dnp.dappnode.eth', x => x)
+  register(session, 'getParams.vpn.dappnode.eth', () => JSON.stringify(params))
   register(session, 'addDevice.vpn.dnp.dappnode.eth', addDevice)
   register(session, 'removeDevice.vpn.dnp.dappnode.eth', removeDevice)
   register(session, 'toggleAdmin.vpn.dnp.dappnode.eth', toggleAdmin)
