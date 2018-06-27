@@ -1,18 +1,21 @@
 const fs = require('file-system')
-
+const util = require('util')
+const readFile = util.promisify(fs.readFile)
 
 const VPN_IP_FILE_PATH = process.env.DEV ? './test/ip' : process.env.VPN_IP_FILE_PATH
 const VPN_PSK_FILE_PATH = process.env.DEV ? './test/psk' : process.env.VPN_PSK_FILE_PATH
 const VPN_NAME_FILE_PATH = process.env.DEV ? './test/name' : process.env.VPN_NAME_FILE_PATH
+const INT_IP_FILE_PATH = process.env.DEV ? './test/internal-ip' : process.env.INTERNAL_IP_FILE_PATH
+const EXT_IP_FILE_PATH = process.env.DEV ? './test/external-ip' : process.env.EXTERNAL_IP_FILE_PATH
 
+let maxAttempts = 120;
 
 async function fetchVPNparameters() {
 
-  await fileToExist(VPN_IP_FILE_PATH)
-  await fileToExist(VPN_PSK_FILE_PATH)
-
   const IP = await fetchVPN_PARAMETER(VPN_IP_FILE_PATH)
   const PSK = await fetchVPN_PARAMETER(VPN_PSK_FILE_PATH)
+  const INT_IP = await fetchVPN_PARAMETER(INT_IP_FILE_PATH)
+  const EXT_IP = await fetchVPN_PARAMETER(EXT_IP_FILE_PATH)
 
   // The existence of this file is not crucial to the system
   // It it doesn't exist fallback to a default name
@@ -23,53 +26,29 @@ async function fetchVPNparameters() {
     NAME = 'DAppNode_server'
   }
 
-  return { IP, PSK, NAME }
+  return { IP, PSK, INT_IP, EXT_IP, NAME }
 
 }
 
 
-function fileToExist(FILE_PATH) {
-
-  let maxAttempts = 120;
-
-  return new Promise(async function(resolve, reject) {
+async function fileToExist(FILE_PATH) {
     for (let i = 0; i < maxAttempts; i++) {
-      if (fs.existsSync(FILE_PATH)) {
-        return resolve()
-      }
+      if (fs.existsSync(FILE_PATH)) return
       await pauseSync(500)
     }
     throw 'File not existent after #' + maxAttempts + ' attempts, path: ' + FILE_PATH
-  })
-
 }
 
 
-function fetchVPN_PARAMETER(VPN_PARAMETER_FILE_PATH) {
-
-  return new Promise(function(resolve, reject) {
-
-    fs.readFile(VPN_PARAMETER_FILE_PATH, 'utf-8', (err, fileContent) => {
-      if (err) throw err
-      let VPN_PARAMETER = String(fileContent).trim()
-      resolve(VPN_PARAMETER)
-    })
-
-  })
-}
+const fetchVPN_PARAMETER = (FILE_PATH) => 
+  fileToExist(FILE_PATH)
+  .then(() => readFile(FILE_PATH, 'utf-8'))
+  .then(data => String(data).trim())
 
 
 ///////////////////
 // Helper functions
 
-
-function pauseSync(ms) {
-  return new Promise(function(resolve, reject) {
-    setTimeout(function(){
-      resolve()
-    }, ms);
-  })
-}
-
+const pauseSync = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 module.exports = fetchVPNparameters
