@@ -24,7 +24,7 @@ const addDevice = createAddDevice(credentialsFile, generate)
 const removeDevice = createRemoveDevice(credentialsFile)
 const toggleAdmin = createToggleAdmin(credentialsFile)
 const listDevices = createListDevices(credentialsFile, generate, params)
-const statusUPnP = createStatusUPnP(params)
+const statusUPnP = createStatusUPnP(params, fetchVPNparameters)
 const getParams = createGetParams(params)
 
 const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws'

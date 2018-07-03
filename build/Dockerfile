@@ -79,6 +79,7 @@ COPY src/ipsec /etc/init.d/ipsec
 
 RUN chmod 755 init.sh
 RUN chmod 755 ip_upnp.sh
+RUN chmod 755 check_upnp.sh
 
 RUN mkdir -p /usr/src/app/secrets
 # envs for init.sh -> node communication
