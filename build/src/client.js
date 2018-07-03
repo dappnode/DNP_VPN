@@ -6,8 +6,9 @@ const createAddDevice = require('./calls/createAddDevice')
 const createRemoveDevice = require('./calls/createRemoveDevice')
 const createToggleAdmin = require('./calls/createToggleAdmin')
 const createListDevices = require('./calls/createListDevices')
-const createStatusUPnP = require('./calls/createStatusUPnP')
 const createGetParams = require('./calls/createGetParams')
+const createStatusUPnP = require('./calls/createStatusUPnP')
+const createStatusExternalIp = require('./calls/createStatusExternalIp')
 
 // import dependencies
 const credentialsFile = require('./utils/credentialsFile')
@@ -24,8 +25,9 @@ const addDevice = createAddDevice(credentialsFile, generate)
 const removeDevice = createRemoveDevice(credentialsFile)
 const toggleAdmin = createToggleAdmin(credentialsFile)
 const listDevices = createListDevices(credentialsFile, generate, params)
-const statusUPnP = createStatusUPnP(params, fetchVPNparameters)
 const getParams = createGetParams(params)
+const statusUPnP = createStatusUPnP(params, fetchVPNparameters)
+const statusExternalIp = createStatusExternalIp(params, fetchVPNparameters)
 
 const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws'
 const REALM = 'dappnode_admin'
@@ -54,7 +56,7 @@ connection.onopen = function (session, details) {
   register(session, 'toggleAdmin.vpn.dnp.dappnode.eth', toggleAdmin)
   register(session, 'listDevices.vpn.dnp.dappnode.eth', listDevices)
   register(session, 'statusUPnP.vpn.dnp.dappnode.eth', statusUPnP)
-  
+  register(session, 'statusExternalIp.vpn.dnp.dappnode.eth', statusExternalIp)
 
 }
 

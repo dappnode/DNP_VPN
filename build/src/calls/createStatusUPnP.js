@@ -61,7 +61,7 @@ const runUpnpScript = () => {
 const ping = (host, method) => {
     return new Promise((resolve, reject) => {
         let cmd;
-        if (method == 'ping') cmd = 'ping -c 10 '+host
+        if (method == 'ping') cmd = 'ping -c 20 '+host
         if (method == 'nc') cmd = 'nc -vzu '+host+' 500'
         exec(cmd, (error) => {
             if (error) return reject(error)
@@ -72,7 +72,7 @@ const ping = (host, method) => {
 
 const checkHost = async (host) => {
   for (i=0; i<10; i++) {
-    let res = await ping(host, 'nc').then(() => true, () => false)
+    let res = await ping(host, 'ping').then(() => true, () => false)
     if (res) return true
   } 
   return false
