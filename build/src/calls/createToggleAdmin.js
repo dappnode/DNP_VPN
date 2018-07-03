@@ -9,9 +9,7 @@ const ADMIN_STATIC_IP_PREFIX = '172.33.10.'
 
 function createToggleAdmin(credentialsFile) {
 
-  return async function toggleAdmin (args) {
-
-    let deviceName = args[0]
+  return async function toggleAdmin ({id}) {
 
     // Fetch devices data from the chap_secrets file
     let credentialsArray = await credentialsFile.fetch()
@@ -24,7 +22,7 @@ function createToggleAdmin(credentialsFile) {
     let deviceNameFound = false
     let isAdmin
     for (i = 0; i < credentialsArray.length; i++) {
-      if (deviceName == credentialsArray[i].name) {
+      if (id == credentialsArray[i].name) {
 
         // Prevent the user from deleting admins
         if (credentialsArray[i].ip.includes(MASTER_ADMIN_IP)) {
@@ -45,13 +43,13 @@ function createToggleAdmin(credentialsFile) {
     // Write back the device object array
     // Log results to the UI
     if (!deviceNameFound) {
-      throw Error('Device name not found: '+deviceName)
+      throw Error('Device name not found: '+id)
     }
 
     // Write back the device object array
     await credentialsFile.write(credentialsArray)
 
-    let msg = isAdmin ? 'Removed admin credentials from '+deviceName : 'Given admin credentials to '+deviceName
+    let msg = isAdmin ? 'Removed admin credentials from '+id : 'Given admin credentials to '+id
     return res.success(msg)
 
   }

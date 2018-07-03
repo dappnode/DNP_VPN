@@ -3,7 +3,7 @@ const exec = require('child_process').exec;
 
 function createStatusUPnP(params) {
 
-  return async function addDevice (args) {
+  return async function addDevice () {
 
     // Check availability of UPnP
     const VPN = params.VPN;

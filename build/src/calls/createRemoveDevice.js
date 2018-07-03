@@ -6,9 +6,7 @@ const ADMIN_STATIC_IP_PREFIX = '172.33.10.'
 
 function createRemoveDevice(credentialsFile) {
 
-  return async function removeDevice (args) {
-
-    let deviceName = args[0]
+  return async function removeDevice ({id}) {
 
     // Fetch devices data from the chap_secrets file
     let credentialsArray = await credentialsFile.fetch()
@@ -18,7 +16,7 @@ function createRemoveDevice(credentialsFile) {
     // else: throw error
     let deviceNameFound = false
     for (i = 0; i < credentialsArray.length; i++) {
-      if (deviceName == credentialsArray[i].name) {
+      if (id == credentialsArray[i].name) {
 
         // Prevent the user from deleting admins
         if (credentialsArray[i].ip.includes(ADMIN_STATIC_IP_PREFIX)) {
@@ -32,13 +30,13 @@ function createRemoveDevice(credentialsFile) {
     }
 
     if (!deviceNameFound) {
-      throw Error('Device name not found: '+deviceName)
+      throw Error('Device name not found: '+id)
     }
 
     // Write back the device object array
     await credentialsFile.write(credentialsArray)
 
-    return res.success('Removed device '+deviceName)
+    return res.success('Removed device '+id)
 
   }
 }

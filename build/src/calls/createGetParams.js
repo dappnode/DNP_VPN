@@ -3,7 +3,7 @@ const exec = require('child_process').exec;
 
 function createGetParams(params) {
 
-  return async function getParams (args) {
+  return async function getParams () {
 
     return res.success('UPnP status ', publicParams(params.VPN))
 

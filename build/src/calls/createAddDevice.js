@@ -6,10 +6,9 @@ const VPN_PASSWORD_LENGTH = 20
 
 function createAddDevice(credentialsFile, generate) {
 
-  return async function addDevice (args) {
+  return async function addDevice ({id}) {
 
-    let newDeviceName = args[0]
-    validateName(newDeviceName)
+    validateName(id)
 
     // Fetch devices data from the chap_secrets file
     let credentialsArray = await credentialsFile.fetch()
@@ -17,8 +16,8 @@ function createAddDevice(credentialsFile, generate) {
     let deviceIPsArray = credentialsArray.map(credentials => credentials.ip)
 
     // Check if device name is unique
-    if (deviceNamesArray.includes(newDeviceName)) {
-      throw Error('Device name exists: '+newDeviceName)
+    if (deviceNamesArray.includes(id)) {
+      throw Error('Device name exists: '+id)
     }
 
     // Generate credentials
@@ -27,14 +26,14 @@ function createAddDevice(credentialsFile, generate) {
 
     // Append credentials to the chap_secrets file
     credentialsArray.push({
-      name: newDeviceName,
+      name: id,
       password: password,
       ip: ip
     })
 
     await credentialsFile.write(credentialsArray)
 
-    return res.success('Added device '+newDeviceName)
+    return res.success('Added device '+id)
 
   }
 }

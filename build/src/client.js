@@ -105,18 +105,20 @@ function register(session, event, handler) {
 
 
 function wrapErrors(handler) {
+  // 0. args: an array with call arguments
+  // 1. kwargs: an object with call arguments
+  // 2. details: an object which provides call metadata
 
-  return async function () {
+  return async function(args, kwargs) {
     try {
-        return await handler(arguments[0])
+      return await handler(kwargs);
     } catch (err) {
+      console.log(err);
 
-      console.log(err)
       return JSON.stringify({
-          success: false,
-          message: err.message
-      })
-
+        success: false,
+        message: err.message,
+      });
     }
-  }
+  };
 }
