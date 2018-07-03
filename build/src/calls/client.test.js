@@ -36,7 +36,7 @@ describe('Integration test', function() {
     let user
 
     it('should called addDevice without crashing', async () => {
-      unparsedRes = await addDevice([USER_NAME])
+      unparsedRes = await addDevice({id: USER_NAME})
     })
 
     it('should return success', () => {
@@ -62,7 +62,7 @@ describe('Integration test', function() {
     it('should throw an error', async () => {
       let error = 'did not throw'
       try {
-        await addDevice([USER_NAME])
+        await addDevice({id: USER_NAME})
       } catch(e) {
         error = e.message
       }
@@ -77,7 +77,7 @@ describe('Integration test', function() {
     let user
 
     it('should call toggleAdmin without crashing', async () => {
-      unparsedRes = await toggleAdmin([USER_NAME])
+      unparsedRes = await toggleAdmin({id: USER_NAME})
     })
 
     it('should return success', () => {
@@ -104,7 +104,7 @@ describe('Integration test', function() {
     it('should throw an error', async () => {
       let error = 'did not throw'
       try {
-        await removeDevice([USER_NAME])
+        await removeDevice({id: USER_NAME})
       } catch(e) {
         error = e.message
       }
@@ -118,7 +118,7 @@ describe('Integration test', function() {
     let user
 
     it('should call toggleAdmin without crashing', async () => {
-      unparsedRes = await toggleAdmin([USER_NAME])
+      unparsedRes = await toggleAdmin({id: USER_NAME})
       expect( JSON.parse(unparsedRes).success ).to.be.true
     })
 
@@ -141,7 +141,7 @@ describe('Integration test', function() {
     let user
 
     it('should call toggleAdmin without crashing', async () => {
-      unparsedRes = await removeDevice([USER_NAME])
+      unparsedRes = await removeDevice({id: USER_NAME})
     })
 
     it('should return success', () => {
