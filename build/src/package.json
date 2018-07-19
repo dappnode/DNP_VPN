@@ -4,9 +4,11 @@
   "description": "",
   "main": "client.js",
   "scripts": {
-    "start": "node client.js",
-    "dev": "DEV=true DAPPNODE_OTP_URL=https://dappnode.github.io/DAppNode_OTP/ node client.js",
-    "test": "DEV=true TEST_INTEGRATION=false mocha \"./{,!(node_modules)/**}/*.test.js\" "
+    "start": "node src/client.js",
+    "dev": "DEV=true DAPPNODE_OTP_URL=https://dappnode.github.io/DAppNode_OTP/ node src/client.js",
+    "test": "DEV=true TEST_INTEGRATION=false mocha ./src/**/*.test.js ",
+    "coverage": "./node_modules/.bin/nyc report --reporter=text-lcov | ./node_modules/.bin/coveralls",
+    "lint": "./node_modules/.bin/eslint src/**/*.js --fix"
   },
   "keywords": [],
   "author": "dappLion",
@@ -22,7 +24,11 @@
   },
   "devDependencies": {
     "chai": "^4.1.2",
+    "coveralls": "^3.0.2",
+    "eslint": "^5.1.0",
+    "eslint-config-google": "^0.9.1",
     "mocha": "^5.2.0",
+    "nyc": "^12.0.2",
     "sinon": "^5.1.0",
     "sinon-chai": "^3.1.0"
   }
