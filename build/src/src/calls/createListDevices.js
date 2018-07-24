@@ -1,4 +1,3 @@
-const res = require('../utils/res');
 
 
 function createListDevices(credentialsFile, generate, params) {
@@ -9,7 +8,10 @@ function createListDevices(credentialsFile, generate, params) {
       credentials.otp = generate.otp(credentials.name, credentials.password, params.VPN);
     });
 
-    return res.success('Listing '+deviceList.length+' devices', deviceList);
+    return {
+      message: 'Listing '+deviceList.length+' devices',
+      result: deviceList,
+    };
   };
 }
 

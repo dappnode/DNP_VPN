@@ -1,6 +1,7 @@
 const fs = require('file-system');
 const util = require('util');
 const readFile = util.promisify(fs.readFile);
+const logs = require('../logs.js')(module);
 
 const VPN_IP_FILE_PATH = process.env.DEV ? './test/ip' : process.env.VPN_IP_FILE_PATH;
 const VPN_PSK_FILE_PATH = process.env.DEV ? './test/psk' : process.env.VPN_PSK_FILE_PATH;
@@ -29,7 +30,7 @@ async function fileToExist(FILE_PATH, fallbackValue) {
       await pauseSync(500);
     }
     if (fallbackValue) {
-      console.log('Option file '+FILE_PATH+' not found (after #' + maxAttempts + ' attempts) '
+      logs.warn('Option file '+FILE_PATH+' not found (after #' + maxAttempts + ' attempts) '
         +'- Fallback value: '+fallbackValue);
       return fallbackValue;
     }

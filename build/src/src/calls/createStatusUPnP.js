@@ -1,4 +1,3 @@
-const res = require('../utils/res');
 const exec = require('child_process').exec;
 
 function createStatusUPnP(params, fetchVPNparameters) {
@@ -13,7 +12,10 @@ function createStatusUPnP(params, fetchVPNparameters) {
 
     const status = getStatus(VPN);
 
-    return res.success('UPnP status ', status);
+    return {
+      message: 'UPnP status ',
+      result: status,
+    };
   };
 }
 

@@ -1,4 +1,3 @@
-const res = require('../utils/res');
 const exec = require('child_process').exec;
 
 function createCheckHostResolution(params, fetchVPNparameters) {
@@ -12,7 +11,10 @@ function createCheckHostResolution(params, fetchVPNparameters) {
 
     const externalIpResolves = checkHost(VPN.EXT_IP);
 
-    return res.success('externalIpResolves ', externalIpResolves);
+    return {
+      message: 'externalIpResolves '+JSON.stringify(externalIpResolves),
+      result: externalIpResolves,
+    };
   };
 }
 

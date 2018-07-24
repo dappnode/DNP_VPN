@@ -1,4 +1,3 @@
-const res = require('../utils/res');
 
 
 const ADMIN_STATIC_IP_PREFIX = '172.33.10.';
@@ -32,7 +31,9 @@ function createRemoveDevice(credentialsFile) {
     // Write back the device object array
     await credentialsFile.write(credentialsArray);
 
-    return res.success('Removed device '+id);
+    return {
+      message: 'Removed device '+id,
+    };
   };
 }
 

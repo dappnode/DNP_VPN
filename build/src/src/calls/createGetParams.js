@@ -1,8 +1,11 @@
-const res = require('../utils/res');
+
 
 function createGetParams(params) {
   return async function getParams() {
-    return res.success('UPnP status ', publicParams(params.VPN));
+    return {
+      message: 'UPnP status '+JSON.stringify(publicParams(params.VPN)),
+      result: publicParams(params.VPN),
+    };
   };
 }
 
