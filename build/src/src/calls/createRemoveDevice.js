@@ -33,6 +33,7 @@ function createRemoveDevice(credentialsFile) {
 
     return {
       message: 'Removed device '+id,
+      log: true,
     };
   };
 }

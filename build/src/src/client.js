@@ -97,11 +97,11 @@ function register(session, event, handler) {
       try {
         const res = await handler(kwargs);
         const eventShort = event.replace('.vpn.dnp.dappnode.eth', '');
-        logs.info('Result of '+eventShort+': '+res.message);
+        if (res.log) logs.info('Result of '+eventShort+': '+res.message);
         return JSON.stringify({
           success: true,
           message: res.message,
-          result: res.result,
+          result: res.result || {},
         });
       } catch (err) {
         logs.error('Event: '+event+', Error: '+err);

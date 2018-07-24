@@ -46,6 +46,7 @@ function createToggleAdmin(credentialsFile) {
 
     return {
       message: isAdmin ? 'Removed admin credentials from '+id : 'Given admin credentials to '+id,
+      log: true,
     };
   };
 }
