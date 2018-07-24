@@ -1,4 +1,3 @@
-const res = require('../utils/res');
 
 
 const VPN_PASSWORD_LENGTH = 20;
@@ -31,7 +30,9 @@ function createAddDevice(credentialsFile, generate) {
 
     await credentialsFile.write(credentialsArray);
 
-    return res.success('Added device '+id);
+    return {
+      message: 'Added device '+id,
+    };
   };
 }
 

@@ -1,4 +1,3 @@
-const res = require('../utils/res');
 const exec = require('child_process').exec;
 
 // Just for debugging purposes
@@ -13,23 +12,37 @@ function createStatusExternalIp(params) {
     }
 
 
-    if (!VPN.IP === '' && VPN.IP === VPN.INT_IP)
-      {return res.success('External IP status ', {externalIpResolves: true});}
+    if (!VPN.IP === '' && VPN.IP === VPN.INT_IP) {
+      return {
+        message: 'External IP status ',
+        result: {externalIpResolves: true},
+      };
+    }
 
     let IP;
     if (VPN.EXT_IP || !VPN.EXT_IP === '') IP = VPN.EXT_IP;
     else if (VPN.IP || !VPN.IP === '') IP = VPN.IP;
-    else
-      {return res.success('External IP status ', {externalIpResolves: true});}
+    else {
+      return {
+        message: 'External IP status ',
+        result: {externalIpResolves: true},
+      };
+    }
       // Wierd case, don't deal with it yet
 
     const externalIpResolves = await checkHost(IP);
-    return res.success('External IP status ', {
+
+    const externalIpStatus = {
       externalIpResolves,
       attempts,
       INT_IP: VPN.INT_IP,
       EXT_IP: IP,
-    });
+    };
+
+    return {
+      message: 'External IP status ',
+      result: externalIpStatus,
+    };
   };
 }
 

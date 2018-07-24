@@ -1,4 +1,4 @@
-const res = require('../utils/res');
+
 
 const MASTER_ADMIN_IP = '172.33.10.1';
 const USER_STATIC_IP_PREFIX = '172.33.100.';
@@ -44,8 +44,9 @@ function createToggleAdmin(credentialsFile) {
     // Write back the device object array
     await credentialsFile.write(credentialsArray);
 
-    let msg = isAdmin ? 'Removed admin credentials from '+id : 'Given admin credentials to '+id;
-    return res.success(msg);
+    return {
+      message: isAdmin ? 'Removed admin credentials from '+id : 'Given admin credentials to '+id,
+    };
   };
 }
 

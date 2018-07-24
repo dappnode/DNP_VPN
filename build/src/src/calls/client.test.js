@@ -28,20 +28,19 @@ describe('Integration test', function() {
   const listDevices = createListDevices(credentialsFile, generate, params);
 
   describe('Call function: createAddDevice', function() {
-    let unparsedRes;
+    let res;
     let user;
 
     it('should called addDevice without crashing', async () => {
-      unparsedRes = await addDevice({id: USER_NAME});
+      res = await addDevice({id: USER_NAME});
     });
 
     it('should return success', () => {
-      let res = JSON.parse(unparsedRes);
-      expect( res.success ).to.be.true;
+      expect( res ).to.have.property('message');
     });
 
     it('should actually write in the chap-secrets file', async () => {
-      let res = JSON.parse(await listDevices());
+      let res = await listDevices();
       user = res.result.find((d) => d.name == USER_NAME);
       expect( Boolean(user) ).to.be.true;
     });
@@ -65,20 +64,19 @@ describe('Integration test', function() {
   });
 
   describe('Call function: toggleAdmin', function() {
-    let unparsedRes;
+    let res;
     let user;
 
     it('should call toggleAdmin without crashing', async () => {
-      unparsedRes = await toggleAdmin({id: USER_NAME});
+      res = await toggleAdmin({id: USER_NAME});
     });
 
     it('should return success', () => {
-      let res = JSON.parse(unparsedRes);
-      expect( res.success ).to.be.true;
+      expect( res ).to.have.property('message');
     });
 
     it('should actually write in the chap-secrets file', async () => {
-      let res = JSON.parse(await listDevices());
+      let res = await listDevices();
       user = res.result.find((d) => d.name == USER_NAME);
       expect( Boolean(user) ).to.be.true;
     });
@@ -105,13 +103,13 @@ describe('Integration test', function() {
     let user;
 
     it('should call toggleAdmin without crashing', async () => {
-      const unparsedRes = await toggleAdmin({id: USER_NAME});
-      expect( JSON.parse(unparsedRes).success ).to.be.true;
+      const res = await toggleAdmin({id: USER_NAME});
+      expect( res ).to.have.property('message');
     });
 
     it('should have changed the user to user IP', async () => {
       // Fetching devices
-      let res = JSON.parse(await listDevices());
+      let res = await listDevices();
       // Searching device
       user = res.result.find((d) => d.name == USER_NAME);
       expect( Boolean(user) ).to.be.true;
@@ -122,20 +120,19 @@ describe('Integration test', function() {
   });
 
   describe('Call function: removeDevice', function() {
-    let unparsedRes;
+    let res;
     let user;
 
     it('should call toggleAdmin without crashing', async () => {
-      unparsedRes = await removeDevice({id: USER_NAME});
+      res = await removeDevice({id: USER_NAME});
     });
 
     it('should return success', () => {
-      let res = JSON.parse(unparsedRes);
-      expect( res.success ).to.be.true;
+      expect( res ).to.have.property('message');
     });
 
     it('should actually write in the chap-secrets file', async () => {
-      let res = JSON.parse(await listDevices());
+      let res = await listDevices();
       user = res.result.find((d) => d.name == USER_NAME);
       expect( Boolean(user) ).to.be.false;
     });

@@ -8,7 +8,6 @@
     "mocha": true
   },
   "rules": {
-    "no-console": "off",
     "brace-style": "off",
     "no-tabs": "off",
     "max-len": ["error", 100],

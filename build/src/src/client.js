@@ -1,4 +1,5 @@
 const autobahn = require('autobahn');
+const logs = require('./logs.js')(module);
 
 // import calls
 const createAddDevice = require('./calls/createAddDevice');
@@ -40,7 +41,7 @@ const REALM = 'dappnode_admin';
 const connection = new autobahn.Connection({url: URL, realm: REALM});
 
 connection.onopen = function(session, details) {
-  console.log('CONNECTED to DAppnode\'s WAMP '+
+  logs.info('CONNECTED to DAppnode\'s WAMP '+
       '\n   url '+URL+
       '\n   realm: '+REALM+
       '\n   session ID: '+details.authid);
@@ -56,7 +57,7 @@ connection.onopen = function(session, details) {
 };
 
 connection.onclose = function(reason, details) {
-  console.log('[client.js connection.onclose] reason: '+reason+' details '+JSON.stringify(details));
+  logs.error('Connection closed, reason: '+reason+' details '+JSON.stringify(details));
 };
 
 
@@ -68,15 +69,15 @@ connection.onclose = function(reason, details) {
 start();
 
 async function start() {
-  console.log('Waiting for credentials files to exist');
+  logs.info('Waiting for credentials files to exist');
   params.VPN = await fetchVPNparameters();
 
-  console.log('VPN credentials fetched - \n  '
+  logs.info('VPN credentials fetched - \n  '
     + Object.keys(params.VPN).map((name) => name+': '+params.VPN[name]).join('\n  '));
 
   logAdminCredentials(params.VPN);
 
-  console.log('Attempting to connect to.... \n'
+  logs.info('Attempting to connect to.... \n'
     +'   url: '+connection._options.url+'\n'
     +'   realm: '+connection._options.realm);
   connection.open();
@@ -88,28 +89,33 @@ async function start() {
 
 
 function register(session, event, handler) {
+  const wrapErrors = (handler) =>
+    async function(args, kwargs) {
+      // 0. args: an array with call arguments
+      // 1. kwargs: an object with call arguments
+      // 2. details: an object which provides call metadata
+      try {
+        const res = await handler(kwargs);
+        const eventShort = event.replace('.vpn.dnp.dappnode.eth', '');
+        logs.info('Result of '+eventShort+': '+res.message);
+        return JSON.stringify({
+          success: true,
+          message: res.message,
+          result: res.result,
+        });
+      } catch (err) {
+        logs.error('Event: '+event+', Error: '+err);
+        return JSON.stringify({
+          success: false,
+          message: err.message,
+        });
+      }
+    };
+
   return session.register(event, wrapErrors(handler)).then(
-    function(reg) {console.log('CROSSBAR: registered '+event);},
-    function(err) {console.log('CROSSBAR: error registering '+event+'. Error message: '+err.error);}
+    function(reg) {logs.info('CROSSBAR: registered '+event);},
+    function(err) {logs.error('CROSSBAR: error registering '+event+'. Error message: '+err.error);}
   );
 }
 
 
-function wrapErrors(handler) {
-  // 0. args: an array with call arguments
-  // 1. kwargs: an object with call arguments
-  // 2. details: an object which provides call metadata
-
-  return async function(args, kwargs) {
-    try {
-      return await handler(kwargs);
-    } catch (err) {
-      console.log(err);
-
-      return JSON.stringify({
-        success: false,
-        message: err.message,
-      });
-    }
-  };
-}
