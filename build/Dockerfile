@@ -79,6 +79,7 @@ COPY src/ipsec /etc/init.d/ipsec
 
 RUN chmod 755 init.sh
 RUN chmod 755 ip_upnp.sh
+RUN chmod 755 check_upnp.sh
 
 RUN mkdir -p /usr/src/app/secrets
 # envs for init.sh -> node communication
@@ -95,8 +96,8 @@ ENV VPN_DNS_SRV2 8.8.8.8
 # location of the OTP parsing tool
 ENV DAPPNODE_OTP_URL https://dappnode.github.io/DAppNode_OTP/
 
-RUN ln -s /usr/src/app/getAdminCredentials.js /usr/bin/getAdminCredentials
-RUN chmod +x /usr/src/app/getAdminCredentials.js
+RUN ln -s /usr/src/app/src/getAdminCredentials.js /usr/bin/getAdminCredentials
+RUN chmod +x /usr/src/app/src/getAdminCredentials.js
 
 # Supervisord processes:
 # > /usr/src/app/init.sh (libreswan VPN, executes xl2tpd)
