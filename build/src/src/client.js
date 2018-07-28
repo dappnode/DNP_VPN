@@ -18,7 +18,14 @@ const fetchVPNparameters = require('./modules/fetchVPNparameters');
 
 // Initialize dependencies
 const params = {};
-const logAdminCredentials = createLogAdminCredentials(credentialsFile, generate);
+const statusUPnP = createStatusUPnP(params, fetchVPNparameters);
+const statusExternalIp = createStatusExternalIp(params, fetchVPNparameters);cd doNotTrack
+const logAdminCredentials = createLogAdminCredentials(
+  credentialsFile,
+  statusUPnP,
+  statusExternalIp,
+  generate
+);
 
 // Initialize calls
 const addDevice = createAddDevice(credentialsFile, generate);
@@ -26,8 +33,7 @@ const removeDevice = createRemoveDevice(credentialsFile);
 const toggleAdmin = createToggleAdmin(credentialsFile);
 const listDevices = createListDevices(credentialsFile, generate, params);
 const getParams = createGetParams(params);
-const statusUPnP = createStatusUPnP(params, fetchVPNparameters);
-const statusExternalIp = createStatusExternalIp(params, fetchVPNparameters);
+
 
 const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws';
 const REALM = 'dappnode_admin';
