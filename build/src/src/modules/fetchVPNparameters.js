@@ -9,7 +9,8 @@ const VPN_NAME_FILE_PATH = process.env.DEV ? './test/name' : process.env.VPN_NAM
 const INT_IP_FILE_PATH = process.env.DEV ? './test/internal-ip' : process.env.INTERNAL_IP_FILE_PATH;
 const EXT_IP_FILE_PATH = process.env.DEV ? './test/external-ip' : process.env.EXTERNAL_IP_FILE_PATH;
 
-let maxAttempts = 10;
+const MAXATTEMPTS = 90; // 3 min
+const PAUSETIME = 2000; 
 
 async function fetchVPNparameters() {
   // The second parameter is a fallback value
@@ -25,16 +26,16 @@ async function fetchVPNparameters() {
 
 
 async function fileToExist(FILE_PATH, fallbackValue) {
-    for (let i = 0; i < maxAttempts; i++) {
+    for (let i = 0; i < MAXATTEMPTS; i++) {
       if (fs.existsSync(FILE_PATH)) return;
-      await pauseSync(500);
+      await pauseSync(PAUSETIME);
     }
     if (fallbackValue) {
-      logs.warn('Option file '+FILE_PATH+' not found (after #' + maxAttempts + ' attempts) '
+      logs.warn('Option file '+FILE_PATH+' not found (after #' + MAXATTEMPTS + ' attempts) '
         +'- Fallback value: '+fallbackValue);
       return fallbackValue;
     }
-    throw Error('Mandatory file '+FILE_PATH+' not found (after #' + maxAttempts + ' attempts)');
+    throw Error('Mandatory file '+FILE_PATH+' not found (after #' + MAXATTEMPTS + ' attempts)');
 }
 
 

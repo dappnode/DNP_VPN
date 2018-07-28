@@ -35,20 +35,5 @@ fi
 
 #UPNP Device
 if [ ! -z "$ExternalIP" ]; then 
-    # Delete UPnP Ports
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -d 500 UDP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -d 4500 UDP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -d 22 TCP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -d 30303 UDP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -d 30303 TCP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -d 4001 TCP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -d 4002 UDP
-    # Open UPnP Ports
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 500 UDP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 4500 UDP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 22 TCP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 30303 UDP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 30303 TCP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 4001 TCP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 4002 UDP
+    /usr/src/app/upnp_openports.sh &
 fi

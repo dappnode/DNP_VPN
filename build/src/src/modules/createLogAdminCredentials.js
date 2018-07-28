@@ -43,10 +43,10 @@ function createLogAdminCredentials(
     L2TP/IPSec  ${VPN.IP}  ${VPN.PSK}  ${adminDevice.name}  ${adminDevice.password}`;
 
     if (statusUPnP.openPorts && !statusUPnP.UPnP) {
-      msg += '\n ALERT: You may not be able to connect. Turn your router\'s UPnP on or open the VPN ports manually';
+      msg += '\n ALERT: You may not be able to connect. Turn your router\'s UPnP on or open the VPN ports (500 and 4500) manually';
     }
     if (!statusExternalIp.externalIpResolves) {
-      msg += '\n ALERT: If you are connecting from the same network as your DAppNode use the internal IP: '+statusExternalIp.INT_IP;
+      msg += '\n ALERT: (NAT-Loopback disable) If you are connecting from the same network as your DAppNode use the internal IP: '+statusExternalIp.INT_IP;
     }
     /* eslint-enable max-len */
 
