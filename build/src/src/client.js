@@ -19,7 +19,7 @@ const fetchVPNparameters = require('./modules/fetchVPNparameters');
 // Initialize dependencies
 const params = {};
 const statusUPnP = createStatusUPnP(params, fetchVPNparameters);
-const statusExternalIp = createStatusExternalIp(params, fetchVPNparameters);cd doNotTrack
+const statusExternalIp = createStatusExternalIp(params, fetchVPNparameters);
 const logAdminCredentials = createLogAdminCredentials(
   credentialsFile,
   statusUPnP,
