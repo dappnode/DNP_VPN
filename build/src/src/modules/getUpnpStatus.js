@@ -55,8 +55,8 @@ const runUpnpScript = async () => {
   /* eslint-disable max-len */ /* eslint-disable no-useless-escape */
   const VPN_CONTAINER = 'DAppNodeCore-vpn.dnp.dappnode.eth';
   const IMAGE = await execAsync('docker inspect '+VPN_CONTAINER+' -f \'{{.Config.Image}}\'');
-  const EXTERNAL_IP = await execAsync('docker run --rm --net=host '+IMAGE+' upnpc -l | awk -F\'= \'  \'/ExternalIPAddress/{print $2}\'');
-  const INTERNAL_IP = await execAsync('docker run --rm --net=host '+IMAGE+' ip route get 1  | sed -n \'s/.*src \([0-9.]\+\).*/\1/p\'');
+  const {stdout: EXTERNAL_IP} = await execAsync('docker run --rm --net=host '+IMAGE+' upnpc -l | awk -F\'= \'  \'/ExternalIPAddress/{print $2}\'');
+  const {stdout: INTERNAL_IP} = await execAsync('docker run --rm --net=host '+IMAGE+' ip route get 1  | sed -n \'s/.*src \([0-9.]\+\).*/\1/p\'');
   await writeFileAsync(process.env.EXTERNAL_IP_FILE_PATH, EXTERNAL_IP, 'utf8');
   await writeFileAsync(process.env.INTERNAL_IP_FILE_PATH, INTERNAL_IP, 'utf8');
   /* eslint-enable max-len */ /* eslint-enable no-useless-escape */
