@@ -23,6 +23,9 @@ const logAdminCredentials = createLogAdminCredentials(
 start();
 
 async function start() {
+  // Trigger a parameters load. If parameters are preloaded the execution will be fast
+  // Otherwise it will wait for parameter files to exist.
+
   const VPN = await fetchVPNparameters();
   logAdminCredentials(VPN);
 }
