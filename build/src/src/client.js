@@ -22,8 +22,6 @@ const statusUPnP = createStatusUPnP(params, fetchVPNparameters);
 const statusExternalIp = createStatusExternalIp(params, fetchVPNparameters);
 const logAdminCredentials = createLogAdminCredentials(
   credentialsFile,
-  statusUPnP,
-  statusExternalIp,
   generate
 );
 
