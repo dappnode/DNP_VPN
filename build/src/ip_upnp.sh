@@ -35,20 +35,26 @@ fi
 
 #UPNP Device
 if [ ! -z "$ExternalIP" ]; then 
-    # Delete UPnP Ports
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -d 500 UDP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -d 4500 UDP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -d 22 TCP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -d 30303 UDP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -d 30303 TCP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -d 4001 TCP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -d 4002 UDP
-    # Open UPnP Ports
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 500 UDP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 4500 UDP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 22 TCP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 30303 UDP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 30303 TCP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 4001 TCP
-    docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 4002 UDP
+    /usr/src/app/upnp_openports.sh &
 fi
+
+# Test PUBLIC_IP resolution
+PUBLIC_IP_RESOLVED=0
+count=10
+max=3
+i=0
+
+while [ "$i" -lt $max ] && [ "$PUBLIC_IP_RESOLVED" == 0 ]
+do
+  ping -c $count $PUBLIC_IP
+  if [ $? -eq 0 ]
+  then
+    PUBLIC_IP_RESOLVED=1
+  fi
+  echo "count $i"
+  i=$[$i + 1]
+done
+
+echo "$PUBLIC_IP_RESOLVED" > $PUBLIC_IP_RESOLVED_FILE_PATH
+
+

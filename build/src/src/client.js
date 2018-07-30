@@ -18,7 +18,12 @@ const fetchVPNparameters = require('./modules/fetchVPNparameters');
 
 // Initialize dependencies
 const params = {};
-const logAdminCredentials = createLogAdminCredentials(credentialsFile, generate);
+const statusUPnP = createStatusUPnP(params, fetchVPNparameters);
+const statusExternalIp = createStatusExternalIp(params, fetchVPNparameters);
+const logAdminCredentials = createLogAdminCredentials(
+  credentialsFile,
+  generate
+);
 
 // Initialize calls
 const addDevice = createAddDevice(credentialsFile, generate);
@@ -26,8 +31,7 @@ const removeDevice = createRemoveDevice(credentialsFile);
 const toggleAdmin = createToggleAdmin(credentialsFile);
 const listDevices = createListDevices(credentialsFile, generate, params);
 const getParams = createGetParams(params);
-const statusUPnP = createStatusUPnP(params, fetchVPNparameters);
-const statusExternalIp = createStatusExternalIp(params, fetchVPNparameters);
+
 
 const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws';
 const REALM = 'dappnode_admin';
@@ -69,6 +73,11 @@ connection.onclose = function(reason, details) {
 start();
 
 async function start() {
+  logs.info('Attempting to connect to.... \n'
+    +'   url: '+connection._options.url+'\n'
+    +'   realm: '+connection._options.realm);
+  connection.open();
+
   logs.info('Waiting for credentials files to exist');
   params.VPN = await fetchVPNparameters();
 
@@ -76,11 +85,6 @@ async function start() {
     + Object.keys(params.VPN).map((name) => name+': '+params.VPN[name]).join('\n  '));
 
   logAdminCredentials(params.VPN);
-
-  logs.info('Attempting to connect to.... \n'
-    +'   url: '+connection._options.url+'\n'
-    +'   realm: '+connection._options.realm);
-  connection.open();
 }
 
 
