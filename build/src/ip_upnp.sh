@@ -39,15 +39,20 @@ if [ ! -z "$ExternalIP" ]; then
 fi
 
 # Test PUBLIC_IP resolution
+PUBLIC_IP_RESOLVED=0
 count=10
 max=3
-PUBLIC_IP_RESOLVED=0
 i=0
 
-while (( "$PUBLIC_IP_RESOLVED" != "1" && "$i" < $max ))
+while [ "$i" -lt $max ] && [ "$PUBLIC_IP_RESOLVED" == 0 ]
 do
-  ping -c $count $PUBLIC_IP && PUBLIC_IP_RESOLVED=1 || PUBLIC_IP_RESOLVED=0
-  i=$[$i+1]
+  ping -c $count $PUBLIC_IP
+  if [ $? -eq 0 ]
+  then
+    PUBLIC_IP_RESOLVED=1
+  fi
+  echo "count $i"
+  i=$[$i + 1]
 done
 
 echo "$PUBLIC_IP_RESOLVED" > $PUBLIC_IP_RESOLVED_FILE_PATH
