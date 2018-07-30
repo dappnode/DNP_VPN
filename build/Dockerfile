@@ -13,8 +13,7 @@ RUN git clone https://github.com/xelerance/xl2tpd.git && cd xl2tpd && make
 WORKDIR /usr/src/app
 
 COPY src .
-
-RUN npm install
+RUN npm install 
 
 FROM alpine
 
@@ -88,6 +87,9 @@ ENV VPN_IP_FILE_PATH /usr/src/app/secrets/server-ip
 ENV VPN_PSK_FILE_PATH /usr/src/app/secrets/server-psk
 ENV INTERNAL_IP_FILE_PATH /usr/src/app/secrets/internal-ip
 ENV EXTERNAL_IP_FILE_PATH /usr/src/app/secrets/external-ip
+ENV EXTERNALIP_STATUS_FILE_PATH /usr/src/app/secrets/external-ip_status
+ENV UPNP_STATUS_FILE_PATH /usr/src/app/secrets/upnp_status
+ENV PUBLIC_IP_RESOLVED_FILE_PATH /usr/src/app/secrets/public-ip_resolved
 ENV VPN_NAME_FILE_PATH /etc/vpnname
 ENV VPN_ADMIN_PASS_FILE_PATH /usr/src/app/secrets/admin-pass
 ENV VPN_DNS_SRV1 172.33.1.2
