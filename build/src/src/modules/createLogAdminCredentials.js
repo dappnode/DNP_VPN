@@ -47,7 +47,7 @@ function parseUpnpStatus(VPN) {
 }
 
 function parsePublicIpStatus(VPN) {
-  if (!VPN.PUBLIC_IP_RESOLVED) {
+  if (!VPN.PUB_IP_RESOLVED) {
     // EXTERNALIP_STATUS: {
     //   externalIpResolves: true,
     //   INT_IP: INT_IP,
