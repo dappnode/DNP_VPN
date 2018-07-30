@@ -1,5 +1,6 @@
 const exec = require('child_process').exec;
 const fs = require('fs');
+const logs = require('../logs.js')(module);
 
 // Just for debugging purposes
 let attempts = 0;
@@ -64,15 +65,16 @@ const checkHost = async (host) => {
 };
 
 const ping = (host, method) => {
-    return new Promise((resolve, reject) => {
-        let cmd;
-        if (method == 'ping') cmd = 'ping -c 100 '+host;
-        if (method == 'nc') cmd = 'nc -vzu '+host+' 500';
-        exec(cmd, (error) => {
-            if (error) return reject(error);
-            return resolve();
-        });
+  logs.info('Pinging host: '+host);
+  return new Promise((resolve, reject) => {
+    let cmd;
+    if (method == 'ping') cmd = 'ping -c 100 '+host;
+    if (method == 'nc') cmd = 'nc -vzu '+host+' 500';
+    exec(cmd, (error) => {
+      if (error) return reject(error);
+      return resolve();
     });
+  });
 };
 
 module.exports = getExternalIpStatus;
