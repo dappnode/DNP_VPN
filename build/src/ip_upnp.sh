@@ -37,3 +37,19 @@ fi
 if [ ! -z "$ExternalIP" ]; then 
     /usr/src/app/upnp_openports.sh &
 fi
+
+# Test PUBLIC_IP resolution
+count=10
+max=3
+PUBLIC_IP_RESOLVED=0
+i=0
+
+while (( "$resolved" != "1" && "$i" < $max ))
+do
+  ping -c $count $PUBLIC_IP_RESOLVED && resolved=1 || resolved=0
+  i=$[$i+1]
+done
+
+echo "$PUBLIC_IP_RESOLVED" > $PUBLIC_IP_RESOLVED_FILE_PATH
+
+

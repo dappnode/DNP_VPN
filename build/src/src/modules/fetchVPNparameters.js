@@ -6,8 +6,8 @@ const logs = require('../logs.js')(module);
 
 const DEV = process.env.DEV;
 
-const getUpnpStatus = DEV ? () => {} : require('./getUpnpStatus');
-const getExternalIpStatus = DEV ? () => {} : require('./getExternalIpStatus');
+const getUpnpStatus = require('./getUpnpStatus');
+const getExternalIpStatus = require('./getExternalIpStatus');
 
 // Fetch VPN parameters loads all files containing parameters and status
 // It acts as a cache to minimize response time.
@@ -19,10 +19,8 @@ const VPN_PSK_FILE_PATH = DEV ? './test/psk' : process.env.VPN_PSK_FILE_PATH;
 const VPN_NAME_FILE_PATH = DEV ? './test/name' : process.env.VPN_NAME_FILE_PATH;
 const INT_IP_FILE_PATH = DEV ? './test/internal-ip' : process.env.INTERNAL_IP_FILE_PATH;
 const EXT_IP_FILE_PATH = DEV ? './test/external-ip' : process.env.EXTERNAL_IP_FILE_PATH;
-const EXTERNALIP_STATUS_FILE_PATH =
-  DEV ? './test/external-ip_status' : process.env.EXTERNALIP_STATUS_FILE_PATH;
-const UPNP_STATUS_FILE_PATH =
-  DEV ? './test/upnp_status' : process.env.UPNP_STATUS_FILE_PATH;
+const PUBLIC_IP_RESOLVED_FILE_PATH =
+  DEV ? './test/public-ip_resolved' : process.env.PUBLIC_IP_RESOLVED_FILE_PATH;
 
 const MAXATTEMPTS = 3 * 60; // 3 min
 const PAUSETIME = 1000;
@@ -36,22 +34,23 @@ async function fetchVPNparameters() {
   const PSK = await fetchVpnParameter(VPN_PSK_FILE_PATH);
   const INT_IP = await fetchVpnParameter(INT_IP_FILE_PATH, '');
   const EXT_IP = await fetchVpnParameter(EXT_IP_FILE_PATH, '');
+  const _PUB_IP_RESOLVED = await fetchVpnParameter(PUBLIC_IP_RESOLVED_FILE_PATH);
+  let PUB_IP_RESOLVED;
+    if (_PUB_IP_RESOLVED == '0') PUB_IP_RESOLVED = false;
+    else if (_PUB_IP_RESOLVED == '1') PUB_IP_RESOLVED = true;
+    else logs.warn('PUBLIC_IP_RESOLVED has a wrong format: '+_PUB_IP_RESOLVED);
   const NAME = await fetchVpnParameter(VPN_NAME_FILE_PATH, 'DAppNode_server');
 
-  // Trigger a parameter computation but don't wait for it
-  // On the first run only, the awaits below will halt the execution
-  getUpnpStatus(IP, EXT_IP, INT_IP);
-  getExternalIpStatus(IP, EXT_IP, INT_IP);
-
   // > This files contain stringified jsons
-  const EXTERNALIP_STATUS = JSON.parse( await fetchVpnParameter(EXTERNALIP_STATUS_FILE_PATH) );
-  const UPNP_STATUS = JSON.parse( await fetchVpnParameter(UPNP_STATUS_FILE_PATH) );
+  const EXTERNALIP_STATUS = getExternalIpStatus(IP, EXT_IP, INT_IP, PUB_IP_RESOLVED);
+  const UPNP_STATUS = getUpnpStatus(IP, EXT_IP, INT_IP);
 
   return {
     IP,
     PSK,
     INT_IP,
     EXT_IP,
+    PUB_IP_RESOLVED,
     NAME,
     EXTERNALIP_STATUS,
     UPNP_STATUS,

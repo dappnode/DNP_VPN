@@ -3,7 +3,7 @@ const fs = require('fs');
 const UPNP_STATUS_FILE_PATH =
   process.env.DEV ? './test/upnp_status' : process.env.UPNP_STATUS_FILE_PATH;
 
-async function getUpnpStatus(IP, EXT_IP, INT_IP) {
+function getUpnpStatus(IP, EXT_IP, INT_IP) {
   // Check availability of UPnP
   const upnpStatus = getStatus(IP, EXT_IP, INT_IP);
   // Write to file
@@ -11,7 +11,8 @@ async function getUpnpStatus(IP, EXT_IP, INT_IP) {
     UPNP_STATUS_FILE_PATH,
     JSON.stringify(upnpStatus),
     'utf8'
-);
+  );
+  return upnpStatus;
 }
 
 const getStatus = (IP, EXT_IP, INT_IP) => {
