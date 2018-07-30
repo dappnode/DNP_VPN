@@ -62,6 +62,7 @@ async function fetchVPNparameters() {
 }
 
 async function fileToExist(FILE_PATH, fallbackValue) {
+  logs.info('Waiting for '+FILE_PATH+' to exist');
     for (let i = 0; i < MAXATTEMPTS; i++) {
       if (fs.existsSync(FILE_PATH)) return;
       await pause(PAUSETIME);

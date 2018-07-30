@@ -22,8 +22,7 @@ const getStatus = async (IP, EXT_IP, INT_IP) => {
     // Case 1:
     if (!IP === '' && IP === INT_IP) {
       return {
-        message: 'External IP status ',
-        result: {externalIpResolves: true},
+        externalIpResolves: true,
       };
     }
 
@@ -33,8 +32,7 @@ const getStatus = async (IP, EXT_IP, INT_IP) => {
     else if (IP || !IP === '') _IP = IP;
     else {
       return {
-        message: 'External IP status ',
-        result: {externalIpResolves: true},
+        externalIpResolves: true,
       };
     }
       // Wierd case, don't deal with it yet
@@ -42,16 +40,11 @@ const getStatus = async (IP, EXT_IP, INT_IP) => {
     // Case 3:
     const externalIpResolves = await checkHost(_IP);
 
-    const externalIpStatus = {
+    return {
       externalIpResolves,
       attempts,
       INT_IP: INT_IP,
       EXT_IP: _IP,
-    };
-
-    return {
-      message: 'External IP status ',
-      result: externalIpStatus,
     };
 };
 
