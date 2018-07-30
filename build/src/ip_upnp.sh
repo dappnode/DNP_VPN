@@ -46,7 +46,7 @@ i=0
 
 while (( "$resolved" != "1" && "$i" < $max ))
 do
-  ping -c $count $PUBLIC_IP_RESOLVED && resolved=1 || resolved=0
+  ping -c $count $PUBLIC_IP && PUBLIC_IP_RESOLVED=1 || PUBLIC_IP_RESOLVED=0
   i=$[$i+1]
 done
 
