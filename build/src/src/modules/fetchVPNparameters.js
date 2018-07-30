@@ -1,8 +1,6 @@
 const fs = require('file-system');
-const exec = require('child_process').exec;
 const {promisify} = require('util');
 const readFileAsync = promisify(fs.readFile);
-const execAsync = promisify(exec);
 
 const logs = require('../logs.js')(module);
 
@@ -42,7 +40,6 @@ async function fetchVPNparameters() {
 
   // Trigger a parameter computation but don't wait for it
   // On the first run only, the awaits below will halt the execution
-  runUpnpScript();
   getUpnpStatus(IP, EXT_IP, INT_IP);
   getExternalIpStatus(IP, EXT_IP, INT_IP);
 
@@ -81,11 +78,10 @@ const fetchVpnParameter = (FILE_PATH, fallbackValue = false) =>
   .then(() => readFileAsync(FILE_PATH, 'utf-8'))
   .then((data) => String(data).trim());
 
-
-const runUpnpScript = async () => {
-  // Run script
-  await execAsync('./check_upnp.sh');
-};
+// const runUpnpScript = async () => {
+//   // Run script
+//   await execAsync('./check_upnp.sh');
+// };
 
 // /////////////////
 // Helper functions
