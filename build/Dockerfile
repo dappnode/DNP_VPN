@@ -13,6 +13,7 @@ RUN git clone https://github.com/xelerance/xl2tpd.git && cd xl2tpd && make
 WORKDIR /usr/src/app
 
 COPY src .
+RUN npm install 
 
 FROM alpine
 
