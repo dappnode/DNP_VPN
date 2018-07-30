@@ -58,17 +58,16 @@ async function fetchVPNparameters() {
 }
 
 async function fileToExist(FILE_PATH, fallbackValue) {
-  logs.info('Waiting for '+FILE_PATH+' to exist');
-    for (let i = 0; i < MAXATTEMPTS; i++) {
-      if (fs.existsSync(FILE_PATH)) return;
-      await pause(PAUSETIME);
-    }
-    if (fallbackValue) {
-      logs.warn('Option file '+FILE_PATH+' not found (after #' + MAXATTEMPTS + ' attempts) '
-        +'- Fallback value: '+fallbackValue);
-      return fallbackValue;
-    }
-    throw Error('Mandatory file '+FILE_PATH+' not found (after #' + MAXATTEMPTS + ' attempts)');
+  for (let i = 0; i < MAXATTEMPTS; i++) {
+    if (fs.existsSync(FILE_PATH)) return;
+    await pause(PAUSETIME);
+  }
+  if (fallbackValue) {
+    logs.warn('Option file '+FILE_PATH+' not found (after #' + MAXATTEMPTS + ' attempts) '
+      +'- Fallback value: '+fallbackValue);
+    return fallbackValue;
+  }
+  throw Error('Mandatory file '+FILE_PATH+' not found (after #' + MAXATTEMPTS + ' attempts)');
 }
 
 
