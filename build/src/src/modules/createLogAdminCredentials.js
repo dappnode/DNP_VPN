@@ -43,6 +43,8 @@ function parseUpnpStatus(VPN) {
     // },
     return '\n ALERT: You may not be able to connect. '
       +'Turn your router\'s UPnP on or open the VPN ports (500 and 4500) manually';
+  } else {
+    return '';
   }
 }
 
@@ -55,6 +57,8 @@ function parsePublicIpStatus(VPN) {
     return '\n ALERT: (NAT-Loopback disable) '
       +'If you are connecting from the same network as your DAppNode '
       +'use the internal IP: '+VPN.INT_IP;
+  } else {
+    return '';
   }
 }
 

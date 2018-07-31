@@ -78,11 +78,14 @@ async function start() {
     +'   realm: '+connection._options.realm);
   connection.open();
 
-  logs.info('Waiting for credentials files to exist');
+  logs.info('Loading VPN parameters... It may take a while');
+
   params.VPN = await fetchVPNparameters();
 
   logs.info('VPN credentials fetched - \n  '
-    + Object.keys(params.VPN).map((name) => name+': '+params.VPN[name]).join('\n  '));
+    + Object.keys(params.VPN)
+      .filter((name) => typeof params.VPN[name] !== typeof {})
+      .map((name) => name+': '+params.VPN[name]).join('\n  '));
 
   logAdminCredentials(params.VPN);
 }

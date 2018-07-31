@@ -52,7 +52,7 @@ do
     PUBLIC_IP_RESOLVED=1
   fi
   echo "count $i"
-  i=$[$i + 1]
+  i=$(($i + 1))
 done
 
 echo "$PUBLIC_IP_RESOLVED" > $PUBLIC_IP_RESOLVED_FILE_PATH
