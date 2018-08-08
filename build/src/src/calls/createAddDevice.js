@@ -32,7 +32,8 @@ function createAddDevice(credentialsFile, generate) {
 
     return {
       message: 'Added device '+id,
-      log: true,
+      logMessage: true,
+      userAction: true,
     };
   };
 }
