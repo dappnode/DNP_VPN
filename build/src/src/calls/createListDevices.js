@@ -10,7 +10,7 @@ function createListDevices(credentialsFile, generate, params) {
 
     return {
       message: 'Listing '+deviceList.length+' devices',
-      log: true,
+      logMessage: true,
       result: deviceList,
     };
   };

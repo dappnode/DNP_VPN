@@ -101,16 +101,29 @@ function register(session, event, handler) {
       // 0. args: an array with call arguments
       // 1. kwargs: an object with call arguments
       // 2. details: an object which provides call metadata
+
+      // Construct logger. The dappmanager stores the logs
+      // and forwards them to the ADMIN UI
+      const logToDappmanager = (log) => {
+        session.publish('logUserActionToDappmanager', [log]);
+      };
+
       try {
         const res = await handler(kwargs);
+
+        // Log result
+        logToDappmanager({level: 'info', event, ...res, kwargs});
         const eventShort = event.replace('.vpn.dnp.dappnode.eth', '');
-        if (res.log) logs.info('Result of '+eventShort+': '+res.message);
+        if (res.logMessage) {
+          logs.info('Result of '+eventShort+': '+res.message);
+        }
         return JSON.stringify({
           success: true,
           message: res.message,
           result: res.result || {},
         });
       } catch (err) {
+        logToDappmanager({level: 'error', event, ...error2obj(err), kwargs});
         logs.error('Event: '+event+', Error: '+err);
         return JSON.stringify({
           success: false,
@@ -123,6 +136,10 @@ function register(session, event, handler) {
     function(reg) {logs.info('CROSSBAR: registered '+event);},
     function(err) {logs.error('CROSSBAR: error registering '+event+'. Error message: '+err.error);}
   );
+}
+
+function error2obj(e) {
+  return {name: e.name, message: e.message, stack: e.stack, userAction: true};
 }
 
 
