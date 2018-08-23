@@ -18,7 +18,9 @@ install:
   - npm install
 before_script:
   - npm run lint
+  - chmod +x test/test.sh
 script:
   - npm run test
+  - test/test.sh
 after_success:
   - COVERALLS_REPO_TOKEN=$coveralls_repo_token npm run coverage
