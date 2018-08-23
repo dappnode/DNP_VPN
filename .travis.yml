@@ -12,13 +12,19 @@ node_js:
 cache:
   directories:
     - build/src/node_modules
+
+before_install:
+  - chmod +x test/test.sh
 install:
   # This is a dockerized application, the node app is in /build/src
   - cd ./build/src
   - npm install
 before_script:
   - npm run lint
+
 script:
   - npm run test
+  - cd ../..
+  - test/test.sh
 after_success:
   - COVERALLS_REPO_TOKEN=$coveralls_repo_token npm run coverage
