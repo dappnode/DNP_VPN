@@ -12,13 +12,16 @@ node_js:
 cache:
   directories:
     - build/src/node_modules
+
+before_install:
+  - chmod +x test/test.sh
 install:
   # This is a dockerized application, the node app is in /build/src
   - cd ./build/src
   - npm install
 before_script:
   - npm run lint
-  - chmod +x test/test.sh
+
 script:
   - npm run test
   - cd ../..
