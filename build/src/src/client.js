@@ -1,6 +1,9 @@
 const autobahn = require('autobahn');
 const logs = require('./logs.js')(module);
 
+// New gen
+const dyndnsClient = require('./dyndnsClient');
+
 // import calls
 const createAddDevice = require('./calls/createAddDevice');
 const createRemoveDevice = require('./calls/createRemoveDevice');
@@ -79,15 +82,28 @@ async function start() {
   connection.open();
 
   logs.info('Loading VPN parameters... It may take a while');
-
   params.VPN = await fetchVPNparameters();
+
+  logs.info('Registering to the dynamic DNS...');
+  params.VPN.domain = await dyndnsClient.updateIp();
 
   logs.info('VPN credentials fetched - \n  '
     + Object.keys(params.VPN)
-      .filter((name) => typeof params.VPN[name] !== typeof {})
+      .filter((name) => typeof params.VPN[name] !== 'object')
       .map((name) => name+': '+params.VPN[name]).join('\n  '));
 
   logAdminCredentials(params.VPN);
+
+  // Watch for IP changes, if so update the IP. On error, asume the IP changed.
+  let _IP = '';
+  setInterval(() => {
+    dyndnsClient.getPublicIp().then((IP) => {
+      if (!IP || IP !== _IP) {
+        dyndnsClient.updateIp();
+        _IP = IP;
+      }
+    });
+  }, 30*60*1000);
 }
 
 

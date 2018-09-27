@@ -18,11 +18,10 @@ function createLogAdminCredentials(
     /* eslint-disable max-len */
     let msg = `
     To connect to your DAppNode scan the QR above, copy/paste link below into your browser or use VPN credentials:
-  
     ${adminOtp}
   
-     VPN-Type         IP               PSK                name             password
-    L2TP/IPSec  ${VPN.IP}  ${VPN.PSK}  ${adminDevice.name}  ${adminDevice.password}`;
+     VPN-Type          PSK                name             password               IP
+    L2TP/IPSec  ${VPN.PSK}  ${adminDevice.name}  ${adminDevice.password}  ${VPN.domain || VPN.IP}`;
 
     msg += parseUpnpStatus(VPN);
     msg += parsePublicIpStatus(VPN);
