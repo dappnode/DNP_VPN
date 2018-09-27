@@ -1,29 +1,13 @@
-const fs = require('fs');
-
-const upnpStatusPath =
-  process.env.DEV ? './test/upnp_status' : process.env.UPNP_STATUS_PATH;
-
 function getUpnpStatus(ip, externalIp, internalIp) {
-  // Check availability of UPnP
-  const upnpStatus = getStatus(ip, externalIp, internalIp);
-  // Write to file
-  fs.writeFileSync(
-    upnpStatusPath,
-    JSON.stringify(upnpStatus),
-    'utf8'
-  );
-  return upnpStatus;
-}
-
-const getStatus = (ip, externalIp, internalIp) => {
+  // UPnP device available case
   if (externalIp && externalIp.length) {
     return ({
       openPorts: true,
-      UPnP: true,
-      msg: 'UPnP device available',
+      upnpAvailable: true,
     });
   }
 
+  // Cloud service case
   else if (
     internalIp && internalIp.length
     && ip && ip.length
@@ -31,18 +15,17 @@ const getStatus = (ip, externalIp, internalIp) => {
   ) {
     return ({
       openPorts: false,
-      UPnP: true,
-      msg: 'Cloud service',
+      upnpAvailable: false,
     });
   }
 
+  // UPnP not available. Turn it on or open ports manually
   else {
     return ({
       openPorts: true,
-      UPnP: false,
-      msg: 'UPnP not available. Turn it on or open ports manually',
+      upnpAvailable: false,
     });
   }
-};
+}
 
 module.exports = getUpnpStatus;

@@ -9,12 +9,12 @@ const userStaticIpFirstOctet = 2;
 const userStaticIpLastOctet = 250;
 
 
-function ip(deviceIPsArray) {
+function ip(ips) {
   const firstOctet = userStaticIpFirstOctet;
   const lastOctet = userStaticIpLastOctet;
 
   // Get the list of used octets
-  let usedIpOctets = deviceIPsArray.reduce((usedIpOctets, ip) => {
+  let usedIpOctets = ips.reduce((usedIpOctets, ip) => {
     if (ip.includes(commonStaticIpPrefix)) {
       let octetArray = ip.trim().split('.');
       let endingOctet = octetArray[octetArray.length - 1];
@@ -51,11 +51,11 @@ function password(passwordLength) {
  *
  * @param {Object} credentials
  * {
- *   'server': VPN.IP,
- *   'name': VPN.NAME,
- *   'user': deviceName,
- *   'pass': password,
- *   'psk': VPN.PSK,
+ *   'server': server,
+ *   'name': name,
+ *   'user': user,
+ *   'pass': pass,
+ *   'psk': psk,
  * }
  *
  * @return {String} otp link

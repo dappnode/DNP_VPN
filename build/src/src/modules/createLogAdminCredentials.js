@@ -62,11 +62,10 @@ function createLogAdminCredentials(
 }
 
 function parseUpnpStatus(params) {
-  if (params.upnpStatus.openPorts && !params.upnpStatus.upnp) {
+  if (params.openPorts && !params.upnpAvailable) {
     // upnpStatus: {
     //   openPorts: true, // true => ports have to be opened
     //   upnp: true, // true => UPnP is able to open them automatically
-    //   msg: 'UPnP device available',
     // },
     return '\n ALERT: You may not be able to connect. '
       +'Turn your router\'s UPnP on or open the VPN ports (500 and 4500) manually';
@@ -76,7 +75,7 @@ function parseUpnpStatus(params) {
 }
 
 function parsePublicIpStatus(params) {
-  if (!params.publicIpResolved) {
+  if (!params.externalIpResolves) {
     return '\n ALERT: (NAT-Loopback disable) '
       +'If you are connecting from the same network as your DAppNode '
       +'use the internal IP: '+params.internalIp;

@@ -17,12 +17,12 @@ const createStatusExternalIp = require('./calls/createStatusExternalIp');
 const credentialsFile = require('./utils/credentialsFile');
 const generate = require('./utils/generate');
 const createLogAdminCredentials = require('./modules/createLogAdminCredentials');
-const fetchVPNparameters = require('./modules/fetchVPNparameters');
+const fetchVpnParameters = require('./modules/fetchVpnParameters');
 
 // Initialize dependencies
 let params = {};
-const statusUPnP = createStatusUPnP(params, fetchVPNparameters);
-const statusExternalIp = createStatusExternalIp(params, fetchVPNparameters);
+const statusUPnP = createStatusUPnP(params, fetchVpnParameters);
+const statusExternalIp = createStatusExternalIp(params, fetchVpnParameters);
 const logAdminCredentials = createLogAdminCredentials(
   credentialsFile,
   generate
@@ -84,7 +84,7 @@ async function start() {
   logs.info('Loading VPN parameters... It may take a while');
   params = {
     ...params,
-    ...(await fetchVPNparameters()),
+    ...(await fetchVpnParameters()),
   };
 
   logs.info('Registering to the dynamic DNS...');

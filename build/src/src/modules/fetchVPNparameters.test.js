@@ -1,51 +1,36 @@
 const chai = require('chai');
 const expect = require('chai').expect;
 const fs = require('fs');
-const fetchVPNparameters = require('./fetchVPNparameters');
+const fetchVpnParameters = require('./fetchVpnParameters');
 
 
 chai.should();
 
-describe('fetchVPNparameters test', function() {
+describe('fetchVpnParameters test', function() {
   const paramsToWrite = {
     ip: {
       path: './test/ip',
-      value: 'fakeIP',
+      data: 'fakeIp',
     },
     psk: {
       path: './test/psk',
-      value: 'fakePSK',
+      data: 'fakePsk',
     },
     name: {
       path: './test/name',
-      value: 'fakeNAME',
+      data: 'fakeName',
     },
     internalIp: {
       path: './test/internal-ip',
-      value: 'fakeINT-IP',
+      data: 'fakeInternalIp',
     },
     externalIp: {
       path: './test/external-ip',
-      value: 'fakeEXT-IP',
+      data: 'fakeExternalIp',
     },
-    externalIpStatus: {
-      path: './test/public-ip_resolved',
-      value: {
-        'EXT_IP': 'fakeEXT-IP',
-        'INT_IP': 'fakeINT-IP',
-        'attempts': 0,
-        'externalIpResolves': undefined,
-      },
-      type: 'JSON',
-    },
-    upnpStatus: {
-      path: './test/upnp_status',
-      value: {
-        'UPnP': true,
-        'msg': 'UPnP device available',
-        'openPorts': true,
-      },
-      type: 'JSON',
+    publicIpResolved: {
+      path: './test/public-ip-resolved',
+      data: '1',
     },
   };
 
@@ -60,25 +45,25 @@ describe('fetchVPNparameters test', function() {
     }
     Object.keys(paramsToWrite).forEach((paramName) => {
       const param = paramsToWrite[paramName];
-      fs.writeFileSync(param.path, param.value, 'utf8');
+      fs.writeFileSync(param.path, param.data, 'utf8');
     });
   });
 
-  it('should call fetchVPNparameters without crashing', async () => {
-    params = await fetchVPNparameters();
+  it('should call fetchVpnParameters without crashing', async () => {
+    params = await fetchVpnParameters();
   });
 
-  it('read names should be correct and match each parameter', () => {
-    Object.keys(params).forEach((paramName) => {
-      if (paramsToWrite[paramName]) {
-        if (paramsToWrite[paramName].type === 'JSON') {
-          expect( params[paramName] ).to.deep.equal(
-            paramsToWrite[paramName].value
-          );
-        } else {
-          expect( params[paramName] ).to.equal( paramsToWrite[paramName].value );
-        }
-      }
+  it('the params object should be correct', () => {
+    expect(params).to.deep.equal({
+      ip: 'fakeIp',
+      psk: 'fakePsk',
+      internalIp: 'fakeInternalIp',
+      externalIp: 'fakeExternalIp',
+      publicIpResolved: true,
+      name: 'fakeName',
+      externalIpResolves: true,
+      openPorts: true,
+      upnpAvailable: true,
     });
   });
 

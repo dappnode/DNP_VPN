@@ -91,8 +91,6 @@ ENV PSK_PATH /usr/src/app/secrets/server-psk
 ENV SERVER_NAME_PATH /etc/vpnname
 ENV INTERNAL_IP_PATH /usr/src/app/secrets/internal-ip
 ENV EXTERNAL_IP_PATH /usr/src/app/secrets/external-ip
-ENV EXTERNAL_IP_STATUS_PATH /usr/src/app/secrets/external-ip_status
-ENV UPNP_STATUS_PATH /usr/src/app/secrets/upnp_status
 ENV PUBLIC_IP_RESOLVED_PATH /usr/src/app/secrets/public-ip_resolved
 ENV VPN_ADMIN_PASS_PATH /usr/src/app/secrets/admin-pass
 ENV VPN_DNS_SRV1 172.33.1.2

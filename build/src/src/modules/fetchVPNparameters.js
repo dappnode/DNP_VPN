@@ -7,7 +7,8 @@ const logs = require('../logs.js')(module);
 const DEV = process.env.DEV;
 
 const getUpnpStatus = require('./getUpnpStatus');
-const getExternalIpStatus = require('./getExternalIpStatus');
+const getExternalIpResolves = require('./getExternalIpResolves');
+
 
 // Fetch VPN parameters loads all files containing parameters and status
 // It acts as a cache to minimize response time.
@@ -20,12 +21,12 @@ const serverNamePath = DEV ? './test/name' : process.env.SERVER_NAME_PATH;
 const internalIpPath = DEV ? './test/internal-ip' : process.env.INTERNAL_IP_PATH;
 const externalIpPath = DEV ? './test/external-ip' : process.env.EXTERNAL_IP_PATH;
 const publicIpResolvedPath =
-  DEV ? './test/public-ip_resolved' : process.env.PUBLIC_IP_RESOLVED_PATH;
+  DEV ? './test/public-ip-resolved' : process.env.PUBLIC_IP_RESOLVED_PATH;
 
 const maxAttempts = 3 * 60; // 3 min
 const pauseTime = 1000;
 
-async function fetchVPNparameters() {
+async function fetchVpnParameters() {
   // The second parameter is a fallback value
   // Not providing if enforces the existance of the file
 
@@ -39,8 +40,8 @@ async function fetchVPNparameters() {
     ? true : false;
   const name = await fetchVpnParameter(serverNamePath, 'DAppNode_server');
   // > This files contain stringified jsons
-  const externalIpStatus = getExternalIpStatus(ip, externalIp, internalIp, publicIpResolved);
-  const upnpStatus = getUpnpStatus(ip, externalIp, internalIp);
+  const externalIpResolves = getExternalIpResolves(ip, internalIp, publicIpResolved);
+  const {openPorts, upnpAvailable} = getUpnpStatus(ip, externalIp, internalIp);
 
   return {
     ip,
@@ -49,8 +50,9 @@ async function fetchVPNparameters() {
     externalIp,
     publicIpResolved,
     name,
-    externalIpStatus,
-    upnpStatus,
+    externalIpResolves,
+    openPorts,
+    upnpAvailable,
   };
 }
 
@@ -78,4 +80,4 @@ const fetchVpnParameter = (path, fallbackValue = false) =>
 
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-module.exports = fetchVPNparameters;
+module.exports = fetchVpnParameters;

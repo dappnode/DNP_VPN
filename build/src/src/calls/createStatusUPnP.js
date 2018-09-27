@@ -3,7 +3,10 @@ function createStatusUPnP(params) {
   return async function statusUPnP() {
     return {
       message: 'UPnP status ',
-      result: params.upnpStatus,
+      result: {
+        openPorts: params.openPorts,
+        upnpAvailable: params.upnpAvailable,
+      },
     };
   };
 }

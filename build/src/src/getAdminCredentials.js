@@ -4,7 +4,7 @@
 const createLogAdminCredentials = require('./modules/createLogAdminCredentials');
 const credentialsFile = require('./utils/credentialsFile');
 const generate = require('./utils/generate');
-const fetchVPNparameters = require('./modules/fetchVPNparameters');
+const fetchVpnParameters = require('./modules/fetchVpnParameters');
 
 // Initialize dependencies
 const logAdminCredentials = createLogAdminCredentials(
@@ -23,6 +23,6 @@ async function start() {
   console.log('\nLoading VPN parameters... '
     +'It may take a while, press CTRL + C to skip this process \n');
   /* eslint-enable no-console */
-  const params = await fetchVPNparameters();
+  const params = await fetchVpnParameters();
   logAdminCredentials(params);
 }
