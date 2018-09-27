@@ -12,8 +12,8 @@ RUN git clone https://github.com/xelerance/xl2tpd.git && cd xl2tpd && make
 
 WORKDIR /usr/src/app
 
-COPY src/package*.json .
-RUN npm install 
+COPY src/package*.json ./
+RUN npm install
 # Run the copy in two steps to cache the npm install
 COPY src .
 
