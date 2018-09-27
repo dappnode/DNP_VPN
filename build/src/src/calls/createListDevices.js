@@ -4,9 +4,15 @@ function createListDevices(credentialsFile, generate, params) {
   return async function listDevices() {
     // Fetch devices data from the chap_secrets file
     let deviceList = await credentialsFile.fetch();
-    deviceList.forEach(function(credentials) {
-      credentials.otp = generate.otp(credentials.name, credentials.password, params.VPN);
-    });
+    for (const credentials of deviceList) {
+      credentials.otp = generate.otp({
+        server: params.VPN.server,
+        name: params.VPN.name,
+        user: credentials.name,
+        pass: credentials.password,
+        psk: params.VPN.PSK,
+      });
+    }
 
     return {
       message: 'Listing '+deviceList.length+' devices',
