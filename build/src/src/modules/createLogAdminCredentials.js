@@ -6,22 +6,50 @@ function createLogAdminCredentials(
   generate
 ) {
   return async function logAdminCredentials(VPN) {
-    let deviceList = await credentialsFile.fetch();
-    let adminDevice = deviceList[0];
-    let adminOtp = generate.otp(adminDevice.name, adminDevice.password, VPN);
+    const deviceList = await credentialsFile.fetch();
+    const adminDevice = deviceList[0];
+    const adminOtp = generate.otp({
+      server: VPN.server,
+      name: VPN.name,
+      user: adminDevice.name,
+      pass: adminDevice.password,
+      psk: VPN.PSK,
+    });
 
     // Show the QR code
     qrcode.setErrorLevel('S');
     qrcode.generate(adminOtp);
 
     // Show credentials
+    const columns = [
+      {
+        field: 'VPN-Type',
+        value: 'L2TP/IPSec',
+      },
+      {
+        field: 'PSK',
+        value: VPN.PSK || '',
+      },
+      {
+        field: 'name',
+        value: adminDevice.name || '',
+      },
+      {
+        field: 'password',
+        value: adminDevice.password || '',
+      },
+      {
+        field: 'IP',
+        value: VPN.server || '',
+      },
+    ];
     /* eslint-disable max-len */
     let msg = `
-    To connect to your DAppNode scan the QR above, copy/paste link below into your browser or use VPN credentials:
-    ${adminOtp}
-  
-     VPN-Type          PSK                name             password               IP
-    L2TP/IPSec  ${VPN.PSK}  ${adminDevice.name}  ${adminDevice.password}  ${VPN.domain || VPN.IP}`;
+  To connect to your DAppNode scan the QR above, copy/paste link below into your browser or use VPN credentials:
+  ${adminOtp}
+
+  ${columns.map((col) => col.field.padEnd(col.value.length)).join('  ')}
+  ${columns.map((col) => col.value).join('  ')}`;
 
     msg += parseUpnpStatus(VPN);
     msg += parsePublicIpStatus(VPN);

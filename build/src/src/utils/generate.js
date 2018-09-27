@@ -45,16 +45,31 @@ function password(passwordLength) {
 }
 
 
-function otp(deviceName, password, VPN) {
-    let otpCredentials = {
-      'server': VPN.IP,
-      'name': VPN.NAME,
-      'user': deviceName,
-      'pass': password,
-      'psk': VPN.PSK,
+/**
+ * Leaving the object destructuring to ensure no extra parameters
+ * are included in the link
+ *
+ * @param {Object} credentials
+ * {
+ *   'server': VPN.IP,
+ *   'name': VPN.NAME,
+ *   'user': deviceName,
+ *   'pass': password,
+ *   'psk': VPN.PSK,
+ * }
+ *
+ * @return {String} otp link
+ */
+function otp({server, name, user, pass, psk}) {
+    const otpCredentials = {
+      server,
+      name,
+      user,
+      pass,
+      psk,
     };
 
-    let otpCredentialsEncoded = base64url.encode(JSON.stringify(otpCredentials));
+    const otpCredentialsEncoded = base64url.encode(JSON.stringify(otpCredentials));
     return DAPPNODE_OTP_URL + '#otp=' + otpCredentialsEncoded;
 }
 

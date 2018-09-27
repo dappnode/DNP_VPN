@@ -86,6 +86,7 @@ async function start() {
 
   logs.info('Registering to the dynamic DNS...');
   params.VPN.domain = await dyndnsClient.updateIp();
+  params.VPN.server = params.VPN.domain || params.VPN.IP;
 
   logs.info('VPN credentials fetched - \n  '
     + Object.keys(params.VPN)
@@ -102,6 +103,7 @@ async function start() {
         dyndnsClient.updateIp();
         _IP = IP;
       }
+      if (IP) params.VPN.IP = IP;
     });
   }, 30*60*1000);
 }

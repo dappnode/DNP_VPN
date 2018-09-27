@@ -83,7 +83,7 @@ RUN chmod 755 check_upnp.sh
 RUN mkdir -p /usr/src/app/secrets
 # envs for init.sh -> node communication
 ENV DYNDNS_HOST https://ns2.greyfaze.net
-ENV KEYPAIR_FILE_PATH /etc/ppp/keypair
+ENV KEYPAIR_FILE_PATH /usr/src/app/secrets/keypair
 ENV CREDENTIALS_FILE_PATH /etc/ppp/chap-secrets
 ENV VPN_IP_FILE_PATH /usr/src/app/secrets/server-ip
 ENV VPN_PSK_FILE_PATH /usr/src/app/secrets/server-psk

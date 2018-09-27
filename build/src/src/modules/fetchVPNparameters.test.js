@@ -49,12 +49,20 @@ describe('fetchVPNparameters test', function() {
     },
   };
 
-  Object.keys(paramsToWrite).forEach((paramName) => {
-    const param = paramsToWrite[paramName];
-    fs.writeFileSync(param.path, param.value, 'utf8');
-  });
-
   const params = {};
+
+  before(() => {
+    // Create the files
+    try {
+      fs.mkdirSync('./test');
+    } catch (e) {
+      //
+    }
+    Object.keys(paramsToWrite).forEach((paramName) => {
+      const param = paramsToWrite[paramName];
+      fs.writeFileSync(param.path, param.value, 'utf8');
+    });
+  });
 
   it('should call fetchVPNparameters without crashing', async () => {
     params.VPN = await fetchVPNparameters();
@@ -71,6 +79,13 @@ describe('fetchVPNparameters test', function() {
           expect( params.VPN[paramName] ).to.equal( paramsToWrite[paramName].value );
         }
       }
+    });
+  });
+
+  after(() => {
+    Object.keys(paramsToWrite).forEach((paramName) => {
+      const param = paramsToWrite[paramName];
+      fs.unlinkSync(param.path);
     });
   });
 });
