@@ -1,7 +1,8 @@
 
 
-function createListDevices(credentialsFile, generate, params) {
+function createListDevices(credentialsFile, generate, getParams) {
   return async function listDevices() {
+    const params = getParams();
     // Fetch devices data from the chap_secrets file
     let deviceList = await credentialsFile.fetch();
     for (const credentials of deviceList) {

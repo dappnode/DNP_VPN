@@ -9,9 +9,6 @@ const createAddDevice = require('./calls/createAddDevice');
 const createRemoveDevice = require('./calls/createRemoveDevice');
 const createToggleAdmin = require('./calls/createToggleAdmin');
 const createListDevices = require('./calls/createListDevices');
-const createGetParams = require('./calls/createGetParams');
-const createStatusUPnP = require('./calls/createStatusUPnP');
-const createStatusExternalIp = require('./calls/createStatusExternalIp');
 
 // import dependencies
 const credentialsFile = require('./utils/credentialsFile');
@@ -21,8 +18,7 @@ const fetchVpnParameters = require('./fetchVpnParameters');
 
 // Initialize dependencies
 let params = {};
-const statusUPnP = createStatusUPnP(params, fetchVpnParameters);
-const statusExternalIp = createStatusExternalIp(params, fetchVpnParameters);
+const getParams = () => params;
 const logAdminCredentials = createLogAdminCredentials(
   credentialsFile,
   generate
@@ -32,8 +28,7 @@ const logAdminCredentials = createLogAdminCredentials(
 const addDevice = createAddDevice(credentialsFile, generate);
 const removeDevice = createRemoveDevice(credentialsFile);
 const toggleAdmin = createToggleAdmin(credentialsFile);
-const listDevices = createListDevices(credentialsFile, generate, params);
-const getParams = createGetParams(params);
+const listDevices = createListDevices(credentialsFile, generate, getParams);
 
 
 const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws';
@@ -54,13 +49,29 @@ connection.onopen = function(session, details) {
       '\n   session ID: '+details.authid);
 
   register(session, 'ping.vpn.dnp.dappnode.eth', (x) => x);
-  register(session, 'getParams.vpn.dappnode.eth', getParams);
   register(session, 'addDevice.vpn.dnp.dappnode.eth', addDevice);
   register(session, 'removeDevice.vpn.dnp.dappnode.eth', removeDevice);
   register(session, 'toggleAdmin.vpn.dnp.dappnode.eth', toggleAdmin);
   register(session, 'listDevices.vpn.dnp.dappnode.eth', listDevices);
-  register(session, 'statusUPnP.vpn.dnp.dappnode.eth', statusUPnP);
-  register(session, 'statusExternalIp.vpn.dnp.dappnode.eth', statusExternalIp);
+  register(session, 'getParams.vpn.dappnode.eth', () => ({
+    result: {
+      ip: params.ip,
+      name: params.name,
+    },
+  }));
+  register(session, 'statusUPnP.vpn.dnp.dappnode.eth', () => ({
+    result: {
+      openPorts: params.openPorts,
+      upnpAvailable: params.upnpAvailable,
+    },
+  }));
+  register(session, 'statusExternalIp.vpn.dnp.dappnode.eth', () => ({
+    result: {
+      externalIpResolves: params.externalIpResolves,
+      externalIp: params.externalIp,
+      internalIp: params.internalIp,
+    },
+  }));
 };
 
 connection.onclose = function(reason, details) {
@@ -139,7 +150,7 @@ function register(session, event, handler) {
         }
         return JSON.stringify({
           success: true,
-          message: res.message,
+          message: res.message || event,
           result: res.result || {},
         });
       } catch (err) {
