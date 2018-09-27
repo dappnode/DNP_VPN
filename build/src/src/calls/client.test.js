@@ -7,6 +7,7 @@ const createToggleAdmin = require('./createToggleAdmin');
 
 const credentialsFile = require('../utils/credentialsFile');
 const generate = require('../utils/generate');
+const fs = require('fs');
 
 chai.should();
 
@@ -26,6 +27,18 @@ describe('Integration test', function() {
   const removeDevice = createRemoveDevice(credentialsFile);
   const toggleAdmin = createToggleAdmin(credentialsFile);
   const listDevices = createListDevices(credentialsFile, generate, params);
+
+  // Create file
+  before(() => {
+    // Create the files
+    try {
+      fs.mkdirSync('./test');
+    } catch (e) {
+      //
+    }
+    fs.writeFileSync('./test/chap_secrets', '', 'utf8');
+  });
+
 
   describe('Call function: createAddDevice', function() {
     let res;
@@ -136,5 +149,9 @@ describe('Integration test', function() {
       user = res.result.find((d) => d.name == USER_NAME);
       expect( Boolean(user) ).to.be.false;
     });
+  });
+
+  after(() => {
+    fs.unlinkSync('./test/chap_secrets');
   });
 });

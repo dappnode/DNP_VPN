@@ -81,4 +81,11 @@ describe('fetchVPNparameters test', function() {
       }
     });
   });
+
+  after(() => {
+    Object.keys(paramsToWrite).forEach((paramName) => {
+      const param = paramsToWrite[paramName];
+      fs.unlinkSync(param.path);
+    });
+  });
 });
