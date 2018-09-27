@@ -29,13 +29,22 @@ describe('fetchVPNparameters test', function() {
       value: 'fakeEXT-IP',
     },
     EXTERNALIP_STATUS: {
-      path: './test/external-ip_status',
-      value: '{"fakeEXTERNALIP_STATUS": 0}',
+      path: './test/public-ip_resolved',
+      value: {
+        'EXT_IP': 'fakeEXT-IP',
+        'INT_IP': 'fakeINT-IP',
+        'attempts': 0,
+        'externalIpResolves': undefined,
+      },
       type: 'JSON',
     },
     UPNP_STATUS: {
       path: './test/upnp_status',
-      value: '{"fakeUPNP_STATUS": 0}',
+      value: {
+        'UPnP': true,
+        'msg': 'UPnP device available',
+        'openPorts': true,
+      },
       type: 'JSON',
     },
   };
@@ -53,10 +62,14 @@ describe('fetchVPNparameters test', function() {
 
   it('read names should be correct and match each parameter', () => {
     Object.keys(params.VPN).forEach((paramName) => {
-      if (paramsToWrite[paramName].type === 'JSON') {
-        expect( params.VPN[paramName] ).to.deep.equal( JSON.parse(paramsToWrite[paramName].value) );
-      } else {
-        expect( params.VPN[paramName] ).to.equal( paramsToWrite[paramName].value );
+      if (paramsToWrite[paramName]) {
+        if (paramsToWrite[paramName].type === 'JSON') {
+          expect( params.VPN[paramName] ).to.deep.equal(
+            paramsToWrite[paramName].value
+          );
+        } else {
+          expect( params.VPN[paramName] ).to.equal( paramsToWrite[paramName].value );
+        }
       }
     });
   });
