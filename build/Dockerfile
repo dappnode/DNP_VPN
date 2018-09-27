@@ -12,8 +12,10 @@ RUN git clone https://github.com/xelerance/xl2tpd.git && cd xl2tpd && make
 
 WORKDIR /usr/src/app
 
-COPY src .
+COPY src/package*.json .
 RUN npm install 
+# Run the copy in two steps to cache the npm install
+COPY src .
 
 FROM alpine
 
@@ -84,7 +86,7 @@ RUN mkdir -p /usr/src/app/secrets
 # envs for init.sh -> node communication
 ENV DYNDNS_HOST https://ns2.greyfaze.net
 ENV KEYPAIR_FILE_PATH /usr/src/app/secrets/keypair
-ENV CREDENTIALS_FILE_PATH /etc/ppp/chap-secrets
+ENV CREDENTIALS_FILE_PATH /usr/src/app/secrets/chap-secrets
 ENV VPN_IP_FILE_PATH /usr/src/app/secrets/server-ip
 ENV VPN_PSK_FILE_PATH /usr/src/app/secrets/server-psk
 ENV INTERNAL_IP_FILE_PATH /usr/src/app/secrets/internal-ip

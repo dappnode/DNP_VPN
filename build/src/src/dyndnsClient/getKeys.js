@@ -39,7 +39,11 @@ const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 
 function getKeys() {
-    const PATH = process.env.DEV ? './test/keypair' : process.env.KEYPAIR_FILE_PATH;
+    let PATH = process.env.DEV ? './test/keypair' : process.env.KEYPAIR_FILE_PATH;
+    if (!PATH) {
+        PATH = '/usr/src/app/secrets/keypair';
+        logs.warn('KEYPAIR_FILE_PATH is not defined. Defaulting to /usr/src/app/secrets/keypair');
+    }
     return readFile(PATH)
     .then(JSON.parse)
     .catch((err) => {

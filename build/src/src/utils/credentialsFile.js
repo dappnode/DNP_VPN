@@ -28,17 +28,18 @@ async function fetch() {
   const fileContent = await fs.readFileSync(CREDENTIALS_FILE_PATH, 'utf-8');
 
   // Split by line breaks
-  let deviceCredentialsArray = fileContent.split(/\r?\n/);
-  // Clean empty lines if any
-  for (let i = 0; i < deviceCredentialsArray.length; i++) {
-    if (deviceCredentialsArray[i] == '') {
-      deviceCredentialsArray.splice(i, 1);
-    }
-  }
+  let deviceCredentialsArray = fileContent.trim().split(/\r?\n/);
 
   // Convert each line to an object + strip quotation marks
-  return deviceCredentialsArray.map((credentialsString) => {
-    let credentialsArray = credentialsString.split(' ');
+  return deviceCredentialsArray
+  .filter(((line) => {
+    // Ignore empty lines if any
+    if (line === '') return false;
+    if (line.startsWith('# ')) return false;
+    return true;
+  }))
+  .map((credentialsString) => {
+    let credentialsArray = credentialsString.trim().split(' ');
     return {
       name: credentialsArray[0].replace(/['"]+/g, ''),
       password: credentialsArray[2].replace(/['"]+/g, ''),

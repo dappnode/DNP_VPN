@@ -81,9 +81,9 @@ ln -s ${PWD}/secrets/ipsec.secrets /etc/ipsec.secrets
 
 # Create VPN credentials
 #   ${VPN_USER}  ${VPN_PASSWORD}
-[ ! -f "${PWD}/secrets/chap-secrets" ] &&  envsubst < "templates/chap-secrets" > "${PWD}/secrets/chap-secrets"
+[ ! -f "${CREDENTIALS_FILE_PATH}" ] &&  envsubst < "templates/chap-secrets" > "${CREDENTIALS_FILE_PATH}"
 rm /etc/ppp/chap-secrets
-ln -s ${PWD}/secrets/chap-secrets /etc/ppp/chap-secrets
+ln -s ${CREDENTIALS_FILE_PATH} /etc/ppp/chap-secrets
 
 # Output the IP for the user managment UI
 echo "WRITING PUBLIC IP TO SERVER-IP"

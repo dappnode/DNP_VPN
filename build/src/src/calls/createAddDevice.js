@@ -5,7 +5,12 @@ const VPN_PASSWORD_LENGTH = 20;
 
 function createAddDevice(credentialsFile, generate) {
   return async function addDevice({id}) {
-    validateName(id);
+    if (id === '') {
+      throw Error('The new device name cannot be empty');
+    }
+    if (id === '#') {
+      throw Error('The new device name cannot be #');
+    }
 
     // Fetch devices data from the chap_secrets file
     let credentialsArray = await credentialsFile.fetch();
@@ -36,11 +41,6 @@ function createAddDevice(credentialsFile, generate) {
       userAction: true,
     };
   };
-}
-
-
-function validateName(newDeviceName) {
-  if (newDeviceName == '') throw Error('The new device name cannot be empty');
 }
 
 
