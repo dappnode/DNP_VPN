@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 // import dependencies
-const createLogAdminCredentials = require('./modules/createLogAdminCredentials');
+const createLogAdminCredentials = require('./createLogAdminCredentials');
 const credentialsFile = require('./utils/credentialsFile');
 const generate = require('./utils/generate');
-const fetchVpnParameters = require('./modules/fetchVpnParameters');
+const fetchVpnParameters = require('./fetchVpnParameters');
 
 // Initialize dependencies
 const logAdminCredentials = createLogAdminCredentials(

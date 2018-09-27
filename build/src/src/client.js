@@ -16,8 +16,8 @@ const createStatusExternalIp = require('./calls/createStatusExternalIp');
 // import dependencies
 const credentialsFile = require('./utils/credentialsFile');
 const generate = require('./utils/generate');
-const createLogAdminCredentials = require('./modules/createLogAdminCredentials');
-const fetchVpnParameters = require('./modules/fetchVpnParameters');
+const createLogAdminCredentials = require('./createLogAdminCredentials');
+const fetchVpnParameters = require('./fetchVpnParameters');
 
 // Initialize dependencies
 let params = {};

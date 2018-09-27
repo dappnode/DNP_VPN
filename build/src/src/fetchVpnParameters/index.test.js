@@ -1,7 +1,7 @@
 const chai = require('chai');
 const expect = require('chai').expect;
 const fs = require('fs');
-const fetchVpnParameters = require('./fetchVpnParameters');
+const fetchVpnParameters = require('./index');
 
 
 chai.should();
