@@ -2,20 +2,20 @@ const base64url = require('base64url');
 const generator = require('generate-password');
 
 
-const DAPPNODE_OTP_URL = process.env.DAPPNODE_OTP_URL;
-const COMMON_STATIC_IP_PREFIX = '172.33.';
-const USER_STATIC_IP_PREFIX = '172.33.100.';
-const USER_STATIC_IP_FIRST_OCTET = 2;
-const USER_STATIC_IP_LAST_OCTET = 250;
+const dappnodeOtpUrl = process.env.DAPPNODE_OTP_URL;
+const commonStaticIpPrefix = '172.33.';
+const userStaticIpPrefix = '172.33.100.';
+const userStaticIpFirstOctet = 2;
+const userStaticIpLastOctet = 250;
 
 
 function ip(deviceIPsArray) {
-  const firstOctet = USER_STATIC_IP_FIRST_OCTET;
-  const lastOctet = USER_STATIC_IP_LAST_OCTET;
+  const firstOctet = userStaticIpFirstOctet;
+  const lastOctet = userStaticIpLastOctet;
 
   // Get the list of used octets
   let usedIpOctets = deviceIPsArray.reduce((usedIpOctets, ip) => {
-    if (ip.includes(COMMON_STATIC_IP_PREFIX)) {
+    if (ip.includes(commonStaticIpPrefix)) {
       let octetArray = ip.trim().split('.');
       let endingOctet = octetArray[octetArray.length - 1];
       usedIpOctets.push(parseFloat(endingOctet));
@@ -33,7 +33,7 @@ function ip(deviceIPsArray) {
   // Chose the smallest available octet
   let chosenOctet = Math.min.apply(null, availableOctets);
 
-  return USER_STATIC_IP_PREFIX + chosenOctet;
+  return userStaticIpPrefix + chosenOctet;
 }
 
 
@@ -70,7 +70,7 @@ function otp({server, name, user, pass, psk}) {
     };
 
     const otpCredentialsEncoded = base64url.encode(JSON.stringify(otpCredentials));
-    return DAPPNODE_OTP_URL + '#otp=' + otpCredentialsEncoded;
+    return dappnodeOtpUrl + '#otp=' + otpCredentialsEncoded;
 }
 
 

@@ -20,7 +20,7 @@ const createLogAdminCredentials = require('./modules/createLogAdminCredentials')
 const fetchVPNparameters = require('./modules/fetchVPNparameters');
 
 // Initialize dependencies
-const params = {};
+let params = {};
 const statusUPnP = createStatusUPnP(params, fetchVPNparameters);
 const statusExternalIp = createStatusExternalIp(params, fetchVPNparameters);
 const logAdminCredentials = createLogAdminCredentials(
@@ -82,18 +82,20 @@ async function start() {
   connection.open();
 
   logs.info('Loading VPN parameters... It may take a while');
-  params.VPN = await fetchVPNparameters();
+  params = {
+    ...params,
+    ...(await fetchVPNparameters()),
+  };
 
   logs.info('Registering to the dynamic DNS...');
-  params.VPN.domain = await dyndnsClient.updateIp();
-  params.VPN.server = params.VPN.domain || params.VPN.IP;
+  params.server = await dyndnsClient.updateIp() || params.IP;
 
   logs.info('VPN credentials fetched - \n  '
-    + Object.keys(params.VPN)
-      .filter((name) => typeof params.VPN[name] !== 'object')
-      .map((name) => name+': '+params.VPN[name]).join('\n  '));
+    + Object.keys(params)
+      .filter((name) => typeof params[name] !== 'object')
+      .map((name) => name+': '+params[name]).join('\n  '));
 
-  logAdminCredentials(params.VPN);
+  logAdminCredentials(params);
 
   // Watch for IP changes, if so update the IP. On error, asume the IP changed.
   let _IP = '';
@@ -103,7 +105,7 @@ async function start() {
         dyndnsClient.updateIp();
         _IP = IP;
       }
-      if (IP) params.VPN.IP = IP;
+      if (IP) params.IP = IP;
     });
   }, 30*60*1000);
 }

@@ -5,15 +5,15 @@ function createLogAdminCredentials(
   credentialsFile,
   generate
 ) {
-  return async function logAdminCredentials(VPN) {
+  return async function logAdminCredentials(params) {
     const deviceList = await credentialsFile.fetch();
     const adminDevice = deviceList[0];
     const adminOtp = generate.otp({
-      server: VPN.server,
-      name: VPN.name,
+      server: params.server,
+      name: params.name,
       user: adminDevice.name,
       pass: adminDevice.password,
-      psk: VPN.PSK,
+      psk: params.psk,
     });
 
     // Show the QR code
@@ -28,7 +28,7 @@ function createLogAdminCredentials(
       },
       {
         field: 'PSK',
-        value: VPN.PSK || '',
+        value: params.psk || '',
       },
       {
         field: 'name',
@@ -40,7 +40,7 @@ function createLogAdminCredentials(
       },
       {
         field: 'IP',
-        value: VPN.server || '',
+        value: params.server || '',
       },
     ];
     /* eslint-disable max-len */
@@ -51,8 +51,8 @@ function createLogAdminCredentials(
   ${columns.map((col) => col.field.padEnd(col.value.length)).join('  ')}
   ${columns.map((col) => col.value).join('  ')}`;
 
-    msg += parseUpnpStatus(VPN);
-    msg += parsePublicIpStatus(VPN);
+    msg += parseUpnpStatus(params);
+    msg += parsePublicIpStatus(params);
     /* eslint-enable max-len */
 
     /* eslint-disable no-console */
@@ -61,11 +61,11 @@ function createLogAdminCredentials(
   };
 }
 
-function parseUpnpStatus(VPN) {
-  if (VPN.UPNP_STATUS.openPorts && !VPN.UPNP_STATUS.UPnP) {
-    // UPNP_STATUS: {
+function parseUpnpStatus(params) {
+  if (params.upnpStatus.openPorts && !params.upnpStatus.upnp) {
+    // upnpStatus: {
     //   openPorts: true, // true => ports have to be opened
-    //   UPnP: true, // true => UPnP is able to open them automatically
+    //   upnp: true, // true => UPnP is able to open them automatically
     //   msg: 'UPnP device available',
     // },
     return '\n ALERT: You may not be able to connect. '
@@ -75,15 +75,11 @@ function parseUpnpStatus(VPN) {
   }
 }
 
-function parsePublicIpStatus(VPN) {
-  if (!VPN.PUB_IP_RESOLVED) {
-    // EXTERNALIP_STATUS: {
-    //   externalIpResolves: true,
-    //   INT_IP: INT_IP,
-    // }
+function parsePublicIpStatus(params) {
+  if (!params.publicIpResolved) {
     return '\n ALERT: (NAT-Loopback disable) '
       +'If you are connecting from the same network as your DAppNode '
-      +'use the internal IP: '+VPN.INT_IP;
+      +'use the internal IP: '+params.internalIp;
   } else {
     return '';
   }

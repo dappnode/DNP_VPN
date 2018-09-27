@@ -6,11 +6,11 @@ function createListDevices(credentialsFile, generate, params) {
     let deviceList = await credentialsFile.fetch();
     for (const credentials of deviceList) {
       credentials.otp = generate.otp({
-        server: params.VPN.server,
-        name: params.VPN.name,
+        server: params.server,
+        name: params.name,
         user: credentials.name,
         pass: credentials.password,
-        psk: params.VPN.PSK,
+        psk: params.psk,
       });
     }
 

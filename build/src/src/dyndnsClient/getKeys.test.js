@@ -9,7 +9,7 @@ const unlink = util.promisify(fs.unlink);
 
 chai.should();
 
-const KEYPAIR_FILE_PATH = './test/keypair';
+const KEYPAIR_PATH = './test/keypair';
 
 describe('Get keys function', function() {
   // Initialize calls
@@ -19,7 +19,7 @@ describe('Get keys function', function() {
   describe('read non-existent file and create it', function() {
     before(async () => {
       // Clean files
-      await unlink(KEYPAIR_FILE_PATH).catch((err) => {
+      await unlink(KEYPAIR_PATH).catch((err) => {
         if (err.code !== 'ENOENT') {
           logs.error('\n\n\n', err, '\n\n\n');
         }
@@ -43,7 +43,7 @@ describe('Get keys function', function() {
     });
 
     it('should have created the keypair file', async () => {
-      expect(fs.existsSync(KEYPAIR_FILE_PATH)).to.be.true;
+      expect(fs.existsSync(KEYPAIR_PATH)).to.be.true;
     });
 
     it('should return the same identity the second time ', async () => {
@@ -53,7 +53,7 @@ describe('Get keys function', function() {
 
     after(async () => {
       // Clean files
-      await unlink(KEYPAIR_FILE_PATH).catch((err) => {
+      await unlink(KEYPAIR_PATH).catch((err) => {
         logs.error('\n\n\n', err, '\n\n\n');
       });
     });

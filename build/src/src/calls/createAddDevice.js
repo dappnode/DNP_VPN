@@ -1,6 +1,6 @@
 
 
-const VPN_PASSWORD_LENGTH = 20;
+const vpnPasswordLength = 20;
 
 
 function createAddDevice(credentialsFile, generate) {
@@ -24,7 +24,7 @@ function createAddDevice(credentialsFile, generate) {
 
     // Generate credentials
     let ip = await generate.ip(deviceIPsArray);
-    let password = generate.password(VPN_PASSWORD_LENGTH);
+    let password = generate.password(vpnPasswordLength);
 
     // Append credentials to the chap_secrets file
     credentialsArray.push({

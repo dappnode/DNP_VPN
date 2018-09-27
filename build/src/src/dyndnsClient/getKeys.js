@@ -28,10 +28,10 @@ const logs = require('../logs.js')(module);
 function generateKeys() {
     const identity = EthCrypto.createIdentity();
     const subdomain = identity.address.toLowerCase().substr(2).substring(0, 8);
-    const DYNDNS_HOST = process.env.DEV ? 'dyn.test.io' : process.env.DYNDNS_HOST;
+    const dyndnsHost = process.env.DEV ? 'dyn.test.io' : process.env.DYNDNS_HOST;
     return {
         ...identity,
-        domain: subdomain+'.'+DYNDNS_HOST,
+        domain: subdomain+'.'+dyndnsHost,
     };
 }
 
@@ -39,20 +39,20 @@ const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 
 function getKeys() {
-    let PATH = process.env.DEV ? './test/keypair' : process.env.KEYPAIR_FILE_PATH;
-    if (!PATH) {
-        PATH = '/usr/src/app/secrets/keypair';
-        logs.warn('KEYPAIR_FILE_PATH is not defined. Defaulting to /usr/src/app/secrets/keypair');
+    let path = process.env.DEV ? './test/keypair' : process.env.KEYPAIR_PATH;
+    if (!path) {
+        path = '/usr/src/app/secrets/keypair';
+        logs.warn('KEYPAIR_FILE_path is not defined. Defaulting to /usr/src/app/secrets/keypair');
     }
-    return readFile(PATH)
+    return readFile(path)
     .then(JSON.parse)
     .catch((err) => {
         if (err.code === 'ENOENT') {
             const keydata = generateKeys();
-            return writeFile(PATH, JSON.stringify(keydata))
+            return writeFile(path, JSON.stringify(keydata))
             .then(() => keydata);
         } else {
-            logs.error('Error getting keys from '+PATH+': '+ err.stack);
+            logs.error('Error getting keys from '+path+': '+ err.stack);
         }
     });
 }

@@ -1,15 +1,15 @@
 const exec = require('child_process').exec;
 
-function createCheckHostResolution(params, fetchVPNparameters) {
+function createCheckHostResolution(fetchVPNparameters) {
   return async function statusUPnP() {
     // Check availability of UPnP
     await runUpnpScript();
-    const VPN = await fetchVPNparameters();
-    if (!('IP' in VPN && 'EXT_IP' in VPN && 'INT_IP' in VPN)) {
+    const params = await fetchVPNparameters();
+    if (!('IP' in params && 'EXT_IP' in params && 'INT_IP' in params)) {
       throw Error('Necessary credentials not found in params object');
     }
 
-    const externalIpResolves = checkHost(VPN.EXT_IP);
+    const externalIpResolves = checkHost(params);
 
     return {
       message: 'externalIpResolves '+JSON.stringify(externalIpResolves),

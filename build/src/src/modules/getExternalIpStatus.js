@@ -4,32 +4,32 @@ const logs = require('../logs.js')(module);
 // Just for debugging purposes
 let attempts = 0;
 
-const EXTERNALIP_STATUS_FILE_PATH =
-  process.env.DEV ? './test/external-ip_status' : process.env.EXTERNALIP_STATUS_FILE_PATH;
+const externalIpStatusPath =
+  process.env.DEV ? './test/external-ip_status' : process.env.EXTERNAL_IP_STATUS_PATH;
 
-function getExternalIpStatus(IP, EXT_IP, INT_IP, PUBLIC_IP_RESOLVED) {
-    const externalIpStatus = getStatus(IP, EXT_IP, INT_IP, PUBLIC_IP_RESOLVED);
+function getExternalIpStatus(ip, externalIp, internalIp, publicIpResolved) {
+    const externalIpStatus = getStatus(ip, externalIp, internalIp, publicIpResolved);
     // write to file
     fs.writeFileSync(
-        EXTERNALIP_STATUS_FILE_PATH,
+        externalIpStatusPath,
         JSON.stringify(externalIpStatus),
         'utf8'
     );
     return externalIpStatus;
 }
 
-const getStatus = (IP, EXT_IP, INT_IP, PUBLIC_IP_RESOLVED) => {
+const getStatus = (ip, externalIp, internalIp, publicIpResolved) => {
     // Case 1:
-    if (!IP === '' && IP === INT_IP) {
+    if (!ip === '' && ip === internalIp) {
       return {
         externalIpResolves: true,
       };
     }
 
     // Case 2:
-    let _IP;
-    if (EXT_IP || !EXT_IP === '') _IP = EXT_IP;
-    else if (IP || !IP === '') _IP = IP;
+    let _ip;
+    if (externalIp || !externalIp === '') _ip = externalIp;
+    else if (ip || !ip === '') _ip = ip;
     else {
       // Wierd case, don't deal with it yet
       return {
@@ -39,15 +39,15 @@ const getStatus = (IP, EXT_IP, INT_IP, PUBLIC_IP_RESOLVED) => {
 
 
     let externalIpResolves;
-    if (PUBLIC_IP_RESOLVED == '0') externalIpResolves = false;
-    else if (PUBLIC_IP_RESOLVED == '1') externalIpResolves = true;
-    else logs.warn('PUBLIC_IP_RESOLVED has a wrong format: '+PUBLIC_IP_RESOLVED);
+    if (publicIpResolved == '0') externalIpResolves = false;
+    else if (publicIpResolved == '1') externalIpResolves = true;
+    else logs.warn('PUBLIC_IP_RESOLVED has a wrong format: '+publicIpResolved);
 
     return {
       externalIpResolves,
       attempts,
-      INT_IP: INT_IP,
-      EXT_IP: _IP,
+      internalIp,
+      externalIp: _ip,
     };
 };
 

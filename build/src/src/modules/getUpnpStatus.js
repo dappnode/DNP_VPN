@@ -1,22 +1,22 @@
 const fs = require('fs');
 
-const UPNP_STATUS_FILE_PATH =
-  process.env.DEV ? './test/upnp_status' : process.env.UPNP_STATUS_FILE_PATH;
+const upnpStatusPath =
+  process.env.DEV ? './test/upnp_status' : process.env.UPNP_STATUS_PATH;
 
-function getUpnpStatus(IP, EXT_IP, INT_IP) {
+function getUpnpStatus(ip, externalIp, internalIp) {
   // Check availability of UPnP
-  const upnpStatus = getStatus(IP, EXT_IP, INT_IP);
+  const upnpStatus = getStatus(ip, externalIp, internalIp);
   // Write to file
   fs.writeFileSync(
-    UPNP_STATUS_FILE_PATH,
+    upnpStatusPath,
     JSON.stringify(upnpStatus),
     'utf8'
   );
   return upnpStatus;
 }
 
-const getStatus = (IP, EXT_IP, INT_IP) => {
-  if (EXT_IP && EXT_IP.length) {
+const getStatus = (ip, externalIp, internalIp) => {
+  if (externalIp && externalIp.length) {
     return ({
       openPorts: true,
       UPnP: true,
@@ -25,9 +25,9 @@ const getStatus = (IP, EXT_IP, INT_IP) => {
   }
 
   else if (
-    INT_IP && INT_IP.length
-    && IP && IP.length
-    && INT_IP === IP
+    internalIp && internalIp.length
+    && ip && ip.length
+    && internalIp === ip
   ) {
     return ({
       openPorts: false,

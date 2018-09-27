@@ -52,8 +52,8 @@ function updateIp() {
             `timestamp=${timestamp}`,
             `sig=${signature}`,
         ];
-        const DYNDNS_HOST = process.env.DYNDNS_HOST;
-        const url = `${DYNDNS_HOST}/?${parameters.join('&')}`;
+        const dyndnsHost = process.env.DYNDNS_HOST;
+        const url = `${dyndnsHost}/?${parameters.join('&')}`;
 
         return httpGetRequest(url, {format: 'json'})
         .then((res) => {

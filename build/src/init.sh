@@ -47,17 +47,17 @@ export DNS_SRV2=${VPN_DNS_SRV2:-'8.8.4.4'}
 export PUBLIC_IP
 
 export VPN_USER=dappnode_admin
-export VPN_PASSWORD="$([ -f ${VPN_ADMIN_PASS_FILE_PATH} ] && cat ${VPN_ADMIN_PASS_FILE_PATH} || echo $(LC_CTYPE=C tr -dc 'A-HJ-NPR-Za-km-z2-9' < /dev/urandom | head -c 20))"
-export VPN_IPSEC_PSK="$([ -f ${VPN_PSK_FILE_PATH} ] && cat ${VPN_PSK_FILE_PATH} || echo $(LC_CTYPE=C tr -dc 'A-HJ-NPR-Za-km-z2-9' < /dev/urandom | head -c 20))"
+export VPN_PASSWORD="$([ -f ${VPN_ADMIN_PASS_PATH} ] && cat ${VPN_ADMIN_PASS_PATH} || echo $(LC_CTYPE=C tr -dc 'A-HJ-NPR-Za-km-z2-9' < /dev/urandom | head -c 20))"
+export VPN_IPSEC_PSK="$([ -f ${PSK_PATH} ] && cat ${PSK_PATH} || echo $(LC_CTYPE=C tr -dc 'A-HJ-NPR-Za-km-z2-9' < /dev/urandom | head -c 20))"
 export VPN_PASSWORD_ENC=$(openssl passwd -1 "$VPN_PASSWORD")
 
 # Output the IP for the user managment UI
 echo "WRITING PUBLIC IP TO SERVER-IP"
-echo "$PUBLIC_IP" > $VPN_IP_FILE_PATH
+echo "$PUBLIC_IP" > $PUBLIC_IP_PATH
 echo "WRITING PSK TO SERVER-PSK"
-echo "$VPN_IPSEC_PSK" > $VPN_PSK_FILE_PATH
+echo "$VPN_IPSEC_PSK" > $PSK_PATH
 echo "WRITING VPN_PASSWORD TO ADMIN_PASS"
-echo "$VPN_PASSWORD" > $VPN_ADMIN_PASS_FILE_PATH
+echo "$VPN_PASSWORD" > $VPN_ADMIN_PASS_PATH
 
 mkdir -p /etc/xl2tpd
 
@@ -75,21 +75,22 @@ envsubst < "templates/options.xl2tpd" > "/etc/ppp/options.xl2tpd"
 
 # Specify IPsec PSK
 #   ${VPN_IPSEC_PSK}
-[ ! -f "${PWD}/secrets/ipsec.secrets" ] && envsubst < "templates/ipsec.secrets" > "${PWD}/secrets/ipsec.secrets"
+IPSEC_SECRETS_PATH="/usr/src/app/secrets/ipsec.secrets"
+[ ! -f "${IPSEC_SECRETS_PATH}" ] && envsubst < "templates/ipsec.secrets" > "${IPSEC_SECRETS_PATH}"
 rm /etc/ipsec.secrets
-ln -s ${PWD}/secrets/ipsec.secrets /etc/ipsec.secrets
+ln -s ${IPSEC_SECRETS_PATH} /etc/ipsec.secrets
 
 # Create VPN credentials
 #   ${VPN_USER}  ${VPN_PASSWORD}
-[ ! -f "${CREDENTIALS_FILE_PATH}" ] &&  envsubst < "templates/chap-secrets" > "${CREDENTIALS_FILE_PATH}"
+[ ! -f "${CREDENTIALS_PATH}" ] &&  envsubst < "templates/chap-secrets" > "${CREDENTIALS_PATH}"
 rm /etc/ppp/chap-secrets
-ln -s ${CREDENTIALS_FILE_PATH} /etc/ppp/chap-secrets
+ln -s ${CREDENTIALS_PATH} /etc/ppp/chap-secrets
 
 # Output the IP for the user managment UI
 echo "WRITING PUBLIC IP TO SERVER-IP"
-echo "$PUBLIC_IP" > $VPN_IP_FILE_PATH
+echo "$PUBLIC_IP" > $PUBLIC_IP_PATH
 echo "WRITING PSK TO SERVER-PSK"
-echo "$VPN_IPSEC_PSK" > $VPN_PSK_FILE_PATH
+echo "$VPN_IPSEC_PSK" > $PSK_PATH
 
 # Update sysctl settings
 SYST='/sbin/sysctl -e -q -w'

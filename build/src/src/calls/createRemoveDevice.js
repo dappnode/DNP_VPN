@@ -1,6 +1,6 @@
 
 
-const ADMIN_STATIC_IP_PREFIX = '172.33.10.';
+const adminStaticIpPrefix = '172.33.10.';
 
 
 function createRemoveDevice(credentialsFile) {
@@ -15,11 +15,12 @@ function createRemoveDevice(credentialsFile) {
     for (let i = 0; i < credentialsArray.length; i++) {
       if (id == credentialsArray[i].name) {
         // Prevent the user from deleting admins
-        if (credentialsArray[i].ip.includes(ADMIN_STATIC_IP_PREFIX)) {
+        if (credentialsArray[i].ip.includes(adminStaticIpPrefix)) {
           throw Error('You cannot remove an admin user');
         } else {
           deviceNameFound = true;
           credentialsArray.splice(i, 1);
+          break;
         }
       }
     }

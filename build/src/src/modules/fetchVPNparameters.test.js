@@ -8,27 +8,27 @@ chai.should();
 
 describe('fetchVPNparameters test', function() {
   const paramsToWrite = {
-    IP: {
+    ip: {
       path: './test/ip',
       value: 'fakeIP',
     },
-    PSK: {
+    psk: {
       path: './test/psk',
       value: 'fakePSK',
     },
-    NAME: {
+    name: {
       path: './test/name',
       value: 'fakeNAME',
     },
-    INT_IP: {
+    internalIp: {
       path: './test/internal-ip',
       value: 'fakeINT-IP',
     },
-    EXT_IP: {
+    externalIp: {
       path: './test/external-ip',
       value: 'fakeEXT-IP',
     },
-    EXTERNALIP_STATUS: {
+    externalIpStatus: {
       path: './test/public-ip_resolved',
       value: {
         'EXT_IP': 'fakeEXT-IP',
@@ -38,7 +38,7 @@ describe('fetchVPNparameters test', function() {
       },
       type: 'JSON',
     },
-    UPNP_STATUS: {
+    upnpStatus: {
       path: './test/upnp_status',
       value: {
         'UPnP': true,
@@ -49,7 +49,7 @@ describe('fetchVPNparameters test', function() {
     },
   };
 
-  const params = {};
+  let params = {};
 
   before(() => {
     // Create the files
@@ -65,18 +65,18 @@ describe('fetchVPNparameters test', function() {
   });
 
   it('should call fetchVPNparameters without crashing', async () => {
-    params.VPN = await fetchVPNparameters();
+    params = await fetchVPNparameters();
   });
 
   it('read names should be correct and match each parameter', () => {
-    Object.keys(params.VPN).forEach((paramName) => {
+    Object.keys(params).forEach((paramName) => {
       if (paramsToWrite[paramName]) {
         if (paramsToWrite[paramName].type === 'JSON') {
-          expect( params.VPN[paramName] ).to.deep.equal(
+          expect( params[paramName] ).to.deep.equal(
             paramsToWrite[paramName].value
           );
         } else {
-          expect( params.VPN[paramName] ).to.equal( paramsToWrite[paramName].value );
+          expect( params[paramName] ).to.equal( paramsToWrite[paramName].value );
         }
       }
     });

@@ -18,8 +18,8 @@ function getPublicIp() {
         //          has been updated to 63.84.220.164',
         // };
         if (res.code === 200) {
-            const IP = data.trim();
-            return IP;
+            const ip = data.trim();
+            return ip;
         } else {
             logs.error(`Error getting public IP, error code ${res.code || 'no-code'}: ${data}`);
         }

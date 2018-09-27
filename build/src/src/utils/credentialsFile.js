@@ -1,15 +1,15 @@
 const fs = require('file-system');
 
 
-const CREDENTIALS_FILE_PATH =
-  process.env.DEV ? './test/chap_secrets' : process.env.CREDENTIALS_FILE_PATH;
+const credentialsPath =
+  process.env.DEV ? './test/chap_secrets' : process.env.CREDENTIALS_PATH;
 
 
 async function write(credentialsArray) {
   // Receives an array of credential objects, xl2tpd format
   const credentialsFileContent = chapSecretsFileFormat(credentialsArray);
 
-  fs.writeFileSync(CREDENTIALS_FILE_PATH, credentialsFileContent);
+  fs.writeFileSync(credentialsPath, credentialsFileContent);
 }
 
 
@@ -25,7 +25,7 @@ function chapSecretsFileFormat(credentialsArray) {
 
 
 async function fetch() {
-  const fileContent = await fs.readFileSync(CREDENTIALS_FILE_PATH, 'utf-8');
+  const fileContent = await fs.readFileSync(credentialsPath, 'utf-8');
 
   // Split by line breaks
   let deviceCredentialsArray = fileContent.trim().split(/\r?\n/);

@@ -1,8 +1,8 @@
 
 
-const MASTER_ADMIN_IP = '172.33.10.1';
-const USER_STATIC_IP_PREFIX = '172.33.100.';
-const ADMIN_STATIC_IP_PREFIX = '172.33.10.';
+const masterAdminIp = '172.33.10.1';
+const userStaticIpPrefix = '172.33.100.';
+const adminStaticIpPrefix = '172.33.10.';
 
 
 function createToggleAdmin(credentialsFile) {
@@ -15,33 +15,31 @@ function createToggleAdmin(credentialsFile) {
     // Find the requested name in the device object array
     // if found: splice the device's object,
     // else: throw error
-    let deviceNameFound = false;
     let isAdmin;
-    for (let i = 0; i < credentialsArray.length; i++) {
-      if (id == credentialsArray[i].name) {
-        // Prevent the user from deleting admins
-        if (credentialsArray[i].ip.includes(MASTER_ADMIN_IP)) {
-          throw Error('You cannot remove the master admin user');
-        } else if (credentialsArray[i].ip.includes(ADMIN_STATIC_IP_PREFIX)) {
-          isAdmin = true;
-          credentialsArray[i].ip = credentialsArray[i].ip
-            .replace(ADMIN_STATIC_IP_PREFIX, USER_STATIC_IP_PREFIX);
-        } else if (credentialsArray[i].ip.includes(USER_STATIC_IP_PREFIX)) {
-          credentialsArray[i].ip = credentialsArray[i].ip
-            .replace(USER_STATIC_IP_PREFIX, ADMIN_STATIC_IP_PREFIX);
-        }
-        // Raise found flag
-        deviceNameFound = true;
-      }
-    }
-
-    // Write back the device object array
-    // Log results to the UI
-    if (!deviceNameFound) {
+    const device = credentialsArray.find((d) => d.name === id);
+    if (!device) {
       throw Error('Device name not found: '+id);
     }
 
+    // Prevent the user from deleting admins
+    let ip = device.ip;
+    if (ip && ip.trim() === masterAdminIp) {
+      throw Error('You cannot remove the master admin user');
+    } else if (ip.includes(adminStaticIpPrefix)) {
+      isAdmin = true;
+      ip = ip.replace(adminStaticIpPrefix, userStaticIpPrefix);
+    } else if (ip.includes(userStaticIpPrefix)) {
+      ip = ip.replace(userStaticIpPrefix, adminStaticIpPrefix);
+    }
+
     // Write back the device object array
+    // The modification happens in place, to respect the order of users in the file
+    for (const d of credentialsArray) {
+      if (d.name === id) {
+        d.ip = ip;
+        break;
+      }
+    }
     await credentialsFile.write(credentialsArray);
 
     return {
