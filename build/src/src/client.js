@@ -102,9 +102,7 @@ async function start() {
   params.server = await dyndnsClient.updateIp() || params.IP;
 
   logs.info('VPN credentials fetched - \n  '
-    + Object.keys(params)
-      .filter((name) => typeof params[name] !== 'object')
-      .map((name) => name+': '+params[name]).join('\n  '));
+    + Object.keys(params).map((n) => n+': '+params[n]).join('\n  '));
 
   logAdminCredentials(params);
 

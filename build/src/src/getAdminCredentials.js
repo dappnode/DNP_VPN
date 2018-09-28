@@ -5,6 +5,8 @@ const createLogAdminCredentials = require('./createLogAdminCredentials');
 const credentialsFile = require('./utils/credentialsFile');
 const generate = require('./utils/generate');
 const fetchVpnParameters = require('./fetchVpnParameters');
+const dyndnsClient = require('./dyndnsClient');
+const logs = require('./logs.js')(module);
 
 // Initialize dependencies
 const logAdminCredentials = createLogAdminCredentials(
@@ -24,5 +26,8 @@ async function start() {
     +'It may take a while, press CTRL + C to skip this process \n');
   /* eslint-enable no-console */
   const params = await fetchVpnParameters();
+  params.server = (await dyndnsClient.getKeys() || {}).domain || params.IP;
+  logs.info('VPN credentials fetched - \n  '
+  + Object.keys(params).map((n) => n+': '+params[n]).join('\n  '));
   logAdminCredentials(params);
 }
