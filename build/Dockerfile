@@ -99,7 +99,7 @@ ENV VPN_DNS_SRV2 8.8.8.8
 # location of the OTP parsing tool
 ENV DAPPNODE_OTP_URL https://dappnode.github.io/DAppNode_OTP/
 # dyndns host
-ENV DYNDNS_HOST https://ns.dappnode.io/
+ENV DYNDNS_HOST https://ns.dappnode.io
 ENV PUBLIC_IP_URL https://ns.dappnode.io/myip
 
 RUN ln -s /usr/src/app/src/getAdminCredentials.js /usr/bin/getAdminCredentials

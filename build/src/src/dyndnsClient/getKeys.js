@@ -27,11 +27,12 @@ const logs = require('../logs.js')(module);
 
 // dyndnsHost has to be stripped of http(s):// tag
 // process.env.DYNDNS_HOST should include said tag
-const dyndnsHost = process.env.DEV
+const {DEV, DYNDNS_HOST} = process.env;
+const dyndnsHost = DEV
     ? 'dyn.test.io'
-    : process.env.DYNDNS_HOST.includes('://')
-        ? process.env.DYNDNS_HOST.split('://')[1]
-        : process.env.DYNDNS_HOST;
+    : (DYNDNS_HOST && DYNDNS_HOST.includes('://'))
+        ? DYNDNS_HOST.split('://')[1]
+        : DYNDNS_HOST;
 
 function generateKeys() {
     const identity = EthCrypto.createIdentity();
