@@ -52,6 +52,8 @@ function updateIp() {
             `timestamp=${timestamp}`,
             `sig=${signature}`,
         ];
+        // dyndnsHost has to contain http(s):// tag
+        // process.env.DYNDNS_HOST should include said tag
         const dyndnsHost = process.env.DYNDNS_HOST;
         const url = `${dyndnsHost}/?${parameters.join('&')}`;
 

@@ -25,10 +25,17 @@ const logs = require('../logs.js')(module);
    const signature = EthCrypto.sign(privateKey, messageHash);
  */
 
+// dyndnsHost has to be stripped of http(s):// tag
+// process.env.DYNDNS_HOST should include said tag
+const dyndnsHost = process.env.DEV
+    ? 'dyn.test.io'
+    : process.env.DYNDNS_HOST.includes('://')
+        ? process.env.DYNDNS_HOST.split('://')[1]
+        : process.env.DYNDNS_HOST;
+
 function generateKeys() {
     const identity = EthCrypto.createIdentity();
     const subdomain = identity.address.toLowerCase().substr(2).substring(0, 8);
-    const dyndnsHost = process.env.DEV ? 'dyn.test.io' : process.env.DYNDNS_HOST;
     return {
         ...identity,
         domain: subdomain+'.'+dyndnsHost,
