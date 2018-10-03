@@ -36,7 +36,7 @@ const dyndnsHost = DEV
 
 function generateKeys() {
     const identity = EthCrypto.createIdentity();
-    const subdomain = identity.address.toLowerCase().substr(2).substring(0, 8);
+    const subdomain = identity.address.toLowerCase().substr(2).substring(0, 16);
     return {
         ...identity,
         domain: subdomain+'.'+dyndnsHost,
