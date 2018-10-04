@@ -15,13 +15,13 @@ const getExternalIpResolves = require('./getExternalIpResolves');
 // The computation of this parameters is triggered from somewhere else.
 
 
-const publicIpPath = DEV ? './test/ip' : process.env.PUBLIC_IP_PATH;
-const pskPath = DEV ? './test/psk' : process.env.PSK_PATH;
-const serverNamePath = DEV ? './test/name' : process.env.SERVER_NAME_PATH;
-const internalIpPath = DEV ? './test/internal-ip' : process.env.INTERNAL_IP_PATH;
-const externalIpPath = DEV ? './test/external-ip' : process.env.EXTERNAL_IP_PATH;
+const publicIpPath = DEV ? './mockFiles/ip' : process.env.PUBLIC_IP_PATH;
+const pskPath = DEV ? './mockFiles/psk' : process.env.PSK_PATH;
+const serverNamePath = DEV ? './mockFiles/name' : process.env.SERVER_NAME_PATH;
+const internalIpPath = DEV ? './mockFiles/internal-ip' : process.env.INTERNAL_IP_PATH;
+const externalIpPath = DEV ? './mockFiles/external-ip' : process.env.EXTERNAL_IP_PATH;
 const publicIpResolvedPath =
-  DEV ? './test/public-ip-resolved' : process.env.PUBLIC_IP_RESOLVED_PATH;
+  DEV ? './mockFiles/public-ip-resolved' : process.env.PUBLIC_IP_RESOLVED_PATH;
 
 const maxAttempts = 3 * 60; // 3 min
 const pauseTime = 1000;

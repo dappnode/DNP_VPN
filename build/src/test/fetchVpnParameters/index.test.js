@@ -1,7 +1,7 @@
 const chai = require('chai');
 const expect = require('chai').expect;
 const fs = require('fs');
-const fetchVpnParameters = require('./index');
+const fetchVpnParameters = require('../../src/fetchVpnParameters');
 
 
 chai.should();
@@ -9,27 +9,27 @@ chai.should();
 describe('fetchVpnParameters test', function() {
   const paramsToWrite = {
     ip: {
-      path: './test/ip',
+      path: './mockFiles/ip',
       data: 'fakeIp',
     },
     psk: {
-      path: './test/psk',
+      path: './mockFiles/psk',
       data: 'fakePsk',
     },
     name: {
-      path: './test/name',
+      path: './mockFiles/name',
       data: 'fakeName',
     },
     internalIp: {
-      path: './test/internal-ip',
+      path: './mockFiles/internal-ip',
       data: 'fakeInternalIp',
     },
     externalIp: {
-      path: './test/external-ip',
+      path: './mockFiles/external-ip',
       data: 'fakeExternalIp',
     },
     publicIpResolved: {
-      path: './test/public-ip-resolved',
+      path: './mockFiles/public-ip-resolved',
       data: '1',
     },
   };
@@ -39,7 +39,7 @@ describe('fetchVpnParameters test', function() {
   before(() => {
     // Create the files
     try {
-      fs.mkdirSync('./test');
+      fs.mkdirSync('./mockFiles');
     } catch (e) {
       //
     }

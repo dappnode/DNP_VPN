@@ -2,7 +2,7 @@ const fs = require('file-system');
 
 
 const credentialsPath =
-  process.env.DEV ? './test/chap_secrets' : process.env.CREDENTIALS_PATH;
+  process.env.DEV ? './mockFiles/chap_secrets' : process.env.CREDENTIALS_PATH;
 
 
 async function write(credentialsArray) {

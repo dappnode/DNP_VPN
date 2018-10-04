@@ -10,7 +10,7 @@ ENV PUBLIC_IP_URL https://ns.dappnode.io/myip
 ENV KEYPAIR_PATH /usr/src/app/secrets/keypair
 
 
-KEYPAIR_PATH=./test/keypair DYNDNS_HOST=https://ns.dappnode.io PUBLIC_IP_URL=https://ns.dappnode.io/myip node src/dyndnsClient/test.js
+KEYPAIR_PATH=./mockFiles/keypair DYNDNS_HOST=https://ns.dappnode.io PUBLIC_IP_URL=https://ns.dappnode.io/myip node src/dyndnsClient/test.js
 
  */
 

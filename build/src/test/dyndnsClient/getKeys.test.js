@@ -1,15 +1,15 @@
 const chai = require('chai');
 const expect = require('chai').expect;
-const getKeys = require('./getKeys');
+const getKeys = require('../../src/dyndnsClient/getKeys');
 const fs = require('file-system');
 const util = require('util');
-const logs = require('../logs.js')(module);
+const logs = require('../../src/logs.js')(module);
 
 const unlink = util.promisify(fs.unlink);
 
 chai.should();
 
-const KEYPAIR_PATH = './test/keypair';
+const KEYPAIR_PATH = './mockFiles/keypair';
 
 describe('Get keys function', function() {
   // Initialize calls

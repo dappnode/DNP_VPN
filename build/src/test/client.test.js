@@ -1,12 +1,12 @@
 const chai = require('chai');
 const expect = require('chai').expect;
-const createAddDevice = require('./createAddDevice');
-const createListDevices = require('./createListDevices');
-const createRemoveDevice = require('./createRemoveDevice');
-const createToggleAdmin = require('./createToggleAdmin');
+const createAddDevice = require('../src/calls/createAddDevice');
+const createListDevices = require('../src/calls/createListDevices');
+const createRemoveDevice = require('../src/calls/createRemoveDevice');
+const createToggleAdmin = require('../src/calls/createToggleAdmin');
 
-const credentialsFile = require('../utils/credentialsFile');
-const generate = require('../utils/generate');
+const credentialsFile = require('../src/utils/credentialsFile');
+const generate = require('../src/utils/generate');
 const fs = require('fs');
 
 chai.should();
@@ -21,20 +21,21 @@ describe('Integration test', function() {
   };
 
   // Initialize calls
+  const getParams = () => params;
   const addDevice = createAddDevice(credentialsFile, generate);
   const removeDevice = createRemoveDevice(credentialsFile);
   const toggleAdmin = createToggleAdmin(credentialsFile);
-  const listDevices = createListDevices(credentialsFile, generate, params);
+  const listDevices = createListDevices(credentialsFile, generate, getParams);
 
   // Create file
   before(() => {
     // Create the files
     try {
-      fs.mkdirSync('./test');
+      fs.mkdirSync('./mockFiles');
     } catch (e) {
       //
     }
-    fs.writeFileSync('./test/chap_secrets', '', 'utf8');
+    fs.writeFileSync('./mockFiles/chap_secrets', '', 'utf8');
   });
 
 
@@ -150,6 +151,15 @@ describe('Integration test', function() {
   });
 
   after(() => {
-    fs.unlinkSync('./test/chap_secrets');
+    try {
+      fs.unlinkSync('./mockFiles/chap_secrets');
+    } catch (e) {
+      //
+    }
+    try {
+      fs.rmdirSync('./mockFiles');
+    } catch (e) {
+      //
+    }
   });
 });
