@@ -1,17 +1,17 @@
 const db = require('../db');
 
-async function setStaticIp({ip}) {
-    const oldIp = db.get('ip').value();
-    db.set('ip', ip).write();
+async function setStaticIp({staticIp}) {
+    const oldStaticIp = db.get('staticIp').value();
+    db.set('staticIp', staticIp).write();
 
     // Parse action to display a feedback message
     let message;
-    if (!oldIp && ip) {
-        message = `Enabled static IP: ${ip}`;
-    } else if (oldIp && !ip) {
+    if (!oldStaticIp && staticIp) {
+        message = `Enabled static IP: ${staticIp}`;
+    } else if (oldStaticIp && !staticIp) {
         message = `Disabled static IP`;
     } else {
-        message = `Updated static IP: ${ip}`;
+        message = `Updated static IP: ${staticIp}`;
     }
 
     return {
