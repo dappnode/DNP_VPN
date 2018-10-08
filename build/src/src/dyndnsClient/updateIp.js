@@ -2,6 +2,7 @@ const httpGetRequest = require('./httpGetRequest');
 const EthCrypto = require('eth-crypto');
 const getKeys = require('./getKeys');
 const logs = require('../logs.js')(module);
+const db = require('../db');
 
 /**
  * EthCrypto reference
@@ -75,7 +76,11 @@ function updateIp() {
                 const errorMsg = data.message || JSON.stringify(data);
                 logs.error(`dyndns client error code ${res.code}: ${errorMsg}`);
             }
-        }).catch((err) => {
+        })
+        .then((domain) => {
+            db.set('domain', domain).write();
+        })
+        .catch((err) => {
             logs.error(`httpGetRequest error: ${err.stack || err.message}`);
         });
     });

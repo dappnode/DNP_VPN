@@ -1,17 +1,11 @@
-
-
-function createListDevices(credentialsFile, generate, getParams) {
+function createListDevices(credentialsFile, generate) {
   return async function listDevices() {
-    const params = getParams();
     // Fetch devices data from the chap_secrets file
     let deviceList = await credentialsFile.fetch();
     for (const credentials of deviceList) {
       credentials.otp = generate.otp({
-        server: params.server,
-        name: params.name,
         user: credentials.name,
         pass: credentials.password,
-        psk: params.psk,
       });
     }
 

@@ -1,5 +1,6 @@
 const autobahn = require('autobahn');
 const logs = require('./logs.js')(module);
+const db = require('./db');
 
 // New gen
 const dyndnsClient = require('./dyndnsClient');
@@ -9,6 +10,10 @@ const createAddDevice = require('./calls/createAddDevice');
 const createRemoveDevice = require('./calls/createRemoveDevice');
 const createToggleAdmin = require('./calls/createToggleAdmin');
 const createListDevices = require('./calls/createListDevices');
+const setStaticIp = require('./calls/setStaticIp');
+const getParams = require('./calls/getParams');
+const statusUPnP = require('./calls/statusUPnP');
+const statusExternalIp = require('./calls/statusExternalIp');
 
 // import dependencies
 const credentialsFile = require('./utils/credentialsFile');
@@ -17,8 +22,6 @@ const createLogAdminCredentials = require('./createLogAdminCredentials');
 const fetchVpnParameters = require('./fetchVpnParameters');
 
 // Initialize dependencies
-let params = {};
-const getParams = () => params;
 const logAdminCredentials = createLogAdminCredentials(
   credentialsFile,
   generate
@@ -28,7 +31,7 @@ const logAdminCredentials = createLogAdminCredentials(
 const addDevice = createAddDevice(credentialsFile, generate);
 const removeDevice = createRemoveDevice(credentialsFile);
 const toggleAdmin = createToggleAdmin(credentialsFile);
-const listDevices = createListDevices(credentialsFile, generate, getParams);
+const listDevices = createListDevices(credentialsFile, generate);
 
 
 const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws';
@@ -53,25 +56,10 @@ connection.onopen = function(session, details) {
   register(session, 'removeDevice.vpn.dnp.dappnode.eth', removeDevice);
   register(session, 'toggleAdmin.vpn.dnp.dappnode.eth', toggleAdmin);
   register(session, 'listDevices.vpn.dnp.dappnode.eth', listDevices);
-  register(session, 'getParams.vpn.dappnode.eth', () => ({
-    result: {
-      ip: params.ip,
-      name: params.name,
-    },
-  }));
-  register(session, 'statusUPnP.vpn.dnp.dappnode.eth', () => ({
-    result: {
-      openPorts: params.openPorts,
-      upnpAvailable: params.upnpAvailable,
-    },
-  }));
-  register(session, 'statusExternalIp.vpn.dnp.dappnode.eth', () => ({
-    result: {
-      externalIpResolves: params.externalIpResolves,
-      externalIp: params.externalIp,
-      internalIp: params.internalIp,
-    },
-  }));
+  register(session, 'setStaticIp.vpn.dnp.dappnode.eth', setStaticIp);
+  register(session, 'getParams.vpn.dappnode.eth', getParams);
+  register(session, 'statusUPnP.vpn.dnp.dappnode.eth', statusUPnP);
+  register(session, 'statusExternalIp.vpn.dnp.dappnode.eth', statusExternalIp);
 };
 
 connection.onclose = function(reason, details) {
@@ -92,31 +80,33 @@ async function start() {
     +'   realm: '+connection._options.realm);
   connection.open();
 
+  // fetchVpnParameters read the output files from the .sh scripts
+  // and stores the values in the db
   logs.info('Loading VPN parameters... It may take a while');
-  params = {
-    ...params,
-    ...(await fetchVpnParameters()),
-  };
+  await fetchVpnParameters();
 
-  logs.info('Registering to the dynamic DNS...');
-  params.server = await dyndnsClient.updateIp() || params.IP;
-
-  logs.info('VPN credentials fetched - \n  '
-    + Object.keys(params).map((n) => n+': '+params[n]).join('\n  '));
-
-  logAdminCredentials(params);
+  // If the user has not defined a static IP use dynamic DNS
+  if (!db.get('staticIp').value()) {
+    logs.info('Registering to the dynamic DNS...');
+    await dyndnsClient.updateIp();
+  }
 
   // Watch for IP changes, if so update the IP. On error, asume the IP changed.
-  let _IP = '';
+  let _ip = '';
   setInterval(() => {
-    dyndnsClient.getPublicIp().then((IP) => {
-      if (!IP || IP !== _IP) {
-        dyndnsClient.updateIp();
-        _IP = IP;
-      }
-      if (IP) params.IP = IP;
-    });
+    if (!db.get('staticIp').value()) {
+      dyndnsClient.getPublicIp().then((ip) => {
+        if (!ip || ip !== _ip) {
+          dyndnsClient.updateIp();
+          _ip = ip;
+        }
+        if (ip) db.set('ip', ip).write();
+      });
+    }
   }, 30*60*1000);
+
+  logs.info('VPN credentials fetched');
+  logAdminCredentials();
 }
 
 

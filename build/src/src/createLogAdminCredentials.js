@@ -1,19 +1,17 @@
 const qrcode = require('qrcode-terminal');
-
+const db = require('./db');
+const getServer = require('./getServer');
 
 function createLogAdminCredentials(
   credentialsFile,
   generate
 ) {
-  return async function logAdminCredentials(params) {
+  return async function logAdminCredentials() {
     const deviceList = await credentialsFile.fetch();
     const adminDevice = deviceList[0];
     const adminOtp = generate.otp({
-      server: params.server,
-      name: params.name,
       user: adminDevice.name,
       pass: adminDevice.password,
-      psk: params.psk,
     });
 
     // Show the QR code
@@ -21,6 +19,8 @@ function createLogAdminCredentials(
     qrcode.generate(adminOtp);
 
     // Show credentials
+    const server = getServer();
+    const psk = db.get('psk').value();
     const columns = [
       {
         field: 'VPN-Type',
@@ -28,7 +28,7 @@ function createLogAdminCredentials(
       },
       {
         field: 'PSK',
-        value: params.psk || '',
+        value: psk || '',
       },
       {
         field: 'name',
@@ -40,19 +40,23 @@ function createLogAdminCredentials(
       },
       {
         field: 'IP',
-        value: params.server || '',
+        value: server || '',
       },
     ];
     /* eslint-disable max-len */
     let msg = `
-  To connect to your DAppNode scan the QR above, copy/paste link below into your browser or use VPN credentials:
-  ${adminOtp}
+To connect to your DAppNode scan the QR above, copy/paste link below into your browser or use VPN credentials:
+${adminOtp}
 
-  ${columns.map((col) => col.field.padEnd(col.value.length)).join('  ')}
-  ${columns.map((col) => col.value).join('  ')}`;
+${columns.map((col) => col.field.padEnd(col.value.length)).join('  ')}
+${columns.map((col) => col.value).join('  ')}`;
 
-    msg += parseUpnpStatus(params);
-    msg += parsePublicIpStatus(params);
+    const openPorts = db.get('openPorts').value();
+    const upnpAvailable = db.get('upnpAvailable').value();
+    const externalIpResolves = db.get('externalIpResolves').value();
+    const internalIp = db.get('internalIp').value();
+    msg += parseUpnpStatus(openPorts, upnpAvailable);
+    msg += parsePublicIpStatus(externalIpResolves, internalIp);
     /* eslint-enable max-len */
 
     /* eslint-disable no-console */
@@ -61,8 +65,8 @@ function createLogAdminCredentials(
   };
 }
 
-function parseUpnpStatus(params) {
-  if (params.openPorts && !params.upnpAvailable) {
+function parseUpnpStatus(openPorts, upnpAvailable) {
+  if (openPorts && !upnpAvailable) {
     // upnpStatus: {
     //   openPorts: true, // true => ports have to be opened
     //   upnp: true, // true => UPnP is able to open them automatically
@@ -74,11 +78,11 @@ function parseUpnpStatus(params) {
   }
 }
 
-function parsePublicIpStatus(params) {
-  if (!params.externalIpResolves) {
+function parsePublicIpStatus(externalIpResolves, internalIp) {
+  if (!externalIpResolves) {
     return '\n ALERT: (NAT-Loopback disable) '
       +'If you are connecting from the same network as your DAppNode '
-      +'use the internal IP: '+params.internalIp;
+      +'use the internal IP: '+internalIp;
   } else {
     return '';
   }

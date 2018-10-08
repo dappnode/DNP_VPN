@@ -1,7 +1,7 @@
 const fs = require('file-system');
 const {promisify} = require('util');
 const readFileAsync = promisify(fs.readFile);
-
+const db = require('../db');
 const logs = require('../logs.js')(module);
 
 const DEV = process.env.DEV;
@@ -42,6 +42,16 @@ async function fetchVpnParameters() {
   // > This files contain stringified jsons
   const externalIpResolves = getExternalIpResolves(ip, internalIp, publicIpResolved);
   const {openPorts, upnpAvailable} = getUpnpStatus(ip, externalIp, internalIp);
+
+  db.set('ip', ip).write();
+  db.set('psk', psk).write();
+  db.set('internalIp', internalIp).write();
+  db.set('externalIp', externalIp).write();
+  db.set('publicIpResolved', publicIpResolved).write();
+  db.set('name', name).write();
+  db.set('externalIpResolves', externalIpResolves).write();
+  db.set('openPorts', openPorts).write();
+  db.set('upnpAvailable', upnpAvailable).write();
 
   return {
     ip,

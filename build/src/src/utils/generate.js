@@ -1,6 +1,7 @@
 const base64url = require('base64url');
 const generator = require('generate-password');
-
+const db = require('../db');
+const getServer = require('./getServer');
 
 const dappnodeOtpUrl = process.env.DAPPNODE_OTP_URL;
 const commonStaticIpPrefix = '172.33.';
@@ -60,7 +61,11 @@ function password(passwordLength) {
  *
  * @return {String} otp link
  */
-function otp({server, name, user, pass, psk}) {
+function otp({user, pass}) {
+    const server = getServer();
+    const name = db.get('name').value();
+    const psk = db.get('psk').value();
+
     const otpCredentials = {
       server,
       name,
