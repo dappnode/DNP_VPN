@@ -1,8 +1,8 @@
-const credentialsFile = require('../utils/credentialsFile');
-const generate = require('../utils/generate');
+const credentialsFile = require('./utils/credentialsFile');
+const generate = require('./utils/generate');
 const qrcode = require('qrcode-terminal');
 const db = require('./db');
-const getServer = require('./getServer');
+const getServer = require('./utils/getServer');
 
 async function logAdminCredentials() {
   const deviceList = await credentialsFile.fetch();
