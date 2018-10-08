@@ -2,37 +2,10 @@ const autobahn = require('autobahn');
 const logs = require('./logs.js')(module);
 const db = require('./db');
 
-// New gen
 const dyndnsClient = require('./dyndnsClient');
-
-// import calls
-const createAddDevice = require('./calls/createAddDevice');
-const createRemoveDevice = require('./calls/createRemoveDevice');
-const createToggleAdmin = require('./calls/createToggleAdmin');
-const createListDevices = require('./calls/createListDevices');
-const setStaticIp = require('./calls/setStaticIp');
-const getParams = require('./calls/getParams');
-const statusUPnP = require('./calls/statusUPnP');
-const statusExternalIp = require('./calls/statusExternalIp');
-
-// import dependencies
-const credentialsFile = require('./utils/credentialsFile');
-const generate = require('./utils/generate');
-const createLogAdminCredentials = require('./createLogAdminCredentials');
+const calls = require('./calls');
+const logAdminCredentials = require('./logAdminCredentials');
 const fetchVpnParameters = require('./fetchVpnParameters');
-
-// Initialize dependencies
-const logAdminCredentials = createLogAdminCredentials(
-  credentialsFile,
-  generate
-);
-
-// Initialize calls
-const addDevice = createAddDevice(credentialsFile, generate);
-const removeDevice = createRemoveDevice(credentialsFile);
-const toggleAdmin = createToggleAdmin(credentialsFile);
-const listDevices = createListDevices(credentialsFile, generate);
-
 
 const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws';
 const REALM = 'dappnode_admin';
@@ -52,14 +25,9 @@ connection.onopen = function(session, details) {
       '\n   session ID: '+details.authid);
 
   register(session, 'ping.vpn.dnp.dappnode.eth', (x) => x);
-  register(session, 'addDevice.vpn.dnp.dappnode.eth', addDevice);
-  register(session, 'removeDevice.vpn.dnp.dappnode.eth', removeDevice);
-  register(session, 'toggleAdmin.vpn.dnp.dappnode.eth', toggleAdmin);
-  register(session, 'listDevices.vpn.dnp.dappnode.eth', listDevices);
-  register(session, 'setStaticIp.vpn.dnp.dappnode.eth', setStaticIp);
-  register(session, 'getParams.vpn.dappnode.eth', getParams);
-  register(session, 'statusUPnP.vpn.dnp.dappnode.eth', statusUPnP);
-  register(session, 'statusExternalIp.vpn.dnp.dappnode.eth', statusExternalIp);
+  for (const callId of Object.keys(calls)) {
+    register(session, callId+'.vpn.dnp.dappnode.eth', calls[callId]);
+  }
 };
 
 connection.onclose = function(reason, details) {
