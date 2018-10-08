@@ -26,7 +26,7 @@ function httpGetRequest(url, options = {}) {
         else if (url.startsWith('https://')) {
             client = https;
         } else {
-            return reject(`Unknown url prefix: ${url}, must be http(s)://`);
+            return reject(Error(`Unknown url prefix: ${url}, must be http(s)://`));
         }
 
         // Parse format
@@ -39,7 +39,7 @@ function httpGetRequest(url, options = {}) {
             if (!contentType.includes(format)) {
                 // consume response data to free up memory
                 res.resume();
-                return reject(new Error('Invalid content-type.\n' +
+                return reject(Error('Invalid content-type.\n' +
                     `Expected ${format} but received ${contentType}`));
             }
 
@@ -55,7 +55,7 @@ function httpGetRequest(url, options = {}) {
                             code: statusCode,
                         });
                     } catch (e) {
-                        reject(`Error parsing response: ${e.message}, data: ${rawData}`);
+                        reject(Error(`Error parsing response: ${e.message}, data: ${rawData}`));
                     }
                 } else {
                     resolve({
@@ -65,7 +65,7 @@ function httpGetRequest(url, options = {}) {
                 }
             });
         }).on('error', (e) => {
-            reject(`Got error: ${e.message}`);
+            reject(Error(`Failed GET request to ${url}: ${e.stack || e.message}`));
         });
     });
 }
