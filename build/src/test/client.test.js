@@ -1,12 +1,6 @@
 const chai = require('chai');
 const expect = require('chai').expect;
-const createAddDevice = require('../src/calls/createAddDevice');
-const createListDevices = require('../src/calls/createListDevices');
-const createRemoveDevice = require('../src/calls/createRemoveDevice');
-const createToggleAdmin = require('../src/calls/createToggleAdmin');
-
-const credentialsFile = require('../src/utils/credentialsFile');
-const generate = require('../src/utils/generate');
+const calls = require('../src/calls');
 const fs = require('fs');
 
 chai.should();
@@ -14,18 +8,8 @@ chai.should();
 describe('Integration test', function() {
   const id = 'Jordi';
 
-  const params = {
-    ip: '88.88.88.88',
-    psk: 'PSKfake',
-    name: 'FakeDAppNode',
-  };
-
   // Initialize calls
-  const getParams = () => params;
-  const addDevice = createAddDevice(credentialsFile, generate);
-  const removeDevice = createRemoveDevice(credentialsFile);
-  const toggleAdmin = createToggleAdmin(credentialsFile);
-  const listDevices = createListDevices(credentialsFile, generate, getParams);
+  const {addDevice, removeDevice, toggleAdmin, listDevices} = calls;
 
   // Create file
   before(() => {
