@@ -1,38 +1,34 @@
 const chai = require('chai');
 const expect = require('chai').expect;
-const createAddDevice = require('./createAddDevice');
-const createListDevices = require('./createListDevices');
-const createRemoveDevice = require('./createRemoveDevice');
-const createToggleAdmin = require('./createToggleAdmin');
-
-const credentialsFile = require('../utils/credentialsFile');
-const generate = require('../utils/generate');
+const calls = require('../src/calls');
+const fs = require('fs');
 
 chai.should();
 
 describe('Integration test', function() {
-  const USER_NAME = 'Jordi';
-
-  const params = {
-    VPN: {
-      ip: '88.88.88.88',
-      psk: 'PSKfake',
-      name: 'FakeDAppNode',
-    },
-  };
+  const id = 'Jordi';
 
   // Initialize calls
-  const addDevice = createAddDevice(credentialsFile, generate);
-  const removeDevice = createRemoveDevice(credentialsFile);
-  const toggleAdmin = createToggleAdmin(credentialsFile);
-  const listDevices = createListDevices(credentialsFile, generate, params);
+  const {addDevice, removeDevice, toggleAdmin, listDevices} = calls;
+
+  // Create file
+  before(() => {
+    // Create the files
+    try {
+      fs.mkdirSync('./mockFiles');
+    } catch (e) {
+      //
+    }
+    fs.writeFileSync('./mockFiles/chap_secrets', '', 'utf8');
+  });
+
 
   describe('Call function: createAddDevice', function() {
     let res;
     let user;
 
     it('should called addDevice without crashing', async () => {
-      res = await addDevice({id: USER_NAME});
+      res = await addDevice({id});
     });
 
     it('should return success', () => {
@@ -41,7 +37,7 @@ describe('Integration test', function() {
 
     it('should actually write in the chap-secrets file', async () => {
       let res = await listDevices();
-      user = res.result.find((d) => d.name == USER_NAME);
+      user = res.result.find((d) => d.name == id);
       expect( Boolean(user) ).to.be.true;
     });
 
@@ -55,11 +51,11 @@ describe('Integration test', function() {
     it('should throw an error', async () => {
       let error = 'did not throw';
       try {
-        await addDevice({id: USER_NAME});
+        await addDevice({id});
       } catch (e) {
         error = e.message;
       }
-      expect(error).to.equal('Device name exists: '+USER_NAME);
+      expect(error).to.equal('Device name exists: '+id);
     });
   });
 
@@ -68,7 +64,7 @@ describe('Integration test', function() {
     let user;
 
     it('should call toggleAdmin without crashing', async () => {
-      res = await toggleAdmin({id: USER_NAME});
+      res = await toggleAdmin({id});
     });
 
     it('should return success', () => {
@@ -77,7 +73,7 @@ describe('Integration test', function() {
 
     it('should actually write in the chap-secrets file', async () => {
       let res = await listDevices();
-      user = res.result.find((d) => d.name == USER_NAME);
+      user = res.result.find((d) => d.name == id);
       expect( Boolean(user) ).to.be.true;
     });
 
@@ -91,7 +87,7 @@ describe('Integration test', function() {
     it('should throw an error', async () => {
       let error = 'did not throw';
       try {
-        await removeDevice({id: USER_NAME});
+        await removeDevice({id});
       } catch (e) {
         error = e.message;
       }
@@ -103,7 +99,7 @@ describe('Integration test', function() {
     let user;
 
     it('should call toggleAdmin without crashing', async () => {
-      const res = await toggleAdmin({id: USER_NAME});
+      const res = await toggleAdmin({id});
       expect( res ).to.have.property('message');
     });
 
@@ -111,7 +107,7 @@ describe('Integration test', function() {
       // Fetching devices
       let res = await listDevices();
       // Searching device
-      user = res.result.find((d) => d.name == USER_NAME);
+      user = res.result.find((d) => d.name == id);
       expect( Boolean(user) ).to.be.true;
       // Verifying the ip range
       let ipArray = user.ip.trim().split('.');
@@ -124,7 +120,7 @@ describe('Integration test', function() {
     let user;
 
     it('should call toggleAdmin without crashing', async () => {
-      res = await removeDevice({id: USER_NAME});
+      res = await removeDevice({id});
     });
 
     it('should return success', () => {
@@ -133,8 +129,21 @@ describe('Integration test', function() {
 
     it('should actually write in the chap-secrets file', async () => {
       let res = await listDevices();
-      user = res.result.find((d) => d.name == USER_NAME);
+      user = res.result.find((d) => d.name == id);
       expect( Boolean(user) ).to.be.false;
     });
+  });
+
+  after(() => {
+    try {
+      fs.unlinkSync('./mockFiles/chap_secrets');
+    } catch (e) {
+      //
+    }
+    try {
+      fs.rmdirSync('./mockFiles');
+    } catch (e) {
+      //
+    }
   });
 });

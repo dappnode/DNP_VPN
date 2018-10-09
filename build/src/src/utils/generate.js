@@ -1,21 +1,22 @@
 const base64url = require('base64url');
 const generator = require('generate-password');
+const db = require('../db');
+const getServer = require('./getServer');
+
+const dappnodeOtpUrl = process.env.DAPPNODE_OTP_URL;
+const commonStaticIpPrefix = '172.33.';
+const userStaticIpPrefix = '172.33.100.';
+const userStaticIpFirstOctet = 2;
+const userStaticIpLastOctet = 250;
 
 
-const DAPPNODE_OTP_URL = process.env.DAPPNODE_OTP_URL;
-const COMMON_STATIC_IP_PREFIX = '172.33.';
-const USER_STATIC_IP_PREFIX = '172.33.100.';
-const USER_STATIC_IP_FIRST_OCTET = 2;
-const USER_STATIC_IP_LAST_OCTET = 250;
-
-
-function ip(deviceIPsArray) {
-  const firstOctet = USER_STATIC_IP_FIRST_OCTET;
-  const lastOctet = USER_STATIC_IP_LAST_OCTET;
+function ip(ips) {
+  const firstOctet = userStaticIpFirstOctet;
+  const lastOctet = userStaticIpLastOctet;
 
   // Get the list of used octets
-  let usedIpOctets = deviceIPsArray.reduce((usedIpOctets, ip) => {
-    if (ip.includes(COMMON_STATIC_IP_PREFIX)) {
+  let usedIpOctets = ips.reduce((usedIpOctets, ip) => {
+    if (ip.includes(commonStaticIpPrefix)) {
       let octetArray = ip.trim().split('.');
       let endingOctet = octetArray[octetArray.length - 1];
       usedIpOctets.push(parseFloat(endingOctet));
@@ -33,7 +34,7 @@ function ip(deviceIPsArray) {
   // Chose the smallest available octet
   let chosenOctet = Math.min.apply(null, availableOctets);
 
-  return USER_STATIC_IP_PREFIX + chosenOctet;
+  return userStaticIpPrefix + chosenOctet;
 }
 
 
@@ -45,17 +46,36 @@ function password(passwordLength) {
 }
 
 
-function otp(deviceName, password, VPN) {
-    let otpCredentials = {
-      'server': VPN.IP,
-      'name': VPN.NAME,
-      'user': deviceName,
-      'pass': password,
-      'psk': VPN.PSK,
+/**
+ * Leaving the object destructuring to ensure no extra parameters
+ * are included in the link
+ *
+ * @param {Object} credentials
+ * {
+ *   'server': server,
+ *   'name': name,
+ *   'user': user,
+ *   'pass': pass,
+ *   'psk': psk,
+ * }
+ *
+ * @return {String} otp link
+ */
+function otp({user, pass}) {
+    const server = getServer();
+    const name = db.get('name').value();
+    const psk = db.get('psk').value();
+
+    const otpCredentials = {
+      server,
+      name,
+      user,
+      pass,
+      psk,
     };
 
-    let otpCredentialsEncoded = base64url.encode(JSON.stringify(otpCredentials));
-    return DAPPNODE_OTP_URL + '#otp=' + otpCredentialsEncoded;
+    const otpCredentialsEncoded = base64url.encode(JSON.stringify(otpCredentials));
+    return dappnodeOtpUrl + '#otp=' + otpCredentialsEncoded;
 }
 
 

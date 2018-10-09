@@ -1,8 +1,9 @@
 const chai = require('chai');
+const fs = require('fs');
 
 chai.should();
 
-const credentialsFile = require('./credentialsFile');
+const credentialsFile = require('../../src/utils/credentialsFile');
 
 describe('Util: credentialsFile', function() {
   const credentialsArray = [
@@ -31,5 +32,18 @@ describe('Util: credentialsFile', function() {
       credentialsArrayRes.should.deep.equal(credentialsArray);
       done();
     });
+  });
+
+  after(() => {
+    try {
+      fs.unlinkSync('./mockFiles/chap_secrets');
+    } catch (e) {
+      //
+    }
+    try {
+      fs.rmdirSync('./mockFiles');
+    } catch (e) {
+      //
+    }
   });
 });

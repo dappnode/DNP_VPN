@@ -4,8 +4,8 @@ export IMAGE=$(docker inspect DAppNodeCore-vpn.dnp.dappnode.eth -f '{{.Config.Im
 export ExternalIP=$(docker run --rm --net=host ${IMAGE} upnpc -l | awk -F'= '  '/ExternalIPAddress/{print $2}')
 export InternalIP=$(docker run --rm --net=host ${IMAGE} ip route get 1  | sed -n 's/.*src \([0-9.]\+\).*/\1/p')
  
-echo "$ExternalIP" > $EXTERNAL_IP_FILE_PATH 
-echo "$InternalIP" > $INTERNAL_IP_FILE_PATH
+echo "$ExternalIP" > $EXTERNAL_IP_PATH 
+echo "$InternalIP" > $INTERNAL_IP_PATH
 
 #DIG checkin in the future we want to remove this centralization point 
 export DIG_IP=$(dig @resolver1.opendns.com -t A -4 myip.opendns.com +short)
@@ -55,6 +55,6 @@ do
   i=$(($i + 1))
 done
 
-echo "$PUBLIC_IP_RESOLVED" > $PUBLIC_IP_RESOLVED_FILE_PATH
+echo "$PUBLIC_IP_RESOLVED" > $PUBLIC_IP_RESOLVED_PATH
 
 

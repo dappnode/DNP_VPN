@@ -12,8 +12,10 @@ RUN git clone https://github.com/xelerance/xl2tpd.git && cd xl2tpd && make
 
 WORKDIR /usr/src/app
 
+COPY src/package*.json ./
+RUN npm install
+# Run the copy in two steps to cache the npm install
 COPY src .
-RUN npm install 
 
 FROM alpine
 
@@ -82,21 +84,24 @@ RUN chmod 755 check_upnp.sh
 
 RUN mkdir -p /usr/src/app/secrets
 # envs for init.sh -> node communication
-ENV CREDENTIALS_FILE_PATH /etc/ppp/chap-secrets
-ENV VPN_IP_FILE_PATH /usr/src/app/secrets/server-ip
-ENV VPN_PSK_FILE_PATH /usr/src/app/secrets/server-psk
-ENV INTERNAL_IP_FILE_PATH /usr/src/app/secrets/internal-ip
-ENV EXTERNAL_IP_FILE_PATH /usr/src/app/secrets/external-ip
-ENV EXTERNALIP_STATUS_FILE_PATH /usr/src/app/secrets/external-ip_status
-ENV UPNP_STATUS_FILE_PATH /usr/src/app/secrets/upnp_status
-ENV PUBLIC_IP_RESOLVED_FILE_PATH /usr/src/app/secrets/public-ip_resolved
-ENV VPN_NAME_FILE_PATH /etc/vpnname
-ENV VPN_ADMIN_PASS_FILE_PATH /usr/src/app/secrets/admin-pass
+ENV DB_PATH /usr/src/app/secrets/db.json
+ENV KEYPAIR_PATH /usr/src/app/secrets/keypair
+ENV CREDENTIALS_PATH /usr/src/app/secrets/chap-secrets
+ENV PUBLIC_IP_PATH /usr/src/app/secrets/server-ip
+ENV PSK_PATH /usr/src/app/secrets/server-psk
+ENV SERVER_NAME_PATH /etc/vpnname
+ENV INTERNAL_IP_PATH /usr/src/app/secrets/internal-ip
+ENV EXTERNAL_IP_PATH /usr/src/app/secrets/external-ip
+ENV PUBLIC_IP_RESOLVED_PATH /usr/src/app/secrets/public-ip_resolved
+ENV VPN_ADMIN_PASS_PATH /usr/src/app/secrets/admin-pass
 ENV VPN_DNS_SRV1 172.33.1.2
 ENV VPN_DNS_SRV2 8.8.8.8
 
 # location of the OTP parsing tool
 ENV DAPPNODE_OTP_URL https://dappnode.github.io/DAppNode_OTP/
+# dyndns host
+ENV DYNDNS_HOST https://ns.dappnode.io
+ENV PUBLIC_IP_URL https://ns.dappnode.io/myip
 
 RUN ln -s /usr/src/app/src/getAdminCredentials.js /usr/bin/getAdminCredentials
 RUN chmod +x /usr/src/app/src/getAdminCredentials.js
