@@ -1,15 +1,15 @@
 const fs = require('file-system');
 
 
-const CREDENTIALS_FILE_PATH =
-  process.env.DEV ? './test/chap_secrets' : process.env.CREDENTIALS_FILE_PATH;
+const credentialsPath =
+  process.env.DEV ? './mockFiles/chap_secrets' : process.env.CREDENTIALS_PATH;
 
 
 async function write(credentialsArray) {
   // Receives an array of credential objects, xl2tpd format
   const credentialsFileContent = chapSecretsFileFormat(credentialsArray);
 
-  fs.writeFileSync(CREDENTIALS_FILE_PATH, credentialsFileContent);
+  fs.writeFileSync(credentialsPath, credentialsFileContent);
 }
 
 
@@ -25,20 +25,21 @@ function chapSecretsFileFormat(credentialsArray) {
 
 
 async function fetch() {
-  const fileContent = await fs.readFileSync(CREDENTIALS_FILE_PATH, 'utf-8');
+  const fileContent = await fs.readFileSync(credentialsPath, 'utf-8');
 
   // Split by line breaks
-  let deviceCredentialsArray = fileContent.split(/\r?\n/);
-  // Clean empty lines if any
-  for (let i = 0; i < deviceCredentialsArray.length; i++) {
-    if (deviceCredentialsArray[i] == '') {
-      deviceCredentialsArray.splice(i, 1);
-    }
-  }
+  let deviceCredentialsArray = fileContent.trim().split(/\r?\n/);
 
   // Convert each line to an object + strip quotation marks
-  return deviceCredentialsArray.map((credentialsString) => {
-    let credentialsArray = credentialsString.split(' ');
+  return deviceCredentialsArray
+  .filter(((line) => {
+    // Ignore empty lines if any
+    if (line === '') return false;
+    if (line.startsWith('# ')) return false;
+    return true;
+  }))
+  .map((credentialsString) => {
+    let credentialsArray = credentialsString.trim().split(' ');
     return {
       name: credentialsArray[0].replace(/['"]+/g, ''),
       password: credentialsArray[2].replace(/['"]+/g, ''),

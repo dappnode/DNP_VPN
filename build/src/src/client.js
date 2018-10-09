@@ -1,37 +1,11 @@
 const autobahn = require('autobahn');
 const logs = require('./logs.js')(module);
+const db = require('./db');
 
-// import calls
-const createAddDevice = require('./calls/createAddDevice');
-const createRemoveDevice = require('./calls/createRemoveDevice');
-const createToggleAdmin = require('./calls/createToggleAdmin');
-const createListDevices = require('./calls/createListDevices');
-const createGetParams = require('./calls/createGetParams');
-const createStatusUPnP = require('./calls/createStatusUPnP');
-const createStatusExternalIp = require('./calls/createStatusExternalIp');
-
-// import dependencies
-const credentialsFile = require('./utils/credentialsFile');
-const generate = require('./utils/generate');
-const createLogAdminCredentials = require('./modules/createLogAdminCredentials');
-const fetchVPNparameters = require('./modules/fetchVPNparameters');
-
-// Initialize dependencies
-const params = {};
-const statusUPnP = createStatusUPnP(params, fetchVPNparameters);
-const statusExternalIp = createStatusExternalIp(params, fetchVPNparameters);
-const logAdminCredentials = createLogAdminCredentials(
-  credentialsFile,
-  generate
-);
-
-// Initialize calls
-const addDevice = createAddDevice(credentialsFile, generate);
-const removeDevice = createRemoveDevice(credentialsFile);
-const toggleAdmin = createToggleAdmin(credentialsFile);
-const listDevices = createListDevices(credentialsFile, generate, params);
-const getParams = createGetParams(params);
-
+const dyndnsClient = require('./dyndnsClient');
+const calls = require('./calls');
+const logAdminCredentials = require('./logAdminCredentials');
+const fetchVpnParameters = require('./fetchVpnParameters');
 
 const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws';
 const REALM = 'dappnode_admin';
@@ -51,13 +25,9 @@ connection.onopen = function(session, details) {
       '\n   session ID: '+details.authid);
 
   register(session, 'ping.vpn.dnp.dappnode.eth', (x) => x);
-  register(session, 'getParams.vpn.dappnode.eth', getParams);
-  register(session, 'addDevice.vpn.dnp.dappnode.eth', addDevice);
-  register(session, 'removeDevice.vpn.dnp.dappnode.eth', removeDevice);
-  register(session, 'toggleAdmin.vpn.dnp.dappnode.eth', toggleAdmin);
-  register(session, 'listDevices.vpn.dnp.dappnode.eth', listDevices);
-  register(session, 'statusUPnP.vpn.dnp.dappnode.eth', statusUPnP);
-  register(session, 'statusExternalIp.vpn.dnp.dappnode.eth', statusExternalIp);
+  for (const callId of Object.keys(calls)) {
+    register(session, callId+'.vpn.dnp.dappnode.eth', calls[callId]);
+  }
 };
 
 connection.onclose = function(reason, details) {
@@ -78,16 +48,33 @@ async function start() {
     +'   realm: '+connection._options.realm);
   connection.open();
 
+  // fetchVpnParameters read the output files from the .sh scripts
+  // and stores the values in the db
   logs.info('Loading VPN parameters... It may take a while');
+  await fetchVpnParameters();
 
-  params.VPN = await fetchVPNparameters();
+  // If the user has not defined a static IP use dynamic DNS
+  if (!db.get('staticIp').value()) {
+    logs.info('Registering to the dynamic DNS...');
+    await dyndnsClient.updateIp();
+  }
 
-  logs.info('VPN credentials fetched - \n  '
-    + Object.keys(params.VPN)
-      .filter((name) => typeof params.VPN[name] !== typeof {})
-      .map((name) => name+': '+params.VPN[name]).join('\n  '));
+  // Watch for IP changes, if so update the IP. On error, asume the IP changed.
+  let _ip = '';
+  setInterval(() => {
+    if (!db.get('staticIp').value()) {
+      dyndnsClient.getPublicIp().then((ip) => {
+        if (!ip || ip !== _ip) {
+          dyndnsClient.updateIp();
+          _ip = ip;
+        }
+        if (ip) db.set('ip', ip).write();
+      });
+    }
+  }, 30*60*1000);
 
-  logAdminCredentials(params.VPN);
+  logs.info('VPN credentials fetched');
+  logAdminCredentials();
 }
 
 
@@ -119,7 +106,7 @@ function register(session, event, handler) {
         }
         return JSON.stringify({
           success: true,
-          message: res.message,
+          message: res.message || event,
           result: res.result || {},
         });
       } catch (err) {
