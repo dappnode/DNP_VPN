@@ -9,7 +9,7 @@ const fetchVpnParameters = require('./fetchVpnParameters');
 
 const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws';
 const REALM = 'dappnode_admin';
-
+const publicIpCheckInterval = 30 * 60 * 1000;
 
 // /////////////////////////////
 // Setup crossbar connection //
@@ -71,7 +71,7 @@ async function start() {
         if (ip) db.set('ip', ip).write();
       });
     }
-  }, 30*60*1000);
+  }, publicIpCheckInterval);
 
   logs.info('VPN credentials fetched');
   logAdminCredentials();
