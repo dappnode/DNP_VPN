@@ -3,7 +3,7 @@ const generate = require('../utils/generate');
 const db = require('../db');
 
 const vpnPasswordLength = 20;
-const guestsName = 'guests';
+const guestsName = 'Guests';
 
 async function toggleGuestUsers() {
     // Fetch devices data from the chap_secrets file

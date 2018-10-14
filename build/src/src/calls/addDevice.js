@@ -10,8 +10,8 @@ async function addDevice({id}) {
   if (id === '#') {
     throw Error(`The new device name cannot be "#"`);
   }
-  if (id === 'guests') {
-    throw Error(`Please use the enable guests function to create a "guests" user`);
+  if ((id || '').toLowerCase() === 'guests' || (id || '').toLowerCase() === 'guest') {
+    throw Error(`Please use the enable guests function to create a "Guest(s)" user`);
   }
 
 
