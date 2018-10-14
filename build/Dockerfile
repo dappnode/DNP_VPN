@@ -85,6 +85,7 @@ RUN chmod 755 check_upnp.sh
 RUN mkdir -p /usr/src/app/secrets
 # envs for init.sh -> node communication
 ENV DB_PATH /usr/src/app/secrets/db.json
+ENV INSTALLATION_STATIC_IP /usr/src/dappnode/ip.value
 ENV KEYPAIR_PATH /usr/src/app/secrets/keypair
 ENV CREDENTIALS_PATH /usr/src/app/secrets/chap-secrets
 ENV PUBLIC_IP_PATH /usr/src/app/secrets/server-ip
