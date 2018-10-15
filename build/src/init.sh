@@ -41,7 +41,7 @@ check_ip "$PUBLIC_IP" || exiterr "Cannot detect this server's public IP. Define 
 echo "Generating VPN credentials: PSK and password..."
 export L2TP_NET=${VPN_L2TP_NET:-'172.33.0.0/16'}
 export L2TP_LOCAL=${VPN_L2TP_LOCAL:-'172.33.11.1'}
-export L2TP_POOL=${VPN_L2TP_POOL:-'172.33.100.1-172.33.255.254'}
+export L2TP_POOL=${VPN_L2TP_POOL:-'172.33.200.1-172.33.255.254'}
 export DNS_SRV1=${VPN_DNS_SRV1:-'8.8.8.8'}
 export DNS_SRV2=${VPN_DNS_SRV2:-'8.8.4.4'}
 export PUBLIC_IP
