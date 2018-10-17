@@ -72,15 +72,18 @@ async function start() {
 
   // Watch for IP changes, if so update the IP. On error, asume the IP changed.
   let _ip = '';
-  setInterval(() => {
-    if (!db.get('staticIp').value()) {
-      dyndnsClient.getPublicIp().then((ip) => {
+  setInterval(async () => {
+    try {
+      if (!db.get('staticIp').value()) {
+        const ip = await dyndnsClient.getPublicIp();
         if (!ip || ip !== _ip) {
           dyndnsClient.updateIp();
           _ip = ip;
         }
         if (ip) db.set('ip', ip).write();
-      });
+      }
+    } catch (e) {
+      logs.error(`Error on dyndns interval: ${e.stack || e.message}`);
     }
   }, publicIpCheckInterval);
 
