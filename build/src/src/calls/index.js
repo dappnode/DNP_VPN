@@ -12,4 +12,6 @@ module.exports = {
     setStaticIp: require('./setStaticIp'),
     statusExternalIp: require('./statusExternalIp'),
     statusUPnP: require('./statusUPnP'),
+    toggleGuestUsers: require('./toggleGuestUsers'),
+    resetGuestUsersPassword: require('./resetGuestUsersPassword'),
 };
