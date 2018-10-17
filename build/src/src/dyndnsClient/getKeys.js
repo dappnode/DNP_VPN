@@ -49,8 +49,8 @@ const writeFile = util.promisify(fs.writeFile);
 function getKeys() {
     let path = process.env.DEV ? './mockFiles/keypair' : process.env.KEYPAIR_PATH;
     if (!path) {
-        path = '/usr/src/app/secrets/keypair';
-        logs.warn('KEYPAIR_FILE_path is not defined. Defaulting to /usr/src/app/secrets/keypair');
+        path = '/opt/app/secrets/keypair';
+        logs.warn('KEYPAIR_FILE_path is not defined. Defaulting to /opt/app/secrets/keypair');
     }
     return readFile(path)
     .then(JSON.parse)

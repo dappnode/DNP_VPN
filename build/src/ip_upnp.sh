@@ -35,7 +35,7 @@ fi
 
 #UPNP Device
 if [ ! -z "$ExternalIP" ]; then 
-    /usr/src/app/upnp_openports.sh &
+    /opt/app/upnp_openports.sh &
 fi
 
 # Test PUBLIC_IP resolution

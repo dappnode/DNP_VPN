@@ -10,7 +10,7 @@ RUN apk add --update --no-cache \
 
 RUN git clone https://github.com/xelerance/xl2tpd.git && cd xl2tpd && make
 
-WORKDIR /usr/src/app
+WORKDIR /opt/app
 
 COPY src/package*.json ./
 RUN npm install
@@ -19,10 +19,10 @@ COPY src .
 
 FROM alpine
 
-WORKDIR /usr/src/app
+WORKDIR /opt/app
 
 COPY --from=build /usr/local/bin/node /usr/local/bin/node
-COPY --from=build /usr/src/app /usr/src/app
+COPY --from=build /opt/app /opt/app
 COPY --from=build /usr/bin/docker /usr/bin/docker
 COPY --from=build /xl2tpd/xl2tpd /usr/sbin/xl2tpd
 
@@ -82,19 +82,19 @@ RUN chmod 755 init.sh
 RUN chmod 755 ip_upnp.sh
 RUN chmod 755 check_upnp.sh
 
-RUN mkdir -p /usr/src/app/secrets
+RUN mkdir -p /opt/app/secrets
 # envs for init.sh -> node communication
-ENV DB_PATH /usr/src/app/secrets/db.json
-ENV INSTALLATION_STATIC_IP /usr/src/dappnode/ip.value
-ENV KEYPAIR_PATH /usr/src/app/secrets/keypair
-ENV CREDENTIALS_PATH /usr/src/app/secrets/chap-secrets
-ENV PUBLIC_IP_PATH /usr/src/app/secrets/server-ip
-ENV PSK_PATH /usr/src/app/secrets/server-psk
+ENV DB_PATH /opt/app/secrets/db.json
+ENV INSTALLATION_STATIC_IP /opt/dappnode/ip.value
+ENV KEYPAIR_PATH /opt/app/secrets/keypair
+ENV CREDENTIALS_PATH /opt/app/secrets/chap-secrets
+ENV PUBLIC_IP_PATH /opt/app/secrets/server-ip
+ENV PSK_PATH /opt/app/secrets/server-psk
 ENV SERVER_NAME_PATH /etc/vpnname
-ENV INTERNAL_IP_PATH /usr/src/app/secrets/internal-ip
-ENV EXTERNAL_IP_PATH /usr/src/app/secrets/external-ip
-ENV PUBLIC_IP_RESOLVED_PATH /usr/src/app/secrets/public-ip_resolved
-ENV VPN_ADMIN_PASS_PATH /usr/src/app/secrets/admin-pass
+ENV INTERNAL_IP_PATH /opt/app/secrets/internal-ip
+ENV EXTERNAL_IP_PATH /opt/app/secrets/external-ip
+ENV PUBLIC_IP_RESOLVED_PATH /opt/app/secrets/public-ip_resolved
+ENV VPN_ADMIN_PASS_PATH /opt/app/secrets/admin-pass
 ENV VPN_DNS_SRV1 172.33.1.2
 ENV VPN_DNS_SRV2 8.8.8.8
 
@@ -104,11 +104,11 @@ ENV DAPPNODE_OTP_URL https://dappnode.github.io/DAppNode_OTP/
 ENV DYNDNS_HOST https://ns.dappnode.io
 ENV PUBLIC_IP_URL https://ns.dappnode.io/myip
 
-RUN ln -s /usr/src/app/src/getAdminCredentials.js /usr/bin/getAdminCredentials
-RUN chmod +x /usr/src/app/src/getAdminCredentials.js
+RUN ln -s /opt/app/src/getAdminCredentials.js /usr/bin/getAdminCredentials
+RUN chmod +x /opt/app/src/getAdminCredentials.js
 
 # Supervisord processes:
-# > /usr/src/app/init.sh (libreswan VPN, executes xl2tpd)
-# > /usr/src/app/ipsec.sh (ipsec)
+# > /opt/app/init.sh (libreswan VPN, executes xl2tpd)
+# > /opt/app/ipsec.sh (ipsec)
 # > node client.js (VPN user managment API)
 CMD ["supervisord"]
