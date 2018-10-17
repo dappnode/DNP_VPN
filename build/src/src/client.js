@@ -6,10 +6,12 @@ const dyndnsClient = require('./dyndnsClient');
 const calls = require('./calls');
 const logAdminCredentials = require('./logAdminCredentials');
 const fetchVpnParameters = require('./fetchVpnParameters');
+const getInstallationStaticIp = require('./utils/getInstallationStaticIp');
 
 const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws';
 const REALM = 'dappnode_admin';
 const publicIpCheckInterval = 30 * 60 * 1000;
+
 
 // /////////////////////////////
 // Setup crossbar connection //
@@ -52,6 +54,15 @@ async function start() {
   // and stores the values in the db
   logs.info('Loading VPN parameters... It may take a while');
   await fetchVpnParameters();
+
+  // Load the static IP defined in the installation
+  if (!db.get('staticIp').value()) {
+    const installationStaticIp = await getInstallationStaticIp();
+    if (installationStaticIp) {
+      logs.info(`Static IP was set during installation: ${installationStaticIp}`);
+      db.set('staticIp', installationStaticIp).value();
+    }
+  }
 
   // If the user has not defined a static IP use dynamic DNS
   if (!db.get('staticIp').value()) {
