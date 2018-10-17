@@ -8,8 +8,12 @@ async function addDevice({id}) {
     throw Error('The new device name cannot be empty');
   }
   if (id === '#') {
-    throw Error('The new device name cannot be #');
+    throw Error(`The new device name cannot be "#"`);
   }
+  if ((id || '').toLowerCase() === 'guests' || (id || '').toLowerCase() === 'guest') {
+    throw Error(`Please use the enable guests function to create a "Guest(s)" user`);
+  }
+
 
   // Fetch devices data from the chap_secrets file
   let credentialsArray = await credentialsFile.fetch();

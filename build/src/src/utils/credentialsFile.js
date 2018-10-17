@@ -14,16 +14,23 @@ async function write(credentialsArray) {
 
 
 function chapSecretsFileFormat(credentialsArray) {
-  const chapSecretsLineFormat = (credentials) => {
-    return '"'+credentials.name+'" l2tpd "'+credentials.password+'" '+credentials.ip;
-  };
-
   return credentialsArray
-    .map(chapSecretsLineFormat)
+    .map((credentials) =>
+      `"${credentials.name}" l2tpd "${credentials.password}" ${credentials.ip}`)
     .join('\n');
 }
 
-
+/**
+ * @return {Array} Array of objects:
+ * [
+ *   {
+ *     name: 'guests',
+ *     password: '7xg78agd87g3dkasd31',
+ *     ip: '*'
+ *   },
+ *   ...
+ * ]
+ */
 async function fetch() {
   const fileContent = await fs.readFileSync(credentialsPath, 'utf-8');
 
