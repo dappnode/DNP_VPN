@@ -21,7 +21,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /etc/hostname:/etc/vpnname:ro
       - /lib/modules:/lib/modules:ro
-      - vpndnpdappnodeeth_data:/usr/src/app/secrets
+      - vpndnpdappnodeeth_data:/opt/app/secrets
     ports:
       - 4500:4500/udp
       - 500:500/udp

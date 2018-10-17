@@ -31,7 +31,7 @@ echo 'Trying to auto discover IP of this server and redirect the ports...'
 # Try to auto discover IP of this server
 #[ -z "$PUBLIC_IP" ] && PUBLIC_IP=$(dig @resolver1.opendns.com -t A -4 myip.opendns.com +short)
 
-source /usr/src/app/ip_upnp.sh
+source /opt/app/ip_upnp.sh
 
 # Check IP for correct format
 check_ip "$PUBLIC_IP" || PUBLIC_IP=$(wget -t 3 -T 15 -qO- http://ipv4.icanhazip.com)
@@ -75,7 +75,7 @@ envsubst < "templates/options.xl2tpd" > "/etc/ppp/options.xl2tpd"
 
 # Specify IPsec PSK
 #   ${VPN_IPSEC_PSK}
-IPSEC_SECRETS_PATH="/usr/src/app/secrets/ipsec.secrets"
+IPSEC_SECRETS_PATH="/opt/app/secrets/ipsec.secrets"
 [ ! -f "${IPSEC_SECRETS_PATH}" ] && envsubst < "templates/ipsec.secrets" > "${IPSEC_SECRETS_PATH}"
 rm /etc/ipsec.secrets
 ln -s ${IPSEC_SECRETS_PATH} /etc/ipsec.secrets
