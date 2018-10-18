@@ -13,9 +13,16 @@ function getInstallationStaticIp() {
     .then((data) => String(data).trim())
     // If the file is empty return null
     .then((data) => data.length ? data : null)
-    .then((ip) => ipRegex({exact: true}).test(ip))
+    .then((ip) => {
+        if (ipRegex({exact: true}).test(ip)) return ip;
+        else return null;
+    })
     .catch((err) => {
-        logs.error(`Error reading INSTALLATION_STATIC_IP ${INSTALLATION_STATIC_IP}: ${err.stack || err.message}`);
+        if (err.code === 'ENOENT') {
+            logs.warn(`INSTALLATION_STATIC_IP file not found at ${INSTALLATION_STATIC_IP}: ${err.stack || err.message}`);
+        } else {
+            logs.error(`Error reading INSTALLATION_STATIC_IP ${INSTALLATION_STATIC_IP}: ${err.stack || err.message}`);
+        }
         return null;
     });
 }

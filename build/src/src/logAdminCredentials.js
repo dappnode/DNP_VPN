@@ -60,6 +60,9 @@ ${columns.map((col) => col.value).join('  ')}`;
   /* eslint-disable no-console */
   console.log(msg);
   /* eslint-enable no-console */
+
+  // return msg for testing
+  return msg;
 }
 
 function parseUpnpStatus(openPorts, upnpAvailable) {

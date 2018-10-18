@@ -1,15 +1,29 @@
-const chai = require('chai');
 const expect = require('chai').expect;
-const getKeys = require('../../src/dyndnsClient/getKeys');
 const fs = require('file-system');
 const util = require('util');
 const logs = require('../../src/logs.js')(module);
-
 const unlink = util.promisify(fs.unlink);
+const proxyquire = require('proxyquire');
 
-chai.should();
+const testFoler = './mockFiles';
+process.env.KEYPAIR_PATH = `${testFoler}/keypair`;
+process.env.DYNDNS_HOST = 'dyn.test.io';
 
-const KEYPAIR_PATH = './mockFiles/keypair';
+const dbResult = {};
+const db = {
+  set: (key, val) => ({
+    write: () => {
+      dbResult[key] = val;
+    },
+  }),
+  get: (key) => ({
+    value: () => dbResult[key],
+  }),
+};
+
+const getKeys = proxyquire('../../src/dyndnsClient/getKeys', {
+  '../db': db,
+});
 
 describe('Get keys function', function() {
   // Initialize calls
@@ -19,15 +33,15 @@ describe('Get keys function', function() {
   describe('read non-existent file and create it', function() {
     before(async () => {
       // Clean files
-      await unlink(KEYPAIR_PATH).catch((err) => {
+      await unlink(process.env.KEYPAIR_PATH).catch((err) => {
         if (err.code !== 'ENOENT') {
-          logs.error('\n\n\n', err, '\n\n\n');
+          logs.error(err);
         }
       });
     });
 
     it('should return an identity object', async () => {
-      _res = await getKeys();
+      _res = await getKeys(db);
       expect(_res).to.be.an('Object');
       expect(_res).to.have.property('address');
       expect(_res).to.have.property('domain');
@@ -42,18 +56,22 @@ describe('Get keys function', function() {
       expect(host.join('.')).to.equal('dyn.test.io');
     });
 
-    it('should have created the keypair file', async () => {
-      expect(fs.existsSync(KEYPAIR_PATH)).to.be.true;
+    it('should have created the keypair object', async () => {
+      const keypair = db.get('keypair').value();
+      expect(keypair).to.an('object');
+      ['address', 'domain', 'privateKey', 'publicKey'].forEach((key) => {
+        expect(keypair).to.have.property(key);
+      });
     });
 
     it('should return the same identity the second time ', async () => {
-      const res = await getKeys();
+      const res = await getKeys(db);
       expect(res).to.deep.equal(_res);
     });
 
     after(async () => {
       // Clean files
-      await unlink(KEYPAIR_PATH).catch((err) => {
+      await unlink(process.env.KEYPAIR_PATH).catch((err) => {
         logs.error('\n\n\n', err, '\n\n\n');
       });
     });

@@ -1,7 +1,5 @@
 const EthCrypto = require('eth-crypto');
-const fs = require('file-system');
-const util = require('util');
-const logs = require('../logs.js')(module);
+const db = require('../db');
 
 /**
  * EthCrypto reference
@@ -27,12 +25,10 @@ const logs = require('../logs.js')(module);
 
 // dyndnsHost has to be stripped of http(s):// tag
 // process.env.DYNDNS_HOST should include said tag
-const {DEV, DYNDNS_HOST} = process.env;
-const dyndnsHost = DEV
-    ? 'dyn.test.io'
-    : (DYNDNS_HOST && DYNDNS_HOST.includes('://'))
-        ? DYNDNS_HOST.split('://')[1]
-        : DYNDNS_HOST;
+const {DYNDNS_HOST} = process.env;
+const dyndnsHost = DYNDNS_HOST && DYNDNS_HOST.includes('://')
+    ? DYNDNS_HOST.split('://')[1]
+    : DYNDNS_HOST;
 
 function generateKeys() {
     const identity = EthCrypto.createIdentity();
@@ -43,26 +39,16 @@ function generateKeys() {
     };
 }
 
-const readFile = util.promisify(fs.readFile);
-const writeFile = util.promisify(fs.writeFile);
-
 function getKeys() {
-    let path = process.env.DEV ? './mockFiles/keypair' : process.env.KEYPAIR_PATH;
-    if (!path) {
-        path = '/usr/src/app/secrets/keypair';
-        logs.warn('KEYPAIR_FILE_path is not defined. Defaulting to /usr/src/app/secrets/keypair');
+    const currentKeypair = db.get('keypair').value();
+    if (currentKeypair) {
+        return currentKeypair;
+    } else {
+        const newKeypair = generateKeys();
+        db.set('keypair', newKeypair).write();
+        db.set('domain', newKeypair.domain).write();
+        return newKeypair;
     }
-    return readFile(path)
-    .then(JSON.parse)
-    .catch((err) => {
-        if (err.code === 'ENOENT') {
-            const keydata = generateKeys();
-            return writeFile(path, JSON.stringify(keydata))
-            .then(() => keydata);
-        } else {
-            logs.error('Error getting keys from '+path+': '+ err.stack);
-        }
-    });
 }
 
 module.exports = getKeys;
