@@ -6,7 +6,6 @@ const dyndnsClient = require('./dyndnsClient');
 const calls = require('./calls');
 const logAdminCredentials = require('./logAdminCredentials');
 const fetchVpnParameters = require('./fetchVpnParameters');
-const getInstallationStaticIp = require('./utils/getInstallationStaticIp');
 
 const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws';
 const REALM = 'dappnode_admin';
@@ -55,16 +54,8 @@ async function start() {
   logs.info('Loading VPN parameters... It may take a while');
   await fetchVpnParameters();
 
-  // Load the static IP defined in the installation
-  if (!db.get('staticIp').value()) {
-    const installationStaticIp = await getInstallationStaticIp();
-    if (installationStaticIp) {
-      logs.info(`Static IP was set during installation: ${installationStaticIp}`);
-      db.set('staticIp', installationStaticIp).value();
-    }
-  }
-
   // If the user has not defined a static IP use dynamic DNS
+  // > staticIp is set in `await fetchVpnParameters();`
   if (!db.get('staticIp').value()) {
     logs.info('Registering to the dynamic DNS...');
     await dyndnsClient.updateIp();
@@ -87,7 +78,12 @@ async function start() {
     }
   }, publicIpCheckInterval);
 
-  logs.info('VPN credentials fetched');
+  logs.info('VPN credentials fetched: ');
+  // Print db censoring privateKey
+  const dbClone = JSON.parse(JSON.stringify(db.getState()));
+  dbClone.keypair.privateKey = dbClone.keypair.privateKey.replace(/./g, '*');
+  logs.info(JSON.stringify(dbClone, null, 2 ));
+
   logAdminCredentials();
 }
 
