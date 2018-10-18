@@ -1,14 +1,14 @@
-version: '3.4'
+version: "3.4"
 
 networks:
-    network:
-        driver: bridge
-        ipam:
-            config:
-                - subnet: 172.33.0.0/16
+  network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.33.0.0/16
 
 volumes:
-  vpndnpdappnodeeth_data: {}  
+  vpndnpdappnodeeth_data: {}
 
 services:
   vpn.dnp.dappnode.eth:
@@ -20,6 +20,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /etc/hostname:/etc/vpnname:ro
+      - /usr/src/dappnode/config:/usr/src/app/config:ro
       - /lib/modules:/lib/modules:ro
       - vpndnpdappnodeeth_data:/usr/src/app/secrets
     ports:
