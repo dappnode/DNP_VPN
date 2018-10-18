@@ -3,11 +3,11 @@ const {promisify} = require('util');
 const readFileAsync = promisify(fs.readFile);
 const db = require('../db');
 const logs = require('../logs.js')(module);
-
-const DEV = process.env.DEV;
+const dyndnsClient = require('../dyndnsClient');
 
 const getUpnpStatus = require('./getUpnpStatus');
 const getExternalIpResolves = require('./getExternalIpResolves');
+const getInstallationStaticIp = require('./getInstallationStaticIp');
 
 
 // Fetch VPN parameters loads all files containing parameters and status
@@ -15,13 +15,12 @@ const getExternalIpResolves = require('./getExternalIpResolves');
 // The computation of this parameters is triggered from somewhere else.
 
 
-const publicIpPath = DEV ? './mockFiles/ip' : process.env.PUBLIC_IP_PATH;
-const pskPath = DEV ? './mockFiles/psk' : process.env.PSK_PATH;
-const serverNamePath = DEV ? './mockFiles/name' : process.env.SERVER_NAME_PATH;
-const internalIpPath = DEV ? './mockFiles/internal-ip' : process.env.INTERNAL_IP_PATH;
-const externalIpPath = DEV ? './mockFiles/external-ip' : process.env.EXTERNAL_IP_PATH;
-const publicIpResolvedPath =
-  DEV ? './mockFiles/public-ip-resolved' : process.env.PUBLIC_IP_RESOLVED_PATH;
+const publicIpPath = process.env.PUBLIC_IP_PATH;
+const pskPath = process.env.PSK_PATH;
+const serverNamePath = process.env.SERVER_NAME_PATH;
+const internalIpPath = process.env.INTERNAL_IP_PATH;
+const externalIpPath = process.env.EXTERNAL_IP_PATH;
+const publicIpResolvedPath = process.env.PUBLIC_IP_RESOLVED_PATH;
 
 const maxAttempts = 3 * 60; // 3 min
 const pauseTime = 1000;
@@ -30,6 +29,8 @@ async function fetchVpnParameters() {
   // The second parameter is a fallback value
   // Not providing if enforces the existance of the file
 
+  // Step 1: Get variables coming from the init.sh process
+  // =====================================================
   // > This files contain raw variables
   const ip = await fetchVpnParameter(publicIpPath);
   const psk = await fetchVpnParameter(pskPath);
@@ -39,9 +40,6 @@ async function fetchVpnParameters() {
     await fetchVpnParameter(publicIpResolvedPath) == '1'
     ? true : false;
   const name = await fetchVpnParameter(serverNamePath, 'DAppNode_server');
-  // > This files contain stringified jsons
-  const externalIpResolves = getExternalIpResolves(ip, internalIp, publicIpResolved);
-  const {openPorts, upnpAvailable} = getUpnpStatus(ip, externalIp, internalIp);
 
   db.set('ip', ip).write();
   db.set('psk', psk).write();
@@ -49,21 +47,41 @@ async function fetchVpnParameters() {
   db.set('externalIp', externalIp).write();
   db.set('publicIpResolved', publicIpResolved).write();
   db.set('name', name).write();
+
+
+  // Step 2: Process the loaded variables
+  // =============================================
+  // > This files contain stringified jsons
+  const externalIpResolves = getExternalIpResolves(ip, internalIp, publicIpResolved);
+  const {openPorts, upnpAvailable} = getUpnpStatus(ip, externalIp, internalIp);
+  // Get the static ip possibly set during the installation
+
   db.set('externalIpResolves', externalIpResolves).write();
   db.set('openPorts', openPorts).write();
   db.set('upnpAvailable', upnpAvailable).write();
 
-  return {
-    ip,
-    psk,
-    internalIp,
-    externalIp,
-    publicIpResolved,
-    name,
-    externalIpResolves,
-    openPorts,
-    upnpAvailable,
-  };
+
+  // Step 3: Get ip (maybe) set during the installation
+  // ==================================================
+  // > Only write the IP if it comes from the installation
+  if (!db.get('initialized').value()) {
+    const staticIp = await getInstallationStaticIp();
+    db.set('initialized', true).write();
+    if (staticIp) {
+      logs.info(`Static IP was set during installation: ${staticIp}`);
+      db.set('staticIp', staticIp).write();
+    } else {
+      logs.info(`Static IP was NOT set during installation`);
+    }
+  }
+
+  // Step 4: Get the keys to register to the dyndns
+  // > The keys will be automatically stored in the db
+  //   db.set('keypair', newKeypair).write();
+  //   db.set('domain', newKeypair.domain).write();
+  if (!db.get('staticIp').value()) {
+    await dyndnsClient.getKeys();
+  }
 }
 
 async function fileToExist(path, fallbackValue) {
