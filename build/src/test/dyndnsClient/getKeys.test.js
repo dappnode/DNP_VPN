@@ -7,7 +7,7 @@ const proxyquire = require('proxyquire');
 
 const testFoler = './mockFiles';
 process.env.KEYPAIR_PATH = `${testFoler}/keypair`;
-process.env.DYNDNS_HOST = 'dyn.test.io';
+process.env.DYNDNS_DOMAIN = 'dyn.test.io';
 
 const dbResult = {};
 const db = {
