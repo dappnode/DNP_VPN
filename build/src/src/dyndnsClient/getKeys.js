@@ -25,17 +25,20 @@ const db = require('../db');
 
 // dyndnsHost has to be stripped of http(s):// tag
 // process.env.DYNDNS_HOST should include said tag
-const {DYNDNS_HOST} = process.env;
-const dyndnsHost = DYNDNS_HOST && DYNDNS_HOST.includes('://')
-    ? DYNDNS_HOST.split('://')[1]
-    : DYNDNS_HOST;
+function getDyndnsHost() {
+    const {DYNDNS_HOST} = process.env;
+    return DYNDNS_HOST && DYNDNS_HOST.includes('://')
+        ? DYNDNS_HOST.split('://')[1]
+        : DYNDNS_HOST;
+}
+
 
 function generateKeys() {
     const identity = EthCrypto.createIdentity();
     const subdomain = identity.address.toLowerCase().substr(2).substring(0, 16);
     return {
         ...identity,
-        domain: subdomain+'.'+dyndnsHost,
+        domain: subdomain+'.'+getDyndnsHost(),
     };
 }
 

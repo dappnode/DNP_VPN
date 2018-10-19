@@ -75,7 +75,7 @@ describe('fetchVpnParameters test', function() {
     });
   });
 
-  it('should call log adminCredentials', async () => {
+  it('should call log adminCredentials, and contain the static IP', async () => {
     const credentialsFile = require('../../src/utils/credentialsFile');
     const credentialsArray = [
       {name: 'SUPERadmin', password: 'MockPass2', ip: '172.33.10.1'},
@@ -107,12 +107,13 @@ describe('fetchVpnParameters test', function() {
     });
   });
 
-  it('should call log adminCredentials', async () => {
+  it('should call log adminCredentials, and contain the dyndns domain', async () => {
     const credentialsFile = require('../../src/utils/credentialsFile');
     const credentialsArray = [
       {name: 'SUPERadmin', password: 'MockPass2', ip: '172.33.10.1'},
     ];
     await credentialsFile.write(credentialsArray);
+    console.log(db.getState());
     const log = await logAdminCredentials();
     expect(log).to.include('.dyn.test.io');
   });
