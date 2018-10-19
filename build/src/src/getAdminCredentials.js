@@ -4,6 +4,7 @@
 const logAdminCredentials = require('./logAdminCredentials');
 const fetchVpnParameters = require('./fetchVpnParameters');
 const logs = require('./logs.js')(module);
+const db = require('./db');
 
 
 start();
@@ -16,5 +17,11 @@ async function start() {
     +'It may take a while, press CTRL + C to skip this process \n');
   await fetchVpnParameters();
   logs.info('VPN credentials fetched');
+
+  // Print db censoring privateKey
+  const dbClone = JSON.parse(JSON.stringify(db.getState()));
+  dbClone.keypair.privateKey = dbClone.keypair.privateKey.replace(/./g, '*');
+  logs.info(JSON.stringify(dbClone, null, 2 ));
+
   logAdminCredentials();
 }
