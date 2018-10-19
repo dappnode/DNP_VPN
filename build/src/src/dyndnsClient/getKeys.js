@@ -26,10 +26,10 @@ const db = require('../db');
 // dyndnsHost has to be stripped of http(s):// tag
 // process.env.DYNDNS_HOST should include said tag
 function getDyndnsHost() {
-    const {DYNDNS_HOST} = process.env;
-    return DYNDNS_HOST && DYNDNS_HOST.includes('://')
-        ? DYNDNS_HOST.split('://')[1]
-        : DYNDNS_HOST;
+    const {DYNDNS_DOMAIN} = process.env;
+    return DYNDNS_DOMAIN && DYNDNS_DOMAIN.includes('://')
+        ? DYNDNS_DOMAIN.split('://')[1]
+        : DYNDNS_DOMAIN;
 }
 
 
