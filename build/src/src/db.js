@@ -5,7 +5,15 @@ const FileSync = require('lowdb/adapters/FileSync');
 const dbPath = process.env.DB_PATH || 'db.json';
 const adapter = new FileSync(dbPath);
 const db = low(adapter);
-logs.info(`Starting lowdb at path ${dbPath}`);
+
+// Compute db size for debugging purposes
+let dbSize;
+try {
+    dbSize = JSON.stringify(db.getState() || {}).length;
+} catch (e) {
+    logs.warn(`Error computing dbSize: ${e.stack}`);
+}
+logs.info(`Starting lowdb at path ${dbPath}, size: ${dbSize} bytes`);
 
 /**
  * How to use:

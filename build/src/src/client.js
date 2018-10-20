@@ -49,6 +49,10 @@ async function start() {
     +'   realm: '+connection._options.realm);
   connection.open();
 
+  // init.sh
+  // 1. Create VPN's keypair if it doesn't exist yet
+  dyndnsClient.generateKeys();
+
   // fetchVpnParameters read the output files from the .sh scripts
   // and stores the values in the db
   logs.info('Loading VPN parameters... It may take a while');
@@ -79,6 +83,7 @@ async function start() {
   }, publicIpCheckInterval);
 
   logs.info('VPN credentials fetched: ');
+
   // Print db censoring privateKey
   const dbClone = JSON.parse(JSON.stringify(db.getState()));
   dbClone.keypair.privateKey = dbClone.keypair.privateKey.replace(/./g, '*');
