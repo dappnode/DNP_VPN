@@ -80,6 +80,7 @@ function updateIp() {
     })
     .then((domain) => {
         db.set('domain', domain).write();
+        db.set('registeredToDyndns', true).write();
     })
     .catch((err) => {
         logs.error(`httpGetRequest error: ${err.stack || err.message}`);

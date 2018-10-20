@@ -12,7 +12,7 @@ async function setStaticIp({staticIp}) {
     } else if (oldStaticIp && !staticIp) {
         message = `Disabled static IP`;
         // If the staticIp is being disabled but there is no keypair: register to dyndns
-        if (!db.get('keypair').value()) {
+        if (!db.get('registeredToDyndns').value()) {
             await dyndnsClient.updateIp();
             message += `, and registered to dyndns: ${db.get('domain').value()}`;
         }
