@@ -3,7 +3,6 @@ const {promisify} = require('util');
 const readFileAsync = promisify(fs.readFile);
 const db = require('../db');
 const logs = require('../logs.js')(module);
-const dyndnsClient = require('../dyndnsClient');
 
 const getUpnpStatus = require('./getUpnpStatus');
 const getExternalIpResolves = require('./getExternalIpResolves');
@@ -80,7 +79,7 @@ async function fetchVpnParameters() {
   //   db.set('keypair', newKeypair).write();
   //   db.set('domain', newKeypair.domain).write();
   if (!db.get('staticIp').value()) {
-    await dyndnsClient.getKeys();
+    await dbEntryToExist('keypair');
   }
 }
 
@@ -97,6 +96,13 @@ async function fileToExist(path, fallbackValue) {
   throw Error('Mandatory file '+path+' not found (after #' + maxAttempts + ' attempts)');
 }
 
+async function dbEntryToExist(key) {
+  for (let i = 0; i < maxAttempts; i++) {
+    if (db.get(key).value()) return db.get(key).value();
+    await pause(pauseTime);
+  }
+  throw Error(`Mandatory db entry "${key}" not found (after #${maxAttempts} attempts)`);
+}
 
 const fetchVpnParameter = (path, fallbackValue = false) =>
   fileToExist(path, fallbackValue)

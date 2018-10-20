@@ -23,7 +23,6 @@ Object.keys(paramsToWrite).forEach((paramName) => {
 process.env.DYNDNS_HOST = 'dyn.test.io';
 
 const fetchVpnParameters = require('../../src/fetchVpnParameters');
-const getKeys = require('../../src/dyndnsClient/getKeys');
 const logAdminCredentials = require('../../src/logAdminCredentials');
 
 chai.should();
@@ -50,7 +49,7 @@ describe('fetchVpnParameters test', function() {
 
   it('should call correctly write the params in the db', async () => {
     await fetchVpnParameters();
-    expect(db.getState()).to.deep.equal({
+    expect(db.getState()).to.deep.include({
       ip: 'fakeIp',
       psk: 'fakePsk',
       internalIp: 'fakeInternalIp',
@@ -63,8 +62,6 @@ describe('fetchVpnParameters test', function() {
       staticIp: '85.34.3.13',
       initialized: true,
     });
-    expect(db.getState().keypair).to.equal(undefined);
-    expect(db.getState().domain).to.equal(undefined);
   });
 
   it('should not refetch the staticIp from the installation file', async () => {
@@ -88,7 +85,7 @@ describe('fetchVpnParameters test', function() {
   it('should get a new keypair if there is no staticIp', async () => {
     db.set('staticIp', null).write();
     await fetchVpnParameters();
-    // Deep clone. Calling getKeys() will generate keys if there weren't
+    // Deep clone.
     const currentDb = JSON.parse(JSON.stringify(db.getState()));
     expect(currentDb).to.deep.equal({
       ip: 'fakeIp',
@@ -102,8 +99,8 @@ describe('fetchVpnParameters test', function() {
       upnpAvailable: true,
       staticIp: null,
       initialized: true,
-      keypair: getKeys(),
-      domain: getKeys().domain,
+      keypair: db.get('keypair').value(),
+      domain: db.get('keypair').value().domain,
     });
   });
 
@@ -113,7 +110,6 @@ describe('fetchVpnParameters test', function() {
       {name: 'SUPERadmin', password: 'MockPass2', ip: '172.33.10.1'},
     ];
     await credentialsFile.write(credentialsArray);
-    console.log(db.getState());
     const log = await logAdminCredentials();
     expect(log).to.include('.dyn.test.io');
   });

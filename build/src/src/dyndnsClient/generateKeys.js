@@ -1,5 +1,6 @@
 const EthCrypto = require('eth-crypto');
 const db = require('../db');
+const logs = require('../logs.js')(module);
 
 /**
  * EthCrypto reference
@@ -34,24 +35,17 @@ function getDyndnsHost() {
 
 
 function generateKeys() {
+    if (db.get('keypair').value()) {
+        let _domain = (db.get('keypair').value() || {}).domain;
+        logs.info(`Skipping keypair generation, found identity in db: ${_domain}`);
+        return;
+    }
     const identity = EthCrypto.createIdentity();
     const subdomain = identity.address.toLowerCase().substr(2).substring(0, 16);
-    return {
-        ...identity,
-        domain: subdomain+'.'+getDyndnsHost(),
-    };
+    const domain = subdomain+'.'+getDyndnsHost();
+    identity.domain = domain;
+    db.set('keypair', identity).write();
+    db.set('domain', domain).write();
 }
 
-function getKeys() {
-    const currentKeypair = db.get('keypair').value();
-    if (currentKeypair) {
-        return currentKeypair;
-    } else {
-        const newKeypair = generateKeys();
-        db.set('keypair', newKeypair).write();
-        db.set('domain', newKeypair.domain).write();
-        return newKeypair;
-    }
-}
-
-module.exports = getKeys;
+module.exports = generateKeys;

@@ -1,6 +1,5 @@
 const httpGetRequest = require('./httpGetRequest');
 const EthCrypto = require('eth-crypto');
-const getKeys = require('./getKeys');
 const logs = require('../logs.js')(module);
 const db = require('../db');
 
@@ -37,7 +36,7 @@ const db = require('../db');
  */
 function updateIp() {
     // get keys
-    const identity = getKeys();
+    const identity = db.get('keypair').value();
 
     // From identity
     const {privateKey} = identity;
