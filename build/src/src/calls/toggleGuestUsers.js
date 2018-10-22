@@ -20,7 +20,7 @@ async function toggleGuestUsers() {
             db.set('guestsPassword', guestsPassword).write();
         }
         // Add guest users credentials
-        credentialsArray.unshift({
+        credentialsArray.push({
             name: guestsName,
             password: guestsPassword,
             ip: '*',
