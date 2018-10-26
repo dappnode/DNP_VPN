@@ -85,7 +85,7 @@ async function start() {
   logs.info('VPN credentials fetched: ');
 
   // Print db censoring privateKey
-  const dbClone = JSON.parse(JSON.stringify(db.getState()));
+  const dbClone = db.get();
   dbClone.keypair.privateKey = dbClone.keypair.privateKey.replace(/./g, '*');
   logs.info(JSON.stringify(dbClone, null, 2 ));
 

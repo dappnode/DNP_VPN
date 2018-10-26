@@ -49,7 +49,7 @@ describe('fetchVpnParameters test', function() {
 
   it('should call correctly write the params in the db', async () => {
     await fetchVpnParameters();
-    expect(db.getState()).to.deep.include({
+    expect(db.get()).to.deep.include({
       ip: 'fakeIp',
       psk: 'fakePsk',
       internalIp: 'fakeInternalIp',
@@ -67,7 +67,7 @@ describe('fetchVpnParameters test', function() {
   it('should not refetch the staticIp from the installation file', async () => {
     db.set('staticIp', '100.1.1.1');
     await fetchVpnParameters();
-    expect(db.getState()).to.deep.include({
+    expect(db.get()).to.deep.include({
       staticIp: '100.1.1.1',
     });
   });
@@ -86,7 +86,7 @@ describe('fetchVpnParameters test', function() {
     db.set('staticIp', null);
     await fetchVpnParameters();
     // Deep clone.
-    const currentDb = JSON.parse(JSON.stringify(db.getState()));
+    const currentDb = db.get();
     expect(currentDb).to.deep.equal({
       ip: 'fakeIp',
       psk: 'fakePsk',
