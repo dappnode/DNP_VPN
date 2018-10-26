@@ -2,8 +2,8 @@ const db = require('../db');
 const dyndnsClient = require('../dyndnsClient');
 
 async function setStaticIp({staticIp}) {
-    const oldStaticIp = db.get('staticIp').value();
-    db.set('staticIp', staticIp).write();
+    const oldStaticIp = db.get('staticIp');
+    db.set('staticIp', staticIp);
 
     // Parse action to display a feedback message
     let message;
@@ -12,9 +12,9 @@ async function setStaticIp({staticIp}) {
     } else if (oldStaticIp && !staticIp) {
         message = `Disabled static IP`;
         // If the staticIp is being disabled but there is no keypair: register to dyndns
-        if (!db.get('registeredToDyndns').value()) {
+        if (!db.get('registeredToDyndns')) {
             await dyndnsClient.updateIp();
-            message += `, and registered to dyndns: ${db.get('domain').value()}`;
+            message += `, and registered to dyndns: ${db.get('domain')}`;
         }
     } else {
         message = `Updated static IP: ${staticIp}`;

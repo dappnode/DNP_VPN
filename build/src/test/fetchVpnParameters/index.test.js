@@ -65,7 +65,7 @@ describe('fetchVpnParameters test', function() {
   });
 
   it('should not refetch the staticIp from the installation file', async () => {
-    db.set('staticIp', '100.1.1.1').write();
+    db.set('staticIp', '100.1.1.1');
     await fetchVpnParameters();
     expect(db.getState()).to.deep.include({
       staticIp: '100.1.1.1',
@@ -83,7 +83,7 @@ describe('fetchVpnParameters test', function() {
   });
 
   it('should get a new keypair if there is no staticIp', async () => {
-    db.set('staticIp', null).write();
+    db.set('staticIp', null);
     await fetchVpnParameters();
     // Deep clone.
     const currentDb = JSON.parse(JSON.stringify(db.getState()));
@@ -99,8 +99,8 @@ describe('fetchVpnParameters test', function() {
       upnpAvailable: true,
       staticIp: null,
       initialized: true,
-      keypair: db.get('keypair').value(),
-      domain: db.get('keypair').value().domain,
+      keypair: db.get('keypair'),
+      domain: db.get('keypair').domain,
     });
   });
 

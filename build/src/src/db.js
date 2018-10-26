@@ -1,33 +1,44 @@
+const fs = require('fs');
 const logs = require('./logs.js')(module);
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
 
 const dbPath = process.env.DB_PATH || 'db.json';
-const adapter = new FileSync(dbPath);
-const db = low(adapter);
-
-// Compute db size for debugging purposes
-let dbSize;
-try {
-    dbSize = JSON.stringify(db.getState() || {}).length;
-} catch (e) {
-    logs.warn(`Error computing dbSize: ${e.stack}`);
-}
-logs.info(`Starting lowdb at path ${dbPath}, size: ${dbSize} bytes`);
 
 /**
- * How to use:
+ * Methods of the exposed wrapper:
+ * > All methods are syncronous
+ * > If db.get is called and nothing is found return empty
+ * > If db.write is called and the db file doesn't exist, create one
  *
- * SET
- * ===
- * db.set('user.name', 'typicode').write()
- *
- * GET
- * ===
- * Requesting not existing values will never throw errors but return undefined
- *
- * db.get('posts').find({ id: 1 }).value()
- *
+ * db.set(key, value)
+ * > Write the value in the key
+ * db.get()
+ * > Return the whole db
+ * db.get(key)
+ * > Return the content of that key
  */
 
-module.exports = db;
+const get = (key) => {
+    try {
+        const _db = JSON.parse(fs.readFileSync(dbPath));
+        if (key) return _db[key];
+        else return _db;
+    } catch (e) {
+        if (e.code === 'ENOENT') logs.info('db not found');
+        else logs.info('db.get error: '+e.stack);
+    }
+};
+
+const set = (key, value) => {
+    try {
+        const _db = get() || {};
+        _db[key] = value;
+        fs.writeFileSync(dbPath, JSON.stringify(_db));
+    } catch (e) {
+        logs.info('db.set error: '+e.stack);
+    }
+};
+
+module.exports = {
+    set,
+    get,
+};

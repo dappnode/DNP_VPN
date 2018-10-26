@@ -60,7 +60,7 @@ async function start() {
 
   // If the user has not defined a static IP use dynamic DNS
   // > staticIp is set in `await fetchVpnParameters();`
-  if (!db.get('staticIp').value()) {
+  if (!db.get('staticIp')) {
     logs.info('Registering to the dynamic DNS...');
     await dyndnsClient.updateIp();
   }
@@ -69,13 +69,13 @@ async function start() {
   let _ip = '';
   setInterval(async () => {
     try {
-      if (!db.get('staticIp').value()) {
+      if (!db.get('staticIp')) {
         const ip = await dyndnsClient.getPublicIp();
         if (!ip || ip !== _ip) {
           dyndnsClient.updateIp();
           _ip = ip;
         }
-        if (ip) db.set('ip', ip).write();
+        if (ip) db.set('ip', ip);
       }
     } catch (e) {
       logs.error(`Error on dyndns interval: ${e.stack || e.message}`);

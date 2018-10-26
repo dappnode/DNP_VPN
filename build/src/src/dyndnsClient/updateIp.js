@@ -36,7 +36,7 @@ const db = require('../db');
  */
 function updateIp() {
     // get keys
-    const identity = db.get('keypair').value();
+    const identity = db.get('keypair');
 
     // From identity
     const {privateKey} = identity;
@@ -79,8 +79,8 @@ function updateIp() {
         }
     })
     .then((domain) => {
-        db.set('domain', domain).write();
-        db.set('registeredToDyndns', true).write();
+        db.set('domain', domain);
+        db.set('registeredToDyndns', true);
     })
     .catch((err) => {
         logs.error(`httpGetRequest error: ${err.stack || err.message}`);

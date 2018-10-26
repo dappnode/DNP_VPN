@@ -62,9 +62,10 @@ function password(passwordLength) {
  * @return {String} otp link
  */
 function otp({user, pass}) {
+    const _db = db.get();
     const server = getServer();
-    const name = db.get('name').value();
-    const psk = db.get('psk').value();
+    const name = _db.name;
+    const psk = _db.psk;
 
     const otpCredentials = {
       server,

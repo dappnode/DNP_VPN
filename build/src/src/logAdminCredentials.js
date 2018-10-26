@@ -18,7 +18,7 @@ async function logAdminCredentials() {
 
   // Show credentials
   const server = getServer();
-  const psk = db.get('psk').value();
+  const psk = db.get('psk');
   const columns = [
     {
       field: 'VPN-Type',
@@ -49,10 +49,10 @@ ${adminOtp}
 ${columns.map((col) => col.field.padEnd(col.value.length)).join('  ')}
 ${columns.map((col) => col.value).join('  ')}`;
 
-  const openPorts = db.get('openPorts').value();
-  const upnpAvailable = db.get('upnpAvailable').value();
-  const externalIpResolves = db.get('externalIpResolves').value();
-  const internalIp = db.get('internalIp').value();
+  const openPorts = db.get('openPorts');
+  const upnpAvailable = db.get('upnpAvailable');
+  const externalIpResolves = db.get('externalIpResolves');
+  const internalIp = db.get('internalIp');
   msg += parseUpnpStatus(openPorts, upnpAvailable);
   msg += parsePublicIpStatus(externalIpResolves, internalIp);
   /* eslint-enable max-len */

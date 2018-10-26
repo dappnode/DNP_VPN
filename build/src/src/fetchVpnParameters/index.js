@@ -40,12 +40,12 @@ async function fetchVpnParameters() {
     ? true : false;
   const name = await fetchVpnParameter(serverNamePath, 'DAppNode_server');
 
-  db.set('ip', ip).write();
-  db.set('psk', psk).write();
-  db.set('internalIp', internalIp).write();
-  db.set('externalIp', externalIp).write();
-  db.set('publicIpResolved', publicIpResolved).write();
-  db.set('name', name).write();
+  db.set('ip', ip);
+  db.set('psk', psk);
+  db.set('internalIp', internalIp);
+  db.set('externalIp', externalIp);
+  db.set('publicIpResolved', publicIpResolved);
+  db.set('name', name);
 
 
   // Step 2: Process the loaded variables
@@ -55,20 +55,20 @@ async function fetchVpnParameters() {
   const {openPorts, upnpAvailable} = getUpnpStatus(ip, externalIp, internalIp);
   // Get the static ip possibly set during the installation
 
-  db.set('externalIpResolves', externalIpResolves).write();
-  db.set('openPorts', openPorts).write();
-  db.set('upnpAvailable', upnpAvailable).write();
+  db.set('externalIpResolves', externalIpResolves);
+  db.set('openPorts', openPorts);
+  db.set('upnpAvailable', upnpAvailable);
 
 
   // Step 3: Get ip (maybe) set during the installation
   // ==================================================
   // > Only write the IP if it comes from the installation
-  if (!db.get('initialized').value()) {
+  if (!db.get('initialized')) {
     const staticIp = await getInstallationStaticIp();
-    db.set('initialized', true).write();
+    db.set('initialized', true);
     if (staticIp) {
       logs.info(`Static IP was set during installation: ${staticIp}`);
-      db.set('staticIp', staticIp).write();
+      db.set('staticIp', staticIp);
     } else {
       logs.info(`Static IP was NOT set during installation`);
     }
@@ -76,9 +76,9 @@ async function fetchVpnParameters() {
 
   // Step 4: Get the keys to register to the dyndns
   // > The keys will be automatically stored in the db
-  //   db.set('keypair', newKeypair).write();
-  //   db.set('domain', newKeypair.domain).write();
-  if (!db.get('staticIp').value()) {
+  //   db.set('keypair', newKeypair);
+  //   db.set('domain', newKeypair.domain);
+  if (!db.get('staticIp')) {
     await dbEntryToExist('keypair');
   }
 }
@@ -98,7 +98,7 @@ async function fileToExist(path, fallbackValue) {
 
 async function dbEntryToExist(key) {
   for (let i = 0; i < maxAttempts; i++) {
-    if (db.get(key).value()) return db.get(key).value();
+    if (db.get(key)) return db.get(key);
     await pause(pauseTime);
   }
   throw Error(`Mandatory db entry "${key}" not found (after #${maxAttempts} attempts)`);

@@ -1,13 +1,14 @@
 const db = require('../db');
 
 function getServer() {
+    const _db = db.get();
     // Server can be
     // staticIp
     // domain
     // ip
-    const staticIp = db.get('staticIp').value();
-    const domain = db.get('domain').value();
-    const ip = db.get('ip').value();
+    const staticIp = _db.staticIp;
+    const domain = _db.domain;
+    const ip = _db.ip;
     return staticIp || domain || ip;
 }
 
