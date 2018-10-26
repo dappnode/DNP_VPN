@@ -98,7 +98,8 @@ async function fileToExist(path, fallbackValue) {
 
 async function dbEntryToExist(key) {
   for (let i = 0; i < maxAttempts; i++) {
-    if (db.get(key)) return db.get(key);
+    const value = db.get(key);
+    if (value) return value;
     await pause(pauseTime);
   }
   throw Error(`Mandatory db entry "${key}" not found (after #${maxAttempts} attempts)`);
