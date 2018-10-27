@@ -29,6 +29,7 @@ module.exports = {
     exists,
     print,
     write,
+    generate: generateLoginMsg,
     path: loginMsgPath,
 };
 

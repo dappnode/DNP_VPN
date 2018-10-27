@@ -30,8 +30,8 @@ Object.keys(paramsToWrite).forEach((paramName) => {
 });
 process.env.DYNDNS_HOST = 'dyn.test.io';
 
+const loginMsg = require('../../src/loginMsg');
 const fetchVpnParameters = require('../../src/fetchVpnParameters');
-const logAdminCredentials = require('../../src/logAdminCredentials');
 
 chai.should();
 
@@ -110,7 +110,7 @@ describe('fetchVpnParameters test', function() {
       {name: 'SUPERadmin', password: 'MockPass2', ip: '172.33.10.1'},
     ];
     await credentialsFile.write(credentialsArray);
-    const log = await logAdminCredentials();
+    const log = await loginMsg.generate();
     expect(log).to.include('100.1.1.1');
   });
 
@@ -121,7 +121,7 @@ describe('fetchVpnParameters test', function() {
       {name: 'SUPERadmin', password: 'MockPass2', ip: '172.33.10.1'},
     ];
     await credentialsFile.write(credentialsArray);
-    const log = await logAdminCredentials();
+    const log = await loginMsg.generate();
     expect(log).to.include('.dyn.test.io');
   });
 
