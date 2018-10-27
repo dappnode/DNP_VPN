@@ -5,6 +5,8 @@ const db = require('../db');
 const getServer = require('../utils/getServer');
 
 async function generateLoginMsg() {
+  let msg = '';
+
   const deviceList = await credentialsFile.fetch();
   const adminDevice = deviceList[0];
   const adminOtp = await generate.otp({
@@ -13,8 +15,7 @@ async function generateLoginMsg() {
   });
 
   // Show the QR code
-  qrcode.setErrorLevel('S');
-  qrcode.generate(adminOtp);
+  msg += await getQrCodeString(adminOtp);
 
   // Show credentials
   const server = await getServer();
@@ -42,7 +43,7 @@ async function generateLoginMsg() {
     },
   ];
   /* eslint-disable max-len */
-  let msg = `
+  msg += `
 To connect to your DAppNode scan the QR above, copy/paste link below into your browser or use VPN credentials:
 ${adminOtp}
 
@@ -59,6 +60,13 @@ ${columns.map((col) => col.value).join('  ')}`;
 
   // return msg for testing
   return msg;
+}
+
+function getQrCodeString(data) {
+  return new Promise((resolve) => {
+    qrcode.setErrorLevel('S');
+    qrcode.generate(data, resolve);
+  });
 }
 
 function parseUpnpStatus(openPorts, upnpAvailable) {
