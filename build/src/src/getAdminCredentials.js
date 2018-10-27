@@ -1,29 +1,27 @@
 #!/usr/bin/env node
 
 // import dependencies
-const logAdminCredentials = require('./logAdminCredentials');
-const fetchVpnParameters = require('./fetchVpnParameters');
+const loginMsg = require('./loginMsg');
 const logs = require('./logs.js')(module);
-const db = require('./db');
+const pause = require('../utils/pause');
 
+const maxAttempts = 3 * 60; // 3 min
+const pauseTime = 1000;
 
-start();
-
-
-async function start() {
-  // Trigger a parameters load. If parameters are preloaded the execution will be fast
-  // Otherwise it will wait for parameter files to exist.
-  logs.info('\nLoading VPN parameters... '
+logs.info('\nLoading VPN parameters... '
     +'It may take a while, press CTRL + C to skip this process \n');
-  await fetchVpnParameters();
-  logs.info('VPN credentials fetched');
 
-  // Print db censoring privateKey
-  const _db = await db.get();
-  if (_db && _db.privateKey) {
-    _db.privateKey = _db.privateKey.replace(/./g, '*');
+// Wait for the loginMsg to exist
+loginMsgToExist().then(() => {
+  loginMsg.print();
+}).catch((e) => {
+  logs.error(e.message);
+});
+
+async function loginMsgToExist() {
+  for (let i = 0; i < maxAttempts; i++) {
+    if (loginMsg.exists()) return;
+    await pause(pauseTime);
   }
-  logs.info(JSON.stringify(_db, null, 2 ));
-
-  logAdminCredentials();
+  throw Error(`loginMsg file not found at ${loginMsg.path} (after #${maxAttempts} attempts)`);
 }

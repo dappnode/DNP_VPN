@@ -3,6 +3,7 @@ const {promisify} = require('util');
 const readFileAsync = promisify(fs.readFile);
 const db = require('../db');
 const logs = require('../logs.js')(module);
+const pause = require('../utils/pause');
 
 const getUpnpStatus = require('./getUpnpStatus');
 const getExternalIpResolves = require('./getExternalIpResolves');
@@ -107,10 +108,5 @@ const fetchVpnParameter = (path, fallbackValue = false) =>
   fileToExist(path, fallbackValue)
   .then(() => readFileAsync(path, 'utf-8'))
   .then((data) => String(data).trim());
-
-// /////////////////
-// Helper functions
-
-const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 module.exports = fetchVpnParameters;

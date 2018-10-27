@@ -4,8 +4,8 @@ const db = require('./db');
 
 const dyndnsClient = require('./dyndnsClient');
 const calls = require('./calls');
-const logAdminCredentials = require('./logAdminCredentials');
 const fetchVpnParameters = require('./fetchVpnParameters');
+const loginMsg = require('./loginMsg');
 
 const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws';
 const REALM = 'dappnode_admin';
@@ -82,8 +82,6 @@ async function start() {
     }
   }, publicIpCheckInterval);
 
-  logs.info('VPN credentials fetched: ');
-
   // Print db censoring privateKey
   const _db = await db.get();
   if (_db && _db.privateKey) {
@@ -91,7 +89,16 @@ async function start() {
   }
   logs.info(JSON.stringify(_db, null, 2 ));
 
-  logAdminCredentials();
+  // ///////////////////////
+  // Finished initialization
+  // ///////////////////////
+  // ///////////////////////
+  //
+  // The following code generates a text file with the message to be printed out
+  // for the user to connect to DAppNode. It contains the information to print and
+  // also serves as flag to signal the end of the initialization
+  await loginMsg.write();
+  await loginMsg.print();
 }
 
 
