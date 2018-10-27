@@ -1,27 +1,29 @@
 #!/usr/bin/env node
 
-// import dependencies
-const loginMsg = require('./loginMsg');
-const logs = require('./logs.js')(module);
-const pause = require('./utils/pause');
+/* eslint-disable no-console */ /* eslint-disable max-len */
+// This module must NOT have any non-native dependencies
+const fs = require('fs');
+
+const loginMsgPath = process.env.LOGIN_MSG_PATH || './loginMsgFile.txt';
 
 const maxAttempts = 3 * 60; // 3 min
 const pauseTime = 1000;
 
-logs.info('\nLoading VPN parameters... '
+console.log('\nLoading VPN parameters... '
     +'It may take a while, press CTRL + C to skip this process \n');
 
 // Wait for the loginMsg to exist
-loginMsgToExist().then(() => {
-  loginMsg.print();
-}).catch((e) => {
-  logs.error(e.message);
-});
+check();
 
-async function loginMsgToExist() {
-  for (let i = 0; i < maxAttempts; i++) {
-    if (loginMsg.exists()) return;
-    await pause(pauseTime);
-  }
-  throw Error(`loginMsg file not found at ${loginMsg.path} (after #${maxAttempts} attempts)`);
+let count = 0;
+function check() {
+  fs.readFile(loginMsgPath, 'utf8', (err, loginMsg) => {
+    if (err) {
+      if (err.code !== 'ENOENT') console.error(`Error reading loginMsgFile ${err.message}`);
+      if (count++ > maxAttempts) console.error(`loginMsgFile missing after ${maxAttempts} attempts`);
+      else setTimeout(check, pauseTime);
+    } else {
+      console.log(loginMsg);
+    }
+  });
 }

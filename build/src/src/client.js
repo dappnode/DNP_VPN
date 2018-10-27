@@ -97,8 +97,7 @@ async function start() {
   // The following code generates a text file with the message to be printed out
   // for the user to connect to DAppNode. It contains the information to print and
   // also serves as flag to signal the end of the initialization
-  await loginMsg.write();
-  await loginMsg.print();
+  logs.info(await loginMsg.write());
 }
 
 

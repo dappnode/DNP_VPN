@@ -6,30 +6,15 @@ const generateLoginMsg = require('./generateLoginMsg');
 
 const loginMsgPath = process.env.LOGIN_MSG_PATH || './loginMsgFile.txt';
 
-/**
- * @return {Bool} returns true if file exists, false if doesn't
- */
-const exists = () => new Promise((resolve) => {
-    fs.access(loginMsgPath, fs.constants.F_OK, (err) => {
-        resolve(!err);
-    });
-});
-
-const print = async () => {
-    const loginMsg = await promisify(fs.readFile, 'utf8')(loginMsgPath);
-    console.log(loginMsg);
-};
-
 const write = async () => {
     const loginMsg = await generateLoginMsg();
     await promisify(fs.writeFile)(loginMsgPath, loginMsg, 'utf8');
+    return loginMsg; // return for testing
 };
 
 module.exports = {
-    exists,
-    print,
     write,
     generate: generateLoginMsg,
-    path: loginMsgPath,
+    path: loginMsgPath, // necessary for cleaning in testing
 };
 
