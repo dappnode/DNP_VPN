@@ -21,7 +21,6 @@
     "file-system": "^2.2.2",
     "generate-password": "^1.4.0",
     "ip-regex": "^3.0.0",
-    "level": "^4.0.0",
     "lowdb": "^1.0.0",
     "node-fetch": "^2.1.2",
     "qrcode-terminal": "^0.12.0",

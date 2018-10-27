@@ -5,7 +5,7 @@ const db = require('../db');
 const getServer = require('../utils/getServer');
 
 async function generateLoginMsg() {
-  let msg = '';
+  let msg = '\n\n';
 
   const deviceList = await credentialsFile.fetch();
   const adminDevice = deviceList[0];
@@ -48,7 +48,7 @@ To connect to your DAppNode scan the QR above, copy/paste link below into your b
 ${adminOtp}
 
 ${columns.map((col) => col.field.padEnd(col.value.length)).join('  ')}
-${columns.map((col) => col.value).join('  ')}`;
+${columns.map((col) => col.value).join('  ')}    `; // leave trailing spaces
 
   const openPorts = await db.get('openPorts');
   const upnpAvailable = await db.get('upnpAvailable');
