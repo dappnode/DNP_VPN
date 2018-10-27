@@ -1,4 +1,4 @@
-FROM node:alpine as build
+FROM node:8.12.0-alpine as build
 
 RUN apk add --update --no-cache \
     build-base \
@@ -17,7 +17,7 @@ RUN npm install
 # Run the copy in two steps to cache the npm install
 COPY src .
 
-FROM alpine
+FROM alpine:3.8
 
 WORKDIR /usr/src/app
 
