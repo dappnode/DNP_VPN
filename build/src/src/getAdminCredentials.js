@@ -3,7 +3,7 @@
 // import dependencies
 const loginMsg = require('./loginMsg');
 const logs = require('./logs.js')(module);
-const pause = require('../utils/pause');
+const pause = require('./utils/pause');
 
 const maxAttempts = 3 * 60; // 3 min
 const pauseTime = 1000;

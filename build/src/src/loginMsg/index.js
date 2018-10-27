@@ -16,13 +16,13 @@ const exists = () => new Promise((resolve) => {
 });
 
 const print = async () => {
-    const loginMsg = await promisify(fs.readFile)(loginMsgPath);
+    const loginMsg = await promisify(fs.readFile, 'utf8')(loginMsgPath);
     console.log(loginMsg);
 };
 
 const write = async () => {
     const loginMsg = await generateLoginMsg();
-    await promisify(fs.writeFile)(loginMsgPath, loginMsg);
+    await promisify(fs.writeFile)(loginMsgPath, loginMsg, 'utf8');
 };
 
 module.exports = {
