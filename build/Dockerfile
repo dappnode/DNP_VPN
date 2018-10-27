@@ -84,7 +84,7 @@ RUN chmod 755 check_upnp.sh
 
 RUN mkdir -p /usr/src/app/secrets
 # envs for init.sh -> node communication
-ENV DB_PATH /usr/src/app/secrets/db.json
+ENV DB_PATH /usr/src/app/secrets/vpndb
 ENV INSTALLATION_STATIC_IP /usr/src/app/config/static_ip
 ENV KEYPAIR_PATH /usr/src/app/secrets/keypair
 ENV CREDENTIALS_PATH /usr/src/app/secrets/chap-secrets

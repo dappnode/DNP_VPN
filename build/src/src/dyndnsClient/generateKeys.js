@@ -34,9 +34,10 @@ function getDyndnsHost() {
 }
 
 
-function generateKeys() {
-    if (db.get('keypair')) {
-        let _domain = (db.get('keypair') || {}).domain;
+async function generateKeys() {
+    const _keypair = await db.get('keypair');
+    if (_keypair) {
+        let _domain = (_keypair || {}).domain;
         logs.info(`Skipping keypair generation, found identity in db: ${_domain}`);
         return;
     }
@@ -44,8 +45,8 @@ function generateKeys() {
     const subdomain = identity.address.toLowerCase().substr(2).substring(0, 16);
     const domain = subdomain+'.'+getDyndnsHost();
     identity.domain = domain;
-    db.set('keypair', identity);
-    db.set('domain', domain);
+    await db.set('keypair', identity);
+    await db.set('domain', domain);
 }
 
 module.exports = generateKeys;

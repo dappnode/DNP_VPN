@@ -7,7 +7,7 @@ const getServer = require('./utils/getServer');
 async function logAdminCredentials() {
   const deviceList = await credentialsFile.fetch();
   const adminDevice = deviceList[0];
-  const adminOtp = generate.otp({
+  const adminOtp = await generate.otp({
     user: adminDevice.name,
     pass: adminDevice.password,
   });
@@ -17,8 +17,8 @@ async function logAdminCredentials() {
   qrcode.generate(adminOtp);
 
   // Show credentials
-  const server = getServer();
-  const psk = db.get('psk');
+  const server = await getServer();
+  const psk = await db.get('psk');
   const columns = [
     {
       field: 'VPN-Type',
@@ -49,10 +49,10 @@ ${adminOtp}
 ${columns.map((col) => col.field.padEnd(col.value.length)).join('  ')}
 ${columns.map((col) => col.value).join('  ')}`;
 
-  const openPorts = db.get('openPorts');
-  const upnpAvailable = db.get('upnpAvailable');
-  const externalIpResolves = db.get('externalIpResolves');
-  const internalIp = db.get('internalIp');
+  const openPorts = await db.get('openPorts');
+  const upnpAvailable = await db.get('upnpAvailable');
+  const externalIpResolves = await db.get('externalIpResolves');
+  const internalIp = await db.get('internalIp');
   msg += parseUpnpStatus(openPorts, upnpAvailable);
   msg += parsePublicIpStatus(externalIpResolves, internalIp);
   /* eslint-enable max-len */

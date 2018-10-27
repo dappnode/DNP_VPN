@@ -25,8 +25,8 @@ describe('generateKeys', function() {
     });
 
     it('should return an identity object', async () => {
-      generateKeys();
-      _res = Object.assign({}, db.get('keypair'));
+      await generateKeys();
+      _res = Object.assign({}, await db.get('keypair'));
       expect(_res).to.be.an('Object');
       expect(_res).to.have.property('address');
       expect(_res).to.have.property('domain');
@@ -42,8 +42,8 @@ describe('generateKeys', function() {
     });
 
     it('should return the same identity the second time ', async () => {
-      generateKeys();
-      expect(db.get('keypair')).to.deep.equal(_res);
+      await generateKeys();
+      expect(await db.get('keypair')).to.deep.equal(_res);
     });
 
     after(async () => {

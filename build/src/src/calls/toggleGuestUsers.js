@@ -14,10 +14,10 @@ async function toggleGuestUsers() {
         credentialsArray = credentialsArray.filter((u) => u.name !== guestsName);
     } else {
         // Use the previous password or create a new one
-        let guestsPassword = db.get('guestsPassword');
+        let guestsPassword = await db.get('guestsPassword');
         if (!guestsPassword) {
             guestsPassword = generate.password(vpnPasswordLength);
-            db.set('guestsPassword', guestsPassword);
+            await db.set('guestsPassword', guestsPassword);
         }
         // Add guest users credentials
         credentialsArray.push({

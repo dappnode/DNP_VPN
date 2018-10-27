@@ -51,7 +51,7 @@ async function start() {
 
   // init.sh
   // 1. Create VPN's keypair if it doesn't exist yet
-  dyndnsClient.generateKeys();
+  await dyndnsClient.generateKeys();
 
   // fetchVpnParameters read the output files from the .sh scripts
   // and stores the values in the db
@@ -60,7 +60,7 @@ async function start() {
 
   // If the user has not defined a static IP use dynamic DNS
   // > staticIp is set in `await fetchVpnParameters();`
-  if (!db.get('staticIp')) {
+  if (!await db.get('staticIp')) {
     logs.info('Registering to the dynamic DNS...');
     await dyndnsClient.updateIp();
   }
@@ -69,13 +69,13 @@ async function start() {
   let _ip = '';
   setInterval(async () => {
     try {
-      if (!db.get('staticIp')) {
+      if (!await db.get('staticIp')) {
         const ip = await dyndnsClient.getPublicIp();
         if (!ip || ip !== _ip) {
           dyndnsClient.updateIp();
           _ip = ip;
         }
-        if (ip) db.set('ip', ip);
+        if (ip) await db.set('ip', ip);
       }
     } catch (e) {
       logs.error(`Error on dyndns interval: ${e.stack || e.message}`);
@@ -85,7 +85,7 @@ async function start() {
   logs.info('VPN credentials fetched: ');
 
   // Print db censoring privateKey
-  const _db = db.get();
+  const _db = await db.get();
   if (_db && _db.keypair && _db.keypair.privateKey) {
     _db.keypair.privateKey = _db.keypair.privateKey.replace(/./g, '*');
   }

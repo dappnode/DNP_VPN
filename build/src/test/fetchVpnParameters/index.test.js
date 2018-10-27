@@ -49,7 +49,7 @@ describe('fetchVpnParameters test', function() {
 
   it('should call correctly write the params in the db', async () => {
     await fetchVpnParameters();
-    expect(db.get()).to.deep.include({
+    expect(await db.get()).to.deep.include({
       ip: 'fakeIp',
       psk: 'fakePsk',
       internalIp: 'fakeInternalIp',
@@ -65,9 +65,9 @@ describe('fetchVpnParameters test', function() {
   });
 
   it('should not refetch the staticIp from the installation file', async () => {
-    db.set('staticIp', '100.1.1.1');
+    await db.set('staticIp', '100.1.1.1');
     await fetchVpnParameters();
-    expect(db.get()).to.deep.include({
+    expect(await db.get()).to.deep.include({
       staticIp: '100.1.1.1',
     });
   });
@@ -83,10 +83,10 @@ describe('fetchVpnParameters test', function() {
   });
 
   it('should get a new keypair if there is no staticIp', async () => {
-    db.set('staticIp', null);
+    await db.set('staticIp', null);
     await fetchVpnParameters();
     // Deep clone.
-    const currentDb = db.get();
+    const currentDb = await db.get();
     expect(currentDb).to.deep.equal({
       ip: 'fakeIp',
       psk: 'fakePsk',
@@ -99,8 +99,8 @@ describe('fetchVpnParameters test', function() {
       upnpAvailable: true,
       staticIp: null,
       initialized: true,
-      keypair: db.get('keypair'),
-      domain: db.get('keypair').domain,
+      keypair: await db.get('keypair'),
+      domain: await db.get('keypair').domain,
     });
   });
 

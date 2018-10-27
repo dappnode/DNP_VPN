@@ -34,9 +34,9 @@ const db = require('../db');
  * Example: 1234abcd1234acbd.dyndns.dappnode.io
  *
  */
-function updateIp() {
+async function updateIp() {
     // get keys
-    const identity = db.get('keypair');
+    const identity = await db.get('keypair');
 
     // From identity
     const {privateKey} = identity;
@@ -59,9 +59,8 @@ function updateIp() {
     const dyndnsHost = process.env.DYNDNS_HOST;
     const url = `${dyndnsHost}/?${parameters.join('&')}`;
 
-    return httpGetRequest(url, {format: 'json'})
-    .then((res) => {
-        const data = res.data || {};
+    try {
+        const res = await httpGetRequest(url, {format: 'json'});
         // Deal with the answer
         // Sample res:
         // res.data = {
@@ -70,21 +69,19 @@ function updateIp() {
         //     'message': 'Your dynamic domain 1234abcd1234acbd.dyndns.dappnode.io
         //          has been updated to 63.11.22.164',
         // };
+        const data = res.data || {};
         if (res.code === 200) {
             logs.info(`dyndns client success: ${data.message}`);
+            await db.set('domain', data.domain);
+            await db.set('registeredToDyndns', true);
             return data.domain;
         } else {
             const errorMsg = data.message || JSON.stringify(data);
             logs.error(`dyndns client error code ${res.code}: ${errorMsg}`);
         }
-    })
-    .then((domain) => {
-        db.set('domain', domain);
-        db.set('registeredToDyndns', true);
-    })
-    .catch((err) => {
-        logs.error(`httpGetRequest error: ${err.stack || err.message}`);
-    });
+    } catch (e) {
+        logs.error(`httpGetRequest error: ${e.stack || e.message}`);
+    }
 }
 
 module.exports = updateIp;

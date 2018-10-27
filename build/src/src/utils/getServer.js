@@ -1,14 +1,13 @@
 const db = require('../db');
 
-function getServer() {
-    const _db = db.get();
+async function getServer() {
     // Server can be
     // staticIp
     // domain
     // ip
-    const staticIp = _db.staticIp;
-    const domain = _db.domain;
-    const ip = _db.ip;
+    const staticIp = await db.get('staticIp');
+    const domain = await db.get('domain');
+    const ip = await db.get('ip');
     return staticIp || domain || ip;
 }
 

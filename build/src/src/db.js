@@ -1,41 +1,45 @@
-const fs = require('fs');
-const logs = require('./logs.js')(module);
+const level = require('level');
 
-const dbPath = process.env.DB_PATH || 'db.json';
+const dbPath = process.env.DB_PATH || './vpndb';
+
+// 1) Create our database, supply location and options.
+//    This will create or open the underlying LevelDB store.
+const db = level(dbPath);
 
 /**
  * Methods of the exposed wrapper:
- * > All methods are syncronous
+ * > All methods are ASYNCronous
  * > If db.get is called and nothing is found return empty
  * > If db.write is called and the db file doesn't exist, create one
  *
- * db.set(key, value)
+ * await db.set(key, value)
  * > Write the value in the key
- * db.get()
+ * await db.get()
  * > Return the whole db
- * db.get(key)
+ * await db.get(key)
  * > Return the content of that key
  */
 
 const get = (key) => {
-    try {
-        const _db = JSON.parse(fs.readFileSync(dbPath));
-        if (key) return _db[key];
-        else return _db;
-    } catch (e) {
-        if (e.code === 'ENOENT') logs.info('db not found');
-        else logs.info('db.get error: '+e.stack);
+    if (key) {
+        return db.get(key).catch((err) => {
+            // handle a 'NotFoundError' by returning null
+            if (err.notFound) return;
+            else throw err;
+        });
+    } else {
+        return new Promise((resolve, reject) => {
+            const _db = {};
+            db.createReadStream()
+                .on('data', (data) => _db[data.key] = data.value)
+                .on('error', reject)
+                .on('end', () => resolve(_db));
+        });
     }
 };
 
 const set = (key, value) => {
-    try {
-        const _db = get() || {};
-        _db[key] = value;
-        fs.writeFileSync(dbPath, JSON.stringify(_db));
-    } catch (e) {
-        logs.info('db.set error: '+e.stack);
-    }
+    return db.put(key, value);
 };
 
 module.exports = {
