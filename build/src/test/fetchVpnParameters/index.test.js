@@ -3,6 +3,14 @@ const expect = require('chai').expect;
 const fs = require('fs');
 const db = require('../../src/db');
 
+/* eslint-disable */
+console.big = (log) => {
+  console.log('\n\n\n\n\n\n\n');
+  console.log(log);
+  console.log('\n\n\n\n\n\n\n');
+};
+/* eslint-enable */
+
 
 const paramsToWrite = {
   staticIp: {data: '85.34.3.13', envName: 'INSTALLATION_STATIC_IP'},
@@ -49,27 +57,51 @@ describe('fetchVpnParameters test', function() {
 
   it('should call correctly write the params in the db', async () => {
     await fetchVpnParameters();
-    expect(await db.get()).to.deep.include({
-      ip: 'fakeIp',
-      psk: 'fakePsk',
-      internalIp: 'fakeInternalIp',
-      externalIp: 'fakeExternalIp',
+
+    // params generated from the params to write
+    const params = {
+      // Params read from files
+      staticIp: paramsToWrite.staticIp.data,
+      ip: paramsToWrite.ip.data,
+      psk: paramsToWrite.psk.data,
+      name: paramsToWrite.name.data,
+      internalIp: paramsToWrite.internalIp.data,
+      externalIp: paramsToWrite.externalIp.data,
       publicIpResolved: true,
-      name: 'fakeName',
+      // Params generated from previous params
       externalIpResolves: true,
       openPorts: true,
       upnpAvailable: true,
-      staticIp: '85.34.3.13',
       initialized: true,
-    });
+    };
+    for (const key of (Object.keys(params))) {
+      expect(await db.get(key)).to.equal(String(params[key]), `Wrong ${key}`);
+    }
+    /**
+     * Sample db:
+     *
+     * { address: '0x19aBF633f7cba5D057c23...',
+     *   domain: '19abf633f7cba5d0.dyn.test.io',
+     *   externalIp: 'fakeExternalIp',
+     *   externalIpResolves: 'true',
+     *   initialized: 'true',
+     *   internalIp: 'fakeInternalIp',
+     *   ip: 'fakeIp',
+     *   name: 'fakeName',
+     *   openPorts: 'true',
+     *   privateKey: '0x591c648c5d23...',
+     *   psk: 'fakePsk',
+     *   publicIpResolved: 'true',
+     *   publicKey: 'e3b4f8fecbc7ca9fd79...',
+     *   staticIp: '85.34.3.13',
+     *   upnpAvailable: 'true' }
+     */
   });
 
   it('should not refetch the staticIp from the installation file', async () => {
     await db.set('staticIp', '100.1.1.1');
     await fetchVpnParameters();
-    expect(await db.get()).to.deep.include({
-      staticIp: '100.1.1.1',
-    });
+    expect(await db.get('staticIp')).to.equal('100.1.1.1');
   });
 
   it('should call log adminCredentials, and contain the static IP', async () => {
@@ -82,29 +114,8 @@ describe('fetchVpnParameters test', function() {
     expect(log).to.include('100.1.1.1');
   });
 
-  it('should get a new keypair if there is no staticIp', async () => {
-    await db.set('staticIp', null);
-    await fetchVpnParameters();
-    // Deep clone.
-    const currentDb = await db.get();
-    expect(currentDb).to.deep.equal({
-      ip: 'fakeIp',
-      psk: 'fakePsk',
-      internalIp: 'fakeInternalIp',
-      externalIp: 'fakeExternalIp',
-      publicIpResolved: true,
-      name: 'fakeName',
-      externalIpResolves: true,
-      openPorts: true,
-      upnpAvailable: true,
-      staticIp: null,
-      initialized: true,
-      keypair: await db.get('keypair'),
-      domain: await db.get('keypair').domain,
-    });
-  });
-
   it('should call log adminCredentials, and contain the dyndns domain', async () => {
+    await db.set('staticIp', null);
     const credentialsFile = require('../../src/utils/credentialsFile');
     const credentialsArray = [
       {name: 'SUPERadmin', password: 'MockPass2', ip: '172.33.10.1'},

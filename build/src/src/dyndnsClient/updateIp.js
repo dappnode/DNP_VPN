@@ -35,11 +35,8 @@ const db = require('../db');
  *
  */
 async function updateIp() {
-    // get keys
-    const identity = await db.get('keypair');
-
-    // From identity
-    const {privateKey} = identity;
+    // get private key
+    const privateKey = await db.get('privateKey');
 
     // Prepare message
     const timestamp = Math.floor(new Date() / 1000);

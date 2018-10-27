@@ -20,8 +20,8 @@ async function start() {
 
   // Print db censoring privateKey
   const _db = await db.get();
-  if (_db && _db.keypair && _db.keypair.privateKey) {
-    _db.keypair.privateKey = _db.keypair.privateKey.replace(/./g, '*');
+  if (_db && _db.privateKey) {
+    _db.privateKey = _db.privateKey.replace(/./g, '*');
   }
   logs.info(JSON.stringify(_db, null, 2 ));
 

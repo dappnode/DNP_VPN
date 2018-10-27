@@ -50,7 +50,7 @@ async function start() {
   connection.open();
 
   // init.sh
-  // 1. Create VPN's keypair if it doesn't exist yet
+  // 1. Create VPN's address + publicKey + privateKey if it doesn't exist yet
   await dyndnsClient.generateKeys();
 
   // fetchVpnParameters read the output files from the .sh scripts
@@ -86,8 +86,8 @@ async function start() {
 
   // Print db censoring privateKey
   const _db = await db.get();
-  if (_db && _db.keypair && _db.keypair.privateKey) {
-    _db.keypair.privateKey = _db.keypair.privateKey.replace(/./g, '*');
+  if (_db && _db.privateKey) {
+    _db.privateKey = _db.privateKey.replace(/./g, '*');
   }
   logs.info(JSON.stringify(_db, null, 2 ));
 

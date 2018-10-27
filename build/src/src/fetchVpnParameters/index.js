@@ -76,10 +76,8 @@ async function fetchVpnParameters() {
 
   // Step 4: Get the keys to register to the dyndns
   // > The keys will be automatically stored in the db
-  //   await db.set('keypair', newKeypair);
-  //   await db.set('domain', newKeypair.domain);
   if (!await db.get('staticIp')) {
-    await dbEntryToExist('keypair');
+    await dbEntryToExist('privateKey');
   }
 }
 
