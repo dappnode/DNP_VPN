@@ -3,6 +3,7 @@ build/src/node_modules/
 build/src/mockFiles/
 build/src/db.json
 build/src/vpndb/
+build/src/vpndb.json
 .vscode
 uploader
 .gitignore

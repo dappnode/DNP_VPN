@@ -1,10 +1,11 @@
-const level = require('level');
+const low = require('lowdb');
+const FileSync = require('lowdb/adapters/FileSync');
 
-const dbPath = process.env.DB_PATH || './vpndb';
+const dbPath = process.env.DB_PATH || './vpndb.json';
 
-// 1) Create our database, supply location and options.
-//    This will create or open the underlying LevelDB store.
-const db = level(dbPath);
+// Initialize db
+const adapter = new FileSync(dbPath);
+const db = low(adapter);
 
 /**
  * Methods of the exposed wrapper:
@@ -20,26 +21,16 @@ const db = level(dbPath);
  * > Return the content of that key
  */
 
-const get = (key) => {
+const get = async (key) => {
     if (key) {
-        return db.get(key).catch((err) => {
-            // handle a 'NotFoundError' by returning null
-            if (err.notFound) return;
-            else throw err;
-        });
+        return db.get(key).value();
     } else {
-        return new Promise((resolve, reject) => {
-            const _db = {};
-            db.createReadStream()
-                .on('data', (data) => _db[data.key] = data.value)
-                .on('error', reject)
-                .on('end', () => resolve(_db));
-        });
+        return db.getState();
     }
 };
 
-const set = (key, value) => {
-    return db.put(key, value);
+const set = async (key, value) => {
+    return db.set(key, value).write();
 };
 
 module.exports = {

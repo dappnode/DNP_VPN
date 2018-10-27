@@ -39,7 +39,7 @@ describe('fetchVpnParameters test', function() {
   before(() => {
     // Restart db
     try {
-      fs.unlinkSync('./db.json');
+      // fs.unlinkSync('./vpndb.json');
     } catch (e) {
       //
     }
@@ -75,7 +75,7 @@ describe('fetchVpnParameters test', function() {
       initialized: true,
     };
     for (const key of (Object.keys(params))) {
-      expect(await db.get(key)).to.equal(String(params[key]), `Wrong ${key}`);
+      expect(await db.get(key)).to.equal(params[key], `Wrong ${key}`);
     }
     /**
      * Sample db:
@@ -132,7 +132,7 @@ describe('fetchVpnParameters test', function() {
     });
     // Restart db
     try {
-      fs.unlinkSync('./db.json');
+      fs.unlinkSync('./vpndb.json');
     } catch (e) {
       //
     }
