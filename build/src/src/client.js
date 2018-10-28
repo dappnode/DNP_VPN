@@ -6,6 +6,7 @@ const dyndnsClient = require('./dyndnsClient');
 const calls = require('./calls');
 const fetchVpnParameters = require('./fetchVpnParameters');
 const loginMsg = require('./loginMsg');
+const {eventBus, eventBusTag} = require('./eventBus');
 
 const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws';
 const REALM = 'dappnode_admin';
@@ -29,6 +30,20 @@ connection.onopen = function(session, details) {
   for (const callId of Object.keys(calls)) {
     register(session, callId+'.vpn.dnp.dappnode.eth', calls[callId]);
   }
+
+  /**
+   * Emits the directory
+   */
+  const eventDevices = 'devices.vpn.dnp.dappnode.eth';
+  eventBus.on(eventBusTag.emitDevices, () => {
+    try {
+      calls.listDevices().then((devices) => {
+        session.publish(eventDevices, [], {devices});
+      });
+    } catch (e) {
+      logs.error('Error publishing directory: '+e.stack);
+    }
+  });
 };
 
 connection.onclose = function(reason, details) {

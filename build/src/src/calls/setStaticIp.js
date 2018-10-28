@@ -1,6 +1,7 @@
 const db = require('../db');
 const dyndnsClient = require('../dyndnsClient');
 const loginMsg = require('../loginMsg');
+const {eventBus, eventBusTag} = require('../eventBus');
 
 async function setStaticIp({staticIp}) {
     const oldStaticIp = await db.get('staticIp');
@@ -23,6 +24,9 @@ async function setStaticIp({staticIp}) {
     } else {
         message = `Updated static IP: ${staticIp}`;
     }
+
+    // Emit packages update
+    eventBus.emit(eventBusTag.emitDevices);
 
     return {
       message,

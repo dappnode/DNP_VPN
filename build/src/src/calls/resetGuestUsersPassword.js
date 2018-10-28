@@ -1,5 +1,6 @@
 const credentialsFile = require('../utils/credentialsFile');
 const generate = require('../utils/generate');
+const {eventBus, eventBusTag} = require('../eventBus');
 const db = require('../db');
 
 const vpnPasswordLength = 20;
@@ -17,6 +18,9 @@ async function resetGuestUsersPassword() {
         guestUsers.password = guestsPassword;
         await credentialsFile.write(credentialsArray);
     }
+
+    // Emit packages update
+    eventBus.emit(eventBusTag.emitDevices);
 
     return {
         message: `Reseted guests password`,
