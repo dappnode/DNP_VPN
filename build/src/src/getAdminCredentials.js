@@ -1,29 +1,29 @@
 #!/usr/bin/env node
 
-// import dependencies
-const logAdminCredentials = require('./logAdminCredentials');
-const fetchVpnParameters = require('./fetchVpnParameters');
-const logs = require('./logs.js')(module);
-const db = require('./db');
+/* eslint-disable no-console */ /* eslint-disable max-len */
+// This module must NOT have any non-native dependencies
+const fs = require('fs');
 
+const loginMsgPath = process.env.LOGIN_MSG_PATH || './loginMsgFile.txt';
 
-start();
+const maxAttempts = 3 * 60; // 3 min
+const pauseTime = 1000;
 
-
-async function start() {
-  // Trigger a parameters load. If parameters are preloaded the execution will be fast
-  // Otherwise it will wait for parameter files to exist.
-  logs.info('\nLoading VPN parameters... '
+console.log('\nLoading VPN parameters... '
     +'It may take a while, press CTRL + C to skip this process \n');
-  await fetchVpnParameters();
-  logs.info('VPN credentials fetched');
 
-  // Print db censoring privateKey
-  const _db = db.get();
-  if (_db && _db.keypair && _db.keypair.privateKey) {
-    _db.keypair.privateKey = _db.keypair.privateKey.replace(/./g, '*');
-  }
-  logs.info(JSON.stringify(_db, null, 2 ));
+// Wait for the loginMsg to exist
+check();
 
-  logAdminCredentials();
+let count = 0;
+function check() {
+  fs.readFile(loginMsgPath, 'utf8', (err, loginMsg) => {
+    if (err) {
+      if (err.code !== 'ENOENT') console.error(`Error reading loginMsgFile ${err.message}`);
+      if (count++ > maxAttempts) console.error(`loginMsgFile missing after ${maxAttempts} attempts`);
+      else setTimeout(check, pauseTime);
+    } else {
+      console.log(loginMsg);
+    }
+  });
 }

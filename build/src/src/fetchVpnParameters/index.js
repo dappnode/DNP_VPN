@@ -3,6 +3,7 @@ const {promisify} = require('util');
 const readFileAsync = promisify(fs.readFile);
 const db = require('../db');
 const logs = require('../logs.js')(module);
+const pause = require('../utils/pause');
 
 const getUpnpStatus = require('./getUpnpStatus');
 const getExternalIpResolves = require('./getExternalIpResolves');
@@ -40,12 +41,12 @@ async function fetchVpnParameters() {
     ? true : false;
   const name = await fetchVpnParameter(serverNamePath, 'DAppNode_server');
 
-  db.set('ip', ip);
-  db.set('psk', psk);
-  db.set('internalIp', internalIp);
-  db.set('externalIp', externalIp);
-  db.set('publicIpResolved', publicIpResolved);
-  db.set('name', name);
+  await db.set('ip', ip);
+  await db.set('psk', psk);
+  await db.set('internalIp', internalIp);
+  await db.set('externalIp', externalIp);
+  await db.set('publicIpResolved', publicIpResolved);
+  await db.set('name', name);
 
 
   // Step 2: Process the loaded variables
@@ -55,20 +56,20 @@ async function fetchVpnParameters() {
   const {openPorts, upnpAvailable} = getUpnpStatus(ip, externalIp, internalIp);
   // Get the static ip possibly set during the installation
 
-  db.set('externalIpResolves', externalIpResolves);
-  db.set('openPorts', openPorts);
-  db.set('upnpAvailable', upnpAvailable);
+  await db.set('externalIpResolves', externalIpResolves);
+  await db.set('openPorts', openPorts);
+  await db.set('upnpAvailable', upnpAvailable);
 
 
   // Step 3: Get ip (maybe) set during the installation
   // ==================================================
   // > Only write the IP if it comes from the installation
-  if (!db.get('initialized')) {
+  if (!await db.get('initialized')) {
     const staticIp = await getInstallationStaticIp();
-    db.set('initialized', true);
+    await db.set('initialized', true);
     if (staticIp) {
       logs.info(`Static IP was set during installation: ${staticIp}`);
-      db.set('staticIp', staticIp);
+      await db.set('staticIp', staticIp);
     } else {
       logs.info(`Static IP was NOT set during installation`);
     }
@@ -76,10 +77,8 @@ async function fetchVpnParameters() {
 
   // Step 4: Get the keys to register to the dyndns
   // > The keys will be automatically stored in the db
-  //   db.set('keypair', newKeypair);
-  //   db.set('domain', newKeypair.domain);
-  if (!db.get('staticIp')) {
-    await dbEntryToExist('keypair');
+  if (!await db.get('staticIp')) {
+    await dbEntryToExist('privateKey');
   }
 }
 
@@ -98,7 +97,7 @@ async function fileToExist(path, fallbackValue) {
 
 async function dbEntryToExist(key) {
   for (let i = 0; i < maxAttempts; i++) {
-    const value = db.get(key);
+    const value = await db.get(key);
     if (value) return value;
     await pause(pauseTime);
   }
@@ -109,10 +108,5 @@ const fetchVpnParameter = (path, fallbackValue = false) =>
   fileToExist(path, fallbackValue)
   .then(() => readFileAsync(path, 'utf-8'))
   .then((data) => String(data).trim());
-
-// /////////////////
-// Helper functions
-
-const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 module.exports = fetchVpnParameters;

@@ -10,7 +10,7 @@ async function resetGuestUsersPassword() {
     let credentialsArray = await credentialsFile.fetch();
 
     const guestsPassword = generate.password(vpnPasswordLength);
-    db.set('guestsPassword', guestsPassword);
+    await db.set('guestsPassword', guestsPassword);
 
     const guestUsers = credentialsArray.find((u) => u.name === guestsName);
     if (guestUsers) {

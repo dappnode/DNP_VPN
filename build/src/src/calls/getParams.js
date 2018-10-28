@@ -1,7 +1,7 @@
 const db = require('../db');
 
 async function getParams() {
-    const _db = db.get();
+    const _db = await db.get();
     const result = {
         ip: _db.ip,
         name: _db.name,

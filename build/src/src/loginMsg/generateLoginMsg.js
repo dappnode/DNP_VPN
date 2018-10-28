@@ -1,24 +1,25 @@
-const credentialsFile = require('./utils/credentialsFile');
-const generate = require('./utils/generate');
+const credentialsFile = require('../utils/credentialsFile');
+const generate = require('../utils/generate');
 const qrcode = require('qrcode-terminal');
-const db = require('./db');
-const getServer = require('./utils/getServer');
+const db = require('../db');
+const getServer = require('../utils/getServer');
 
-async function logAdminCredentials() {
+async function generateLoginMsg() {
+  let msg = '\n\n';
+
   const deviceList = await credentialsFile.fetch();
   const adminDevice = deviceList[0];
-  const adminOtp = generate.otp({
+  const adminOtp = await generate.otp({
     user: adminDevice.name,
     pass: adminDevice.password,
   });
 
   // Show the QR code
-  qrcode.setErrorLevel('S');
-  qrcode.generate(adminOtp);
+  msg += await getQrCodeString(adminOtp);
 
   // Show credentials
-  const server = getServer();
-  const psk = db.get('psk');
+  const server = await getServer();
+  const psk = await db.get('psk');
   const columns = [
     {
       field: 'VPN-Type',
@@ -42,27 +43,30 @@ async function logAdminCredentials() {
     },
   ];
   /* eslint-disable max-len */
-  let msg = `
+  msg += `
 To connect to your DAppNode scan the QR above, copy/paste link below into your browser or use VPN credentials:
 ${adminOtp}
 
 ${columns.map((col) => col.field.padEnd(col.value.length)).join('  ')}
-${columns.map((col) => col.value).join('  ')}`;
+${columns.map((col) => col.value).join('  ')}    `; // leave trailing spaces
 
-  const openPorts = db.get('openPorts');
-  const upnpAvailable = db.get('upnpAvailable');
-  const externalIpResolves = db.get('externalIpResolves');
-  const internalIp = db.get('internalIp');
+  const openPorts = await db.get('openPorts');
+  const upnpAvailable = await db.get('upnpAvailable');
+  const externalIpResolves = await db.get('externalIpResolves');
+  const internalIp = await db.get('internalIp');
   msg += parseUpnpStatus(openPorts, upnpAvailable);
   msg += parsePublicIpStatus(externalIpResolves, internalIp);
   /* eslint-enable max-len */
 
-  /* eslint-disable no-console */
-  console.log(msg);
-  /* eslint-enable no-console */
-
   // return msg for testing
   return msg;
+}
+
+function getQrCodeString(data) {
+  return new Promise((resolve) => {
+    qrcode.setErrorLevel('S');
+    qrcode.generate(data, resolve);
+  });
 }
 
 function parseUpnpStatus(openPorts, upnpAvailable) {
@@ -89,4 +93,4 @@ function parsePublicIpStatus(externalIpResolves, internalIp) {
 }
 
 
-module.exports = logAdminCredentials;
+module.exports = generateLoginMsg;

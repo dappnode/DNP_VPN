@@ -1,7 +1,7 @@
 const db = require('../db');
 
 async function statusUPnP() {
-    const _db = db.get();
+    const _db = await db.get();
     return {
         result: {
             openPorts: _db.openPorts,

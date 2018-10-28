@@ -1,4 +1,4 @@
-FROM node:alpine as build
+FROM node:8.12.0-alpine as build
 
 RUN apk add --update --no-cache \
     build-base \
@@ -17,7 +17,7 @@ RUN npm install
 # Run the copy in two steps to cache the npm install
 COPY src .
 
-FROM alpine
+FROM alpine:3.8
 
 WORKDIR /usr/src/app
 
@@ -84,7 +84,8 @@ RUN chmod 755 check_upnp.sh
 
 RUN mkdir -p /usr/src/app/secrets
 # envs for init.sh -> node communication
-ENV DB_PATH /usr/src/app/secrets/db.json
+ENV DB_PATH /usr/src/app/secrets/vpndb.json
+ENV LOGIN_MSG_PATH /usr/src/app/loginMsgFile.txt
 ENV INSTALLATION_STATIC_IP /usr/src/app/config/static_ip
 ENV KEYPAIR_PATH /usr/src/app/secrets/keypair
 ENV CREDENTIALS_PATH /usr/src/app/secrets/chap-secrets
