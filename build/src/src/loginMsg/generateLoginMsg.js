@@ -38,7 +38,7 @@ async function generateLoginMsg() {
       value: adminDevice.password || '',
     },
     {
-      field: 'IP',
+      field: 'Server address',
       value: server || '',
     },
   ];
