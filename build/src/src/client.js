@@ -37,8 +37,8 @@ connection.onopen = function(session, details) {
   const eventDevices = 'devices.vpn.dnp.dappnode.eth';
   eventBus.on(eventBusTag.emitDevices, () => {
     try {
-      calls.listDevices().then((devices) => {
-        session.publish(eventDevices, [], {devices});
+      calls.listDevices().then((res) => {
+        session.publish(eventDevices, [], {devices: res.deviceList});
       });
     } catch (e) {
       logs.error('Error publishing directory: '+e.stack);
