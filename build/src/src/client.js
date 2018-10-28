@@ -38,7 +38,8 @@ connection.onopen = function(session, details) {
   eventBus.on(eventBusTag.emitDevices, () => {
     try {
       calls.listDevices().then((res) => {
-        session.publish(eventDevices, [], {devices: res.deviceList});
+        // res.result = devices = {Array}
+        session.publish(eventDevices, res.result);
       });
     } catch (e) {
       logs.error('Error publishing directory: '+e.stack);
