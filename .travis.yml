@@ -40,16 +40,22 @@ jobs:
         - git remote rm origin
         - git remote add origin https://user:${GITHUB_TOKEN}@github.com/dappnode/DNP_VPN.git
         - travis_retry npm install -g @dappnode/dappnodesdk
+        - . sdkMock.sh # just exports $VERSION_TAG
+        - echo "CALLING ECHO ON VAR, $VERSION_TAG"
+        # - git tag "v.0.0.test"
       # Advanced: optionally overwrite your default `script` step to skip the tests
       deploy:
         provider: script
-        skip_cleanup: true
+        api_key: "GITHUB OAUTH TOKEN"
+        file_glob: true
+        file: build_latest/*
         github-token: $GITHUB_TOKEN
         script:
           - IPFS_PROVIDER=ipfs.infura.io IPFS_PROTO=https SILENT=true PROVIDER=wss://mainnet.infura.io/ws dappnodesdk publish patch
           - npx semantic-release
+        skip_cleanup: true
         on:
           branch: master
-          condition: "$CC = gcc"
+          # condition: "$CC = gcc"
       after_deploy:
         - ./push.sh
