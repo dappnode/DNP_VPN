@@ -7,7 +7,7 @@
 [![Twitter Follow](https://img.shields.io/twitter/follow/espadrine.svg?style=social&label=Follow)](https://twitter.com/DAppNODE?lang=es)
 
 <p align="left">
-  <img src="VPN-min.png" width="200"/>
+  <img src="VPN-min.png" width="201"/>
 </p>
 
 Dappnode package responsible for providing the VPN connection.
