@@ -10,7 +10,7 @@
   <img src="VPN-min.png" width="201"/>
 </p>
 
-Dappnode package responsible for providing the VPN connection.
+Dappnode package responsible for providing the VPN connection.asd
 
 It is an AragonApp whose repo is deployed at this address: [0xe27438944187b49ef0005554a15b913b11baa08c](https://etherscan.io/address/0xe27438944187b49ef0005554a15b913b11baa08c) and whose ENS address is: [vpn.dnp.dappnode.eth](https://etherscan.io/enslookup?q=vpn.dnp.dappnode.eth])
 
