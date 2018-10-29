@@ -5,7 +5,7 @@ async function listDevices() {
   // Fetch devices data from the chap_secrets file
   let deviceList = await credentialsFile.fetch();
   for (const credentials of deviceList) {
-    credentials.otp = generate.otp({
+    credentials.otp = await generate.otp({
       user: credentials.name,
       pass: credentials.password,
     });

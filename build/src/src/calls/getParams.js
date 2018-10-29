@@ -1,12 +1,13 @@
 const db = require('../db');
 
 async function getParams() {
+    const _db = await db.get();
     const result = {
-        ip: db.get('ip').value(),
-        name: db.get('name').value(),
+        ip: _db.ip,
+        name: _db.name,
     };
-    const staticIp = db.get('staticIp').value();
-    const domain = db.get('domain').value();
+    const staticIp = _db.staticIp;
+    const domain = _db.domain;
     if (staticIp) {
         result.staticIp = staticIp;
     } else {

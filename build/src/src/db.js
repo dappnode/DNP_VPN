@@ -1,33 +1,39 @@
-const logs = require('./logs.js')(module);
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
 
-const dbPath = process.env.DB_PATH || 'db.json';
+const dbPath = process.env.DB_PATH || './vpndb.json';
+
+// Initialize db
 const adapter = new FileSync(dbPath);
 const db = low(adapter);
 
-// Compute db size for debugging purposes
-let dbSize;
-try {
-    dbSize = JSON.stringify(db.getState() || {}).length;
-} catch (e) {
-    logs.warn(`Error computing dbSize: ${e.stack}`);
-}
-logs.info(`Starting lowdb at path ${dbPath}, size: ${dbSize} bytes`);
-
 /**
- * How to use:
+ * Methods of the exposed wrapper:
+ * > All methods are ASYNCronous
+ * > If db.get is called and nothing is found return empty
+ * > If db.write is called and the db file doesn't exist, create one
  *
- * SET
- * ===
- * db.set('user.name', 'typicode').write()
- *
- * GET
- * ===
- * Requesting not existing values will never throw errors but return undefined
- *
- * db.get('posts').find({ id: 1 }).value()
- *
+ * await db.set(key, value)
+ * > Write the value in the key
+ * await db.get()
+ * > Return the whole db
+ * await db.get(key)
+ * > Return the content of that key
  */
 
-module.exports = db;
+const get = async (key) => {
+    if (key) {
+        return db.get(key).value();
+    } else {
+        return db.getState();
+    }
+};
+
+const set = async (key, value) => {
+    return db.set(key, value).write();
+};
+
+module.exports = {
+    set,
+    get,
+};

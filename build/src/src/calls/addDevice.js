@@ -1,5 +1,6 @@
 const credentialsFile = require('../utils/credentialsFile');
 const generate = require('../utils/generate');
+const {eventBus, eventBusTag} = require('../eventBus');
 
 const vpnPasswordLength = 20;
 
@@ -37,6 +38,9 @@ async function addDevice({id}) {
   });
 
   await credentialsFile.write(credentialsArray);
+
+  // Emit packages update
+  eventBus.emit(eventBusTag.emitDevices);
 
   return {
     message: 'Added device '+id,

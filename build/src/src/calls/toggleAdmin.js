@@ -1,4 +1,5 @@
 const credentialsFile = require('../utils/credentialsFile');
+const {eventBus, eventBusTag} = require('../eventBus');
 
 const masterAdminIp = '172.33.10.1';
 const userStaticIpPrefix = '172.33.100.';
@@ -39,6 +40,9 @@ async function toggleAdmin({id}) {
     }
   }
   await credentialsFile.write(credentialsArray);
+
+  // Emit packages update
+  eventBus.emit(eventBusTag.emitDevices);
 
   return {
     message: isAdmin ? 'Removed admin credentials from '+id : 'Given admin credentials to '+id,

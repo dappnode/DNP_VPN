@@ -61,10 +61,10 @@ function password(passwordLength) {
  *
  * @return {String} otp link
  */
-function otp({user, pass}) {
-    const server = getServer();
-    const name = db.get('name').value();
-    const psk = db.get('psk').value();
+async function otp({user, pass}) {
+    const server = await getServer();
+    const name = await db.get('name');
+    const psk = await db.get('psk');
 
     const otpCredentials = {
       server,

@@ -4,8 +4,9 @@ const db = require('./db');
 
 const dyndnsClient = require('./dyndnsClient');
 const calls = require('./calls');
-const logAdminCredentials = require('./logAdminCredentials');
 const fetchVpnParameters = require('./fetchVpnParameters');
+const loginMsg = require('./loginMsg');
+const {eventBus, eventBusTag} = require('./eventBus');
 
 const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws';
 const REALM = 'dappnode_admin';
@@ -29,6 +30,21 @@ connection.onopen = function(session, details) {
   for (const callId of Object.keys(calls)) {
     register(session, callId+'.vpn.dnp.dappnode.eth', calls[callId]);
   }
+
+  /**
+   * Emits the directory
+   */
+  const eventDevices = 'devices.vpn.dnp.dappnode.eth';
+  eventBus.on(eventBusTag.emitDevices, () => {
+    try {
+      calls.listDevices().then((res) => {
+        // res.result = devices = {Array}
+        session.publish(eventDevices, res.result);
+      });
+    } catch (e) {
+      logs.error('Error publishing directory: '+e.stack);
+    }
+  });
 };
 
 connection.onclose = function(reason, details) {
@@ -50,8 +66,8 @@ async function start() {
   connection.open();
 
   // init.sh
-  // 1. Create VPN's keypair if it doesn't exist yet
-  dyndnsClient.generateKeys();
+  // 1. Create VPN's address + publicKey + privateKey if it doesn't exist yet
+  await dyndnsClient.generateKeys();
 
   // fetchVpnParameters read the output files from the .sh scripts
   // and stores the values in the db
@@ -60,7 +76,7 @@ async function start() {
 
   // If the user has not defined a static IP use dynamic DNS
   // > staticIp is set in `await fetchVpnParameters();`
-  if (!db.get('staticIp').value()) {
+  if (!await db.get('staticIp')) {
     logs.info('Registering to the dynamic DNS...');
     await dyndnsClient.updateIp();
   }
@@ -69,27 +85,35 @@ async function start() {
   let _ip = '';
   setInterval(async () => {
     try {
-      if (!db.get('staticIp').value()) {
+      if (!await db.get('staticIp')) {
         const ip = await dyndnsClient.getPublicIp();
         if (!ip || ip !== _ip) {
           dyndnsClient.updateIp();
           _ip = ip;
         }
-        if (ip) db.set('ip', ip).write();
+        if (ip) await db.set('ip', ip);
       }
     } catch (e) {
       logs.error(`Error on dyndns interval: ${e.stack || e.message}`);
     }
   }, publicIpCheckInterval);
 
-  logs.info('VPN credentials fetched: ');
-
   // Print db censoring privateKey
-  const dbClone = JSON.parse(JSON.stringify(db.getState()));
-  dbClone.keypair.privateKey = dbClone.keypair.privateKey.replace(/./g, '*');
-  logs.info(JSON.stringify(dbClone, null, 2 ));
+  const _db = await db.get();
+  if (_db && _db.privateKey) {
+    _db.privateKey = _db.privateKey.replace(/./g, '*');
+  }
+  logs.info(JSON.stringify(_db, null, 2 ));
 
-  logAdminCredentials();
+  // ///////////////////////
+  // Finished initialization
+  // ///////////////////////
+  // ///////////////////////
+  //
+  // The following code generates a text file with the message to be printed out
+  // for the user to connect to DAppNode. It contains the information to print and
+  // also serves as flag to signal the end of the initialization
+  logs.info(await loginMsg.write());
 }
 
 

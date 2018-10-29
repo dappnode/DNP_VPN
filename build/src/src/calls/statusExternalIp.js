@@ -1,11 +1,12 @@
 const db = require('../db');
 
 async function statusExternalIp() {
+    const _db = await db.get();
     return {
         result: {
-            externalIpResolves: db.get('externalIpResolves').value(),
-            externalIp: db.get('externalIp').value(),
-            internalIp: db.get('internalIp').value(),
+            externalIpResolves: _db.externalIpResolves,
+            externalIp: _db.externalIp,
+            internalIp: _db.internalIp,
         },
     };
 }

@@ -34,18 +34,18 @@ function getDyndnsHost() {
 }
 
 
-function generateKeys() {
-    if (db.get('keypair').value()) {
-        let _domain = (db.get('keypair').value() || {}).domain;
-        logs.info(`Skipping keypair generation, found identity in db: ${_domain}`);
+async function generateKeys() {
+    if (await db.get('privateKey')) {
+        logs.info(`Skipping keys generation, found identity in db`);
         return;
     }
-    const identity = EthCrypto.createIdentity();
-    const subdomain = identity.address.toLowerCase().substr(2).substring(0, 16);
+    const {address, privateKey, publicKey} = EthCrypto.createIdentity();
+    await db.set('address', address);
+    await db.set('privateKey', privateKey);
+    await db.set('publicKey', publicKey);
+    const subdomain = address.toLowerCase().substr(2).substring(0, 16);
     const domain = subdomain+'.'+getDyndnsHost();
-    identity.domain = domain;
-    db.set('keypair', identity).write();
-    db.set('domain', domain).write();
+    await db.set('domain', domain);
 }
 
 module.exports = generateKeys;

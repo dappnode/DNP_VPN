@@ -1,4 +1,5 @@
 const credentialsFile = require('../utils/credentialsFile');
+const {eventBus, eventBusTag} = require('../eventBus');
 
 const adminStaticIpPrefix = '172.33.10.';
 
@@ -29,6 +30,9 @@ async function removeDevice({id}) {
 
   // Write back the device object array
   await credentialsFile.write(credentialsArray);
+
+  // Emit packages update
+  eventBus.emit(eventBusTag.emitDevices);
 
   return {
     message: 'Removed device '+id,
