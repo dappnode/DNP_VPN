@@ -31,7 +31,6 @@ script:
 after_success:
   - COVERALLS_REPO_TOKEN=$coveralls_repo_token npm run coverage
   - cd ../.. # On the before_install: it cd build/src
-  - ./push.sh
 
 jobs:
   include:
@@ -50,7 +49,7 @@ jobs:
         # - git tag "v.0.0.test"
       # Advanced: optionally overwrite your default `script` step to skip the tests
       deploy:
-        provider: script
+        provider: releases
         api_key: ${GITHUB_API_KEY}
         file_glob: true
         file: build_latest/*
