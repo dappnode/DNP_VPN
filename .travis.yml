@@ -58,9 +58,9 @@ jobs:
           - echo "script; CALLING ECHO ON VAR, $VERSION_TAG"
           - IPFS_PROVIDER=ipfs.infura.io IPFS_PROTO=https SILENT=true PROVIDER=wss://mainnet.infura.io/ws dappnodesdk publish patch
           - npx semantic-release
+        overwrite: true
         skip_cleanup: true
-        on:
-          tags: true
-          # condition: "$CC = gcc"
+        # on:
+        #   # condition: "$CC = gcc"
       after_deploy:
         - ./push.sh
