@@ -60,10 +60,6 @@ jobs:
           - npx semantic-release
         skip_cleanup: true
         on:
-          branches: # ← new!
-            only: # ← new!
-              - master # ← new!
-          # branch: master
           # condition: "$CC = gcc"
       after_deploy:
         - ./push.sh
