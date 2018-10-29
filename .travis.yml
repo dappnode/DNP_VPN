@@ -46,7 +46,7 @@ jobs:
         - travis_retry npm install -g @dappnode/dappnodesdk
         - . sdkMock.sh # just exports $VERSION_TAG
         - echo "before_deploy; CALLING ECHO ON VAR, $VERSION_TAG"
-        # - git tag "v.0.0.test"
+        - git tag "v.$VERSION_TAG"
       # Advanced: optionally overwrite your default `script` step to skip the tests
       deploy:
         provider: releases
