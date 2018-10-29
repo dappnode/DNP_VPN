@@ -2,6 +2,7 @@ build_*
 build/src/node_modules/
 build/src/test
 build/src/test/
+node_modules/
 .vscode
 uploader
 .gitignore

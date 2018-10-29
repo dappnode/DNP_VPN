@@ -12,13 +12,44 @@ node_js:
 cache:
   directories:
     - build/src/node_modules
+
 install:
-  # This is a dockerized application, the node app is in /build/src
-  - cd ./build/src
-  - npm install
+  # This is a dockerized application, the node app is in build/src
+  - npm --prefix build/src install
+
 before_script:
-  - npm run lint
+  # Throw an error if code is not linted properly
+  - npm run --prefix build/src lint
+
 script:
-  - npm run test
+  - npm run --prefix build/src test
+
 after_success:
   - COVERALLS_REPO_TOKEN=$coveralls_repo_token npm run coverage
+  - ./push.sh
+
+jobs:
+  include:
+    # Define the release stage that runs semantic-release
+    - stage: release
+      node_js: lts/*
+      before_deploy:
+        # Configure git to push latter in case of release
+        - git config --global user.email "eduadiez@gmail.com"
+        - git config --global user.name "eduadiez"
+        - git remote rm origin
+        - git remote add origin https://user:${GITHUB_TOKEN}@github.com/dappnode/DNP_VPN.git
+        - travis_retry npm install -g @dappnode/dappnodesdk
+      # Advanced: optionally overwrite your default `script` step to skip the tests
+      deploy:
+        provider: script
+        skip_cleanup: true
+        github-token: $GITHUB_TOKEN
+        script:
+          - IPFS_PROVIDER=ipfs.infura.io IPFS_PROTO=https SILENT=true PROVIDER=wss://mainnet.infura.io/ws dappnodesdk publish patch
+          - npx semantic-release
+        on:
+          branch: master
+          condition: "$CC = gcc"
+      after_deploy:
+        - ./push.sh
