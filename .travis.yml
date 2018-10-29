@@ -12,6 +12,7 @@ node_js:
 cache:
   directories:
     - build/src/node_modules
+    - node_modules
 
 before_install:
   - cd build/src
@@ -50,7 +51,7 @@ jobs:
       # Advanced: optionally overwrite your default `script` step to skip the tests
       deploy:
         provider: script
-        api_key: "GITHUB OAUTH TOKEN"
+        api_key: ${GITHUB_API_KEY}
         file_glob: true
         file: build_latest/*
         github-token: $GITHUB_TOKEN
