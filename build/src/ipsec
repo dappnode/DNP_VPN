@@ -37,15 +37,20 @@ start() {
 }
 
 stop() {
-	if [ "${RC_CMD}" = "restart" ] ; then
-		checkconfig || return 1
+    if [ "${RC_CMD}" = "restart" ] ; then
+    	checkconfig || return 1
+    fi
+    ebegin "Stopping ${SVCNAME}"
+    start-stop-daemon --stop --pidfile "${PLUTO_PIDFILE}"
+    RETVAL=$?
+    if [ $RETVAL -ne 0 ]; then
+        ebegin "Stopping (killing it)"
+		start-stop-daemon --stop -s SIGKILL --pidfile "${PLUTO_PIDFILE}"  
 	fi
-	ebegin "Stopping ${SVCNAME}"
-	start-stop-daemon --stop --pidfile "${PLUTO_PIDFILE}"
-	RETVAL=$?
 	${IPSEC_BINARY} _stackmanager stop
 	${IPSEC_BINARY} --stopnflog
-	eend $RETVAL
+	eend $? 
+
 }
 
 reload() {
