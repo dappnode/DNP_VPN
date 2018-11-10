@@ -142,7 +142,7 @@ modprobe af_key
 
 # Start services
 mkdir -p /var/run/pluto /var/run/xl2tpd
-rm -f /var/run/pluto/pluto.pid /var/run/xl2tpd.pid
+rm -f /var/run/xl2tpd.pid
 
 touch /var/run/dnp_vpn 
  
