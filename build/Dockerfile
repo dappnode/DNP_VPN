@@ -6,7 +6,8 @@ RUN apk add --update --no-cache \
     docker \
     git \
     libpcap-dev \
-    linux-headers
+    linux-headers \
+    bash
 
 RUN git clone https://github.com/xelerance/xl2tpd.git && cd xl2tpd && make
 
