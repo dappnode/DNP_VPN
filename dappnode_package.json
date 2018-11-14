@@ -15,7 +15,10 @@
       "/var/run/docker.sock:/var/run/docker.sock",
       "/usr/src/dappnode/config:/usr/src/app/config:ro"
     ],
-    "ports": ["4500:4500/udp", "500:500/udp"],
+    "ports": [
+      "4500:4500/udp",
+      "500:500/udp"
+    ],
     "privileged": "true",
     "restart": "always",
     "subnet": "172.33.0.0/16",
@@ -27,7 +30,12 @@
     "DAppLion <dapplion@giveth.io> (https://github.com/dapplion)",
     "Alex Floyd <alex@giveth.io> (https://github.com/mex20)"
   ],
-  "keywords": ["DAppNodeCore", "VPN", "IPSec", "L2TP"],
+  "keywords": [
+    "DAppNodeCore",
+    "VPN",
+    "IPSec",
+    "L2TP"
+  ],
   "homepage": {
     "userui": "https://dappnode.github.io/DAppNode_OTP",
     "homepage": "https://github.com/dappnode/DNP_VPN#readme"
