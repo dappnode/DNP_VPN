@@ -67,6 +67,8 @@ async function start() {
 
   // init.sh
   // 1. Create VPN's address + publicKey + privateKey if it doesn't exist yet
+  // Also, verify if the privateKey is corrupted or lost.
+  // In that case generate a new identity and alert the user
   await dyndnsClient.generateKeys();
 
   // fetchVpnParameters read the output files from the .sh scripts
@@ -100,9 +102,6 @@ async function start() {
 
   // Print db censoring privateKey
   const _db = await db.get();
-  if (_db && _db.privateKey) {
-    _db.privateKey = _db.privateKey.replace(/./g, '*');
-  }
   logs.info(JSON.stringify(_db, null, 2 ));
 
   // ///////////////////////

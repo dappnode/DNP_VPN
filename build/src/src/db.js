@@ -25,7 +25,7 @@ const get = async (key) => {
     if (key) {
         return db.get(key).value();
     } else {
-        return db.getState();
+        return Object.assign({}, db.getState());
     }
 };
 
