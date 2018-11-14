@@ -15,12 +15,8 @@ async function setStaticIp({staticIp}) {
     if (!oldStaticIp && staticIp) {
         message = `Enabled static IP: ${staticIp}`;
     } else if (oldStaticIp && !staticIp) {
-        message = `Disabled static IP`;
-        // If the staticIp is being disabled but there is no keys: register to dyndns
-        if (!await db.get('registeredToDyndns')) {
-            await dyndnsClient.updateIp();
-            message += `, and registered to dyndns: ${await db.get('domain')}`;
-        }
+        await dyndnsClient.updateIp();
+        message = `Disabled static IP, and registered to dyndns: ${await db.get('domain')}`;
     } else {
         message = `Updated static IP: ${staticIp}`;
     }

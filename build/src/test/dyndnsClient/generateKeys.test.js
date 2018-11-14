@@ -5,6 +5,7 @@ const logs = require('../../src/logs.js')(module);
 const unlink = util.promisify(fs.unlink);
 const {exec} = require('child_process');
 let db = require('../../src/db');
+const EthCrypto = require('eth-crypto');
 
 process.env.DYNDNS_DOMAIN = 'dyn.test.io';
 const dbPath = './vpndb';
@@ -68,6 +69,32 @@ describe('generateKeys', function() {
       await unlink(process.env.KEYPAIR_PATH).catch((err) => {
         logs.error('\n\n\n', err, '\n\n\n');
       });
+    });
+  });
+
+  describe('recover a corrupted privateKey', () => {
+    it('should detect that a privateKey is corrupted', async () => {
+      /* eslint-disable max-len */
+      // Store old private key and domain to assert the change
+      const oldPrivateKey = await db.get('privateKey');
+      const oldDomain = await db.get('domain');
+
+      // corrupt the private key
+      const corruptedPrivateKey = '******************************************************************';
+      await db.set('privateKey', corruptedPrivateKey);
+
+      // Call generateKeys. This function will be called always when the VPN resets
+      await generateKeys();
+
+      // Assert that a new valid private key is created.
+      // Also that the domain changed
+      const newPrivateKey = await db.get('privateKey');
+      const newDomain = await db.get('domain');
+      expect(newPrivateKey).to.not.equal(oldPrivateKey);
+      expect(newPrivateKey).to.not.equal(corruptedPrivateKey);
+      const publicKey = EthCrypto.publicKeyByPrivateKey(newPrivateKey);
+      expect(publicKey).to.exist;
+      expect(newDomain).to.not.equal(oldDomain);
     });
   });
 });

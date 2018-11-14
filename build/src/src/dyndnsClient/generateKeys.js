@@ -2,6 +2,18 @@ const EthCrypto = require('eth-crypto');
 const db = require('../db');
 const logs = require('../logs.js')(module);
 
+const corruptedPrivateKeyMessage =
+`
+
+
+=====================================================================
+    Found corrupted privateKey.
+    Reseting DYNDNS subdomain, please update your user's profiles
+=====================================================================
+
+
+`;
+
 /**
  * EthCrypto reference
  *
@@ -33,11 +45,27 @@ function getDyndnsHost() {
         : DYNDNS_DOMAIN;
 }
 
+function isPrivateKeyValid(privateKey) {
+    try {
+        EthCrypto.publicKeyByPrivateKey(privateKey);
+        return true;
+    } catch (e) {
+        /* eslint-disable max-len */
+        logs.warn('Private key verification failed. EthCrypto.publicKeyByPrivateKey returned error: '+e.stack);
+        return false;
+    }
+}
+
 
 async function generateKeys() {
-    if (await db.get('privateKey')) {
-        logs.info(`Skipping keys generation, found identity in db`);
-        return;
+    const currentPrivateKey = await db.get('privateKey');
+    if (currentPrivateKey) {
+        if (isPrivateKeyValid(currentPrivateKey)) {
+            logs.info(`Skipping keys generation, found identity in db`);
+            return;
+        } else {
+            logs.warn(corruptedPrivateKeyMessage);
+        }
     }
     const {address, privateKey, publicKey} = EthCrypto.createIdentity();
     await db.set('address', address);

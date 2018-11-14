@@ -70,7 +70,6 @@ async function updateIp() {
         if (res.code === 200) {
             logs.info(`dyndns client success: ${data.message}`);
             await db.set('domain', data.domain);
-            await db.set('registeredToDyndns', true);
             return data.domain;
         } else {
             const errorMsg = data.message || JSON.stringify(data);
