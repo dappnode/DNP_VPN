@@ -1,11 +1,32 @@
-# Check if server is initalized and admin profile exists
-# init: /etc/openvpn/openvpn.conf && /etc/openvpn/ovpn_env.sh
-# check pki and admin user:  
+#!/bin/bash
 
-# init steps:
-# ovpn_genconfig -u udp://xxxxxxx.dyndns.dappnode.io -s 172.33.10.64/26 -n 172.33.1.2
-# EASYRSA_BATCH=yes EASYRSA_REQ_CN=xxxxxx.dyndns.dappnode.io openvpn ovpn_initpki nopass
-# openvpn easyrsa build-client-full dappnode_admin nopass
+OPENVPN_CONF=/etc/openvpn/openvpn.conf
+OPENVPN_ADMIN_PROFILE=/etc/openvpn/pki/issued/dappnode_admin.crt
 
+check_ip() {
+  IP_REGEX='^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$'
+  printf '%s' "$1" | tr -d '\n' | grep -Eq "$IP_REGEX"
+}
 
-# run ovpn_run.sh
+# Check IP for correct format
+check_ip "$PUBLIC_IP" || PUBLIC_IP=$(wget -t 3 -T 15 -qO- http://ipv4.icanhazip.com)
+check_ip "$PUBLIC_IP" || exiterr "Cannot detect this server's public IP. Define it in your 'env' file as 'VPN_PUBLIC_IP'."
+
+# Initialize config and PKI 
+# -c: Client to Client
+# -d: disable default route (disables NAT without '-N')
+if [ ! -e "${OPENVPN_CONF}" ]; then
+    ovpn_genconfig -c -d -u udp://${PUBLIC_IP} -s 172.33.8.0/23 -p "route 172.33.0.0 255.255.0.0" -r 172.33.0.0/16
+    EASYRSA_BATCH=yes EASYRSA_REQ_CN=${PUBLIC_IP} ovpn_initpki nopass > /dev/null
+    echo "client-config-dir /etc/openvpn/ccd" >> /etc/openvpn/openvpn.conf
+    echo "ifconfig-pool-persist ipp.txt 1" >> /etc/openvpn/openvpn.conf
+fi
+
+if [ ! -e "${OPENVPN_ADMIN_PROFILE}" ]; then
+    easyrsa build-client-full dappnode_admin nopass
+fi
+
+# Enable Proxy ARP (needs privileges)
+echo 1 > /proc/sys/net/ipv4/conf/eth0/proxy_arp
+
+/usr/local/bin/ovpn_run

@@ -1,20 +1,21 @@
 # Smallest base image
-FROM alpine:latest
+FROM node:8.14.0-alpine
 
-LABEL maintainer="Kyle Manna <kyle@kylemanna.com>"
-
-RUN apk add --update openvpn iptables bash easy-rsa supervisor && \
+RUN apk add --update wget openvpn iptables bash easy-rsa supervisor && \
     ln -s /usr/share/easy-rsa/easyrsa /usr/local/bin && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/* /var/cache/distfiles/*
 
-# Needed by scripts
 ENV OPENVPN /etc/openvpn
 ENV EASYRSA /usr/share/easy-rsa
 ENV EASYRSA_PKI $OPENVPN/pki
 ENV EASYRSA_VARS_FILE $OPENVPN/vars
-
-# Prevents refused client connection because of an expired CRL
 ENV EASYRSA_CRL_DAYS 3650
+
+WORKDIR /usr/src/app
+COPY src/package.json .
+RUN npm install
+# Add the project afterwards for caching
+COPY src .
 
 VOLUME ["/etc/openvpn"]
 
@@ -24,7 +25,7 @@ EXPOSE 1194/udp
 ADD ./bin /usr/local/bin
 RUN chmod a+x /usr/local/bin/*
 
-# Run:
+# Supervisor run:
 # node src/client.js
 # ovpn_run
 

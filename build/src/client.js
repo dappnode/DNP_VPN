@@ -5,18 +5,16 @@ const db = require('./db');
 const dyndnsClient = require('./dyndnsClient');
 const calls = require('./calls');
 const fetchVpnParameters = require('./fetchVpnParameters');
-const loginMsg = require('./loginMsg');
+//const loginMsg = require('./loginMsg');
 const {eventBus, eventBusTag} = require('./eventBus');
 
 const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws';
 const REALM = 'dappnode_admin';
 const publicIpCheckInterval = 30 * 60 * 1000;
 
-
-// /////////////////////////////
-// Setup crossbar connection //
-// /////////////////////////////
-
+////////////////////////////////
+//  Setup crossbar connection //
+////////////////////////////////
 
 const connection = new autobahn.Connection({url: URL, realm: REALM});
 
