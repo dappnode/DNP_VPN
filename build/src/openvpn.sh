@@ -9,7 +9,7 @@ check_ip() {
   printf '%s' "$1" | tr -d '\n' | grep -Eq "$IP_REGEX"
 }
 
-# Check IP for correct format
+# Check IP for correct format FIXME: needed?
 check_ip "$PUBLIC_IP" || PUBLIC_IP=$(wget -t 3 -T 15 -qO- http://ipv4.icanhazip.com)
 check_ip "$PUBLIC_IP" || exiterr "Cannot detect this server's public IP. Define it in your 'env' file as 'VPN_PUBLIC_IP'."
 
@@ -17,9 +17,11 @@ check_ip "$PUBLIC_IP" || exiterr "Cannot detect this server's public IP. Define 
 # -c: Client to Client
 # -d: disable default route (disables NAT without '-N')
 # -r 172.33.0.0/16 <- FIXME not needed
+
 if [ ! -e "${OPENVPN_CONF}" ]; then
-    EASYRSA_ALGO=ec EASYRSA_CURVE=secp256k1 ovpn_genconfig -c -d -u udp://${PUBLIC_IP} -s 172.33.8.0/23 -p "route 172.33.0.0 255.255.0.0"
-    EASYRSA_ALGO=ec EASYRSA_CURVE=secp256k1 EASYRSA_BATCH=yes EASYRSA_REQ_CN=${PUBLIC_IP} ovpn_initpki nopass    echo "client-config-dir /etc/openvpn/ccd" >> /etc/openvpn/openvpn.conf
+    ovpn_genconfig -c -d -u udp://${PUBLIC_IP} -s 172.33.8.0/23 -p "route 172.33.0.0 255.255.0.0"
+    EASYRSA_REQ_CN=${HOSTNAME} ovpn_initpki nopass
+    echo "client-config-dir /etc/openvpn/ccd" >> /etc/openvpn/openvpn.conf
     echo "ifconfig-pool-persist ipp.txt 1" >> /etc/openvpn/openvpn.conf
 fi
 

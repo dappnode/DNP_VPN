@@ -1,35 +1,30 @@
+const fs = require('fs');
+
 const getUserList = require('../utils/getUserList');
 const getCCD = require('../utils/getCCD');
+const shell = require('../utils/shell');
+
 const {eventBus, eventBusTag} = require('../eventBus');
 
+const revokeCommand = '/usr/local/bin/ovpn_revokeclient'
+
 async function removeDevice({id}) {
-  // Fetch devices data from the chap_secrets file
   let deviceArray = await getUserList.fetch();
   let ccdArray = await getCCD.fetch();
-  // Find the requested name in the device object array
-  // if found: splice the device's object,
-  // else: throw error
 
-  // check if id is present in admins (ccd)
-  let deviceNameFound = false;
-  for (let i = 0; i < ccdArray.length; i++) {
-    if (id == ccdArray[i].cn) {
-        throw Error('You cannot remove an admin user');
-    } else {
-      deviceNameFound = true;
-      // credentialsArray.splice(i, 1);
-      break;
-    }
-    
+  if (ccdArray.find((c) => c.cn === id)) throw Error('You cannot remove an admin user');
+
+  if (!deviceArray.includes(id)) throw Error('Device name not found: '+id);
+
+  try {
+    await shell(`${revokeCommand} ${id}`);
+    await fs.unlinkSync(`${process.env.OPENVPN}/pki/private/${id}.key`);
+    await fs.unlinkSync(`${process.env.OPENVPN}/pki/reqs/${id}.req`);
+    await fs.unlinkSync(`${process.env.OPENVPN}/pki/issued/${id}.crt`);
+  } catch (err) {
+    throw Error(`Error removing device ${id}: ${err}`);
   }
 
-  if (!deviceNameFound) {
-    throw Error('Device name not found: '+id);
-  }
-
-  // Revoke and delete certs
-
-  // Emit packages update
   eventBus.emit(eventBusTag.emitDevices);
 
   return {
