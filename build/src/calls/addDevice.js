@@ -13,12 +13,20 @@ async function addDevice({id}) {
  
   let userArray = await getUserList.fetch();
 
-  if ( ! userArray.includes(id) ) {
+  if ( ! userArray.includes((id)) ) {
     await shell(`easyrsa build-client-full ${id} nopass`);
   } else {
     throw Error('User exists.');
   };
 
-}
+  // Emit packages update
+  eventBus.emit(eventBusTag.emitDevices);
+  
+  return {
+    message: `Added device: ${id}`,
+    logMessage: true,
+    userAction: true,
+  };
+};
 
 module.exports = addDevice;

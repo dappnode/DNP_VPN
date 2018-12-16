@@ -1,16 +1,16 @@
 const fs = require('fs');
 const getCCD = require('../utils/getCCD');
-const getuser = require('../utils/getUserList');
+const getUserList = require('../utils/getUserList');
 
-const ccdPath = './ccd'
+const ccdPath = '/etc/openvpn/ccd'
 const ccdNetmask = '255.255.0.0'
 const masterAdmin = 'dappnode_admin'
-//const {eventBus, eventBusTag} = require('../eventBus');
+const {eventBus, eventBusTag} = require('../eventBus');
 
 
-async function toggleAdmin(id) {
+async function toggleAdmin({id}) {
 
-  let devices = await getuser.fetch();
+  let devices = await getUserList.fetch();
   if (!devices.includes(id)) {
     throw Error('Device not found: '+id);
   };
@@ -42,4 +42,3 @@ async function toggleAdmin(id) {
 }
 
 module.exports = toggleAdmin;
-

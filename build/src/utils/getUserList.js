@@ -7,16 +7,17 @@ const shell = require('./shell');
 // revoked,Nov 23 14:02:38 2018 GMT,Nov 20 14:02:38 2028 GMT,REVOKED
 
 const ovpnListCommand = '/usr/local/bin/ovpn_listclients'
-// const listCommand = 'cat ./userlist';
 
 async function fetch() {
-  output = await shell(listCommand);
+  output = await shell(ovpnListCommand);
   users = []
   // Select users from first field which are not revoked.
-  output.toString().split('\n').filter((elem) => ! (elem.startsWith('name,') || elem.endsWith('REVOKED'))).map(element => { 
-    users.push(element.split(',')[0]);
+  output.toString().split('\n').filter((line) => ! (line.startsWith('name,') || line.endsWith('REVOKED'))).map(element => { 
+    if (element) users.push(element.split(',')[0]);
   });
   return users
 }
 
-module.exports = fetch;
+module.exports = {
+  fetch
+};

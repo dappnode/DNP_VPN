@@ -5,6 +5,7 @@
  */
 module.exports = {
     addDevice: require('./addDevice'),
+    getDeviceCredentials: require('./getDeviceCredentials'),
     removeDevice: require('./removeDevice'),
     toggleAdmin: require('./toggleAdmin'),
     listDevices: require('./listDevices'),

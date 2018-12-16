@@ -12,7 +12,6 @@ set -e
 
 source "$OPENVPN/ovpn_env.sh"
 
-# Specify "nopass" as arg[2] to make the CA insecure (not recommended!)
 nopass=$1
 
 # Provides a sufficient warning before erasing pre-existing files
@@ -23,7 +22,8 @@ easyrsa init-pki
 # needed for normal OpenVPN operation.
 easyrsa build-ca $nopass
 
-easyrsa gen-dh
+# We use Elliptic Curve so initial DH is not needed.
+# easyrsa gen-dh
 openvpn --genkey --secret $EASYRSA_PKI/ta.key
 
 # Was nice to autoset, but probably a bad idea in practice, users should

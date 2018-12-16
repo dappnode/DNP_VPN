@@ -2,6 +2,7 @@
 
 OPENVPN_CONF=/etc/openvpn/openvpn.conf
 OPENVPN_ADMIN_PROFILE=/etc/openvpn/pki/issued/dappnode_admin.crt
+OPENVPN_CRED_DIR=/var/spool/openvpn
 
 check_ip() {
   IP_REGEX='^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$'
@@ -15,12 +16,15 @@ check_ip "$PUBLIC_IP" || exiterr "Cannot detect this server's public IP. Define 
 # Initialize config and PKI 
 # -c: Client to Client
 # -d: disable default route (disables NAT without '-N')
+# -r 172.33.0.0/16 <- FIXME not needed
 if [ ! -e "${OPENVPN_CONF}" ]; then
-    ovpn_genconfig -c -d -u udp://${PUBLIC_IP} -s 172.33.8.0/23 -p "route 172.33.0.0 255.255.0.0" -r 172.33.0.0/16
-    EASYRSA_BATCH=yes EASYRSA_REQ_CN=${PUBLIC_IP} ovpn_initpki nopass > /dev/null
-    echo "client-config-dir /etc/openvpn/ccd" >> /etc/openvpn/openvpn.conf
+    EASYRSA_ALGO=ec EASYRSA_CURVE=secp256k1 ovpn_genconfig -c -d -u udp://${PUBLIC_IP} -s 172.33.8.0/23 -p "route 172.33.0.0 255.255.0.0"
+    EASYRSA_ALGO=ec EASYRSA_CURVE=secp256k1 EASYRSA_BATCH=yes EASYRSA_REQ_CN=${PUBLIC_IP} ovpn_initpki nopass    echo "client-config-dir /etc/openvpn/ccd" >> /etc/openvpn/openvpn.conf
     echo "ifconfig-pool-persist ipp.txt 1" >> /etc/openvpn/openvpn.conf
 fi
+
+mkdir -p ${OPENVPN_CRED_DIR}
+mkdir -p /etc/openvpn/ccd
 
 if [ ! -e "${OPENVPN_ADMIN_PROFILE}" ]; then
     easyrsa build-client-full dappnode_admin nopass

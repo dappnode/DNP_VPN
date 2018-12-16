@@ -40,6 +40,6 @@ for name in issued/*.crt; do
     fi
 done
 
-if [ -e crl.pem ]; then
+if [ -e crl.pem -a -e cacheck.pem ]; then
     rm cacheck.pem
 fi
