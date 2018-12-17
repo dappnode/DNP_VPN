@@ -15,7 +15,7 @@ docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -d 4002 UDP
 docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 500 UDP
 docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 4500 UDP
 ## SSH
-docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 22 TCP
+#docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 22 TCP
 ## Ethereum Node
 docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 30303 UDP
 docker run --rm --net=host ${IMAGE} upnpc -e DAppNode -r 30303 TCP
