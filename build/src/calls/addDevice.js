@@ -16,7 +16,7 @@ async function addDevice({id}) {
   if ( ! userArray.includes((id)) ) {
     await shell(`easyrsa build-client-full ${id} nopass`);
   } else {
-    throw Error('User exists.');
+    throw Error(`Device name exists: ${id}`);
   };
 
   // Emit packages update

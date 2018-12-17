@@ -1,10 +1,12 @@
 # Smallest base image
 FROM node:8.14.0-alpine
 
-RUN apk add --update wget openvpn iptables bash easy-rsa supervisor && \
+RUN apk add --update wget openvpn iptables bash easy-rsa \
+    bind-tools supervisor miniupnpc docker && \
     ln -s /usr/share/easy-rsa/easyrsa /usr/local/bin && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/* /var/cache/distfiles/*
 
+# OpenVPN parameters
 ENV OPENVPN /etc/openvpn
 ENV EASYRSA /usr/share/easy-rsa
 ENV EASYRSA_PKI $OPENVPN/pki
@@ -13,6 +15,21 @@ ENV EASYRSA_CRL_DAYS 3650
 ENV EASYRSA_BATCH yes
 ENV EASYRSA_ALGO ec
 ENV EASYRSA_CURVE secp256k1
+
+RUN mkdir -p /usr/src/app/secrets
+# VPN management parameters
+ENV DB_PATH /usr/src/app/secrets/vpndb.json
+ENV LOGIN_MSG_PATH /usr/src/app/loginMsgFile.txt
+ENV INSTALLATION_STATIC_IP /usr/src/app/config/static_ip
+ENV KEYPAIR_PATH /usr/src/app/secrets/keypair
+ENV PUBLIC_IP_PATH /usr/src/app/secrets/server-ip
+ENV SERVER_NAME_PATH /etc/vpnname
+ENV INTERNAL_IP_PATH /usr/src/app/secrets/internal-ip
+ENV EXTERNAL_IP_PATH /usr/src/app/secrets/external-ip
+ENV PUBLIC_IP_RESOLVED_PATH /usr/src/app/secrets/public-ip_resolved
+ENV DYNDNS_HOST https://ns.dappnode.io
+ENV PUBLIC_IP_URL https://ns.dappnode.io/myip
+ENV DYNDNS_DOMAIN dyndns.dappnode.io
 
 WORKDIR /usr/src/app
 COPY src/package.json .
@@ -31,5 +48,4 @@ RUN chmod a+x /usr/local/bin/*
 # Supervisor run:
 # node src/client.js
 # ovpn_run
-
 CMD ["supervisord"]

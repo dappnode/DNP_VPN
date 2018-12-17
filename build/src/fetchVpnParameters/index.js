@@ -4,7 +4,6 @@ const readFileAsync = promisify(fs.readFile);
 const db = require('../db');
 const logs = require('../logs.js')(module);
 const pause = require('../utils/pause');
-
 const getUpnpStatus = require('./getUpnpStatus');
 const getExternalIpResolves = require('./getExternalIpResolves');
 const getInstallationStaticIp = require('./getInstallationStaticIp');
@@ -16,7 +15,6 @@ const getInstallationStaticIp = require('./getInstallationStaticIp');
 
 
 const publicIpPath = process.env.PUBLIC_IP_PATH;
-const pskPath = process.env.PSK_PATH;
 const serverNamePath = process.env.SERVER_NAME_PATH;
 const internalIpPath = process.env.INTERNAL_IP_PATH;
 const externalIpPath = process.env.EXTERNAL_IP_PATH;
@@ -27,13 +25,12 @@ const pauseTime = 1000;
 
 async function fetchVpnParameters() {
   // The second parameter is a fallback value
-  // Not providing if enforces the existance of the file
+  // Not providing if enforces the existence of the file
 
   // Step 1: Get variables coming from the init.sh process
   // =====================================================
   // > This files contain raw variables
   const ip = await fetchVpnParameter(publicIpPath);
-  const psk = await fetchVpnParameter(pskPath);
   const internalIp = await fetchVpnParameter(internalIpPath, '');
   const externalIp = await fetchVpnParameter(externalIpPath, '');
   const publicIpResolved =
@@ -42,7 +39,6 @@ async function fetchVpnParameters() {
   const name = await fetchVpnParameter(serverNamePath, 'DAppNode_server');
 
   await db.set('ip', ip);
-  await db.set('psk', psk);
   await db.set('internalIp', internalIp);
   await db.set('externalIp', externalIp);
   await db.set('publicIpResolved', publicIpResolved);
