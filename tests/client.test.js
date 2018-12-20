@@ -7,7 +7,7 @@ const fs = require('fs');
 chai.should();
 
 describe('Integration test', function() {
-  const id = 'Jordi';
+  const ids = ['Jordi','Hal','Wardog'];
 
   // Initialize calls
   const {addDevice, removeDevice, toggleAdmin, listDevices} = calls;
@@ -21,7 +21,7 @@ describe('Integration test', function() {
        await shell('easyrsa build-client-full dappnode_admin nopass');
        await shell('easyrsa build-client-full luser nopass');
       } catch (e) {
-  
+        throw Error(`Cannot initalize: ${e}`);
     }
   });
 
@@ -31,7 +31,7 @@ describe('Integration test', function() {
     let user;
 
     it('should called addDevice without crashing', async () => {
-      res = await addDevice({id});
+      res = await addDevice({id: ids[0] });
     });
 
     it('should return success', () => {
@@ -40,7 +40,7 @@ describe('Integration test', function() {
 
     it('user should actually exist', async () => {
       let res = await listDevices();
-      user = res.result.find((d) => d.id == id);
+      user = res.result.find((d) => d.id == ids[0]);
       expect( Boolean(user) ).to.be.true;
     });
 
@@ -54,11 +54,11 @@ describe('Integration test', function() {
     it('should throw an error', async () => {
       let error = 'did not throw';
       try {
-        await addDevice({id});
+        await addDevice({id: ids[0]});
       } catch (e) {
         error = e.message;
       }
-      expect(error).to.equal('Device name exists: '+id);
+      expect(error).to.equal('Device name exists: '+ids[0]);
     });
   });
 
@@ -67,7 +67,7 @@ describe('Integration test', function() {
     let user;
 
     it('should call toggleAdmin without crashing', async () => {
-      res = await toggleAdmin({id});
+      res = await toggleAdmin({id: ids[0]});
     });
 
     it('should return success', () => {
@@ -76,11 +76,11 @@ describe('Integration test', function() {
 
     it('should still exist', async () => {
       let res = await listDevices();
-      user = res.result.find((d) => d.id == id);
+      user = res.result.find((d) => d.id == ids[0]);
       expect( Boolean(user) ).to.be.true;
     });
 
-    it('should have changed the user to admin IP', () => {
+    it('should have changed the user to admin', () => {
       let CcdFile = fs.existsSync(`/etc/openvpn/ccd/${user.id}`)
       expect( Boolean(CcdFile)).to.be.true;
     });
@@ -90,7 +90,7 @@ describe('Integration test', function() {
     it('should throw an error', async () => {
       let error = 'did not throw';
       try {
-        await removeDevice({id});
+        await removeDevice({id: ids[0]});
       } catch (e) {
         error = e.message;
       }
@@ -102,7 +102,7 @@ describe('Integration test', function() {
     let user;
 
     it('should call toggleAdmin without crashing', async () => {
-      const res = await toggleAdmin({id});
+      const res = await toggleAdmin({id: ids[0]});
       expect( res ).to.have.property('message');
     });
 
@@ -110,11 +110,69 @@ describe('Integration test', function() {
       // Fetching devices
       let res = await listDevices();
       // Searching device
-      user = res.result.find((d) => d.id == id);
+      user = res.result.find((d) => d.id == ids[0]);
       expect( Boolean(user) ).to.be.true;
       let CcdFile = fs.existsSync(`/etc/openvpn/ccd/${user.id}`)
       expect( Boolean(CcdFile)).to.be.false;
     });
+  });
+
+  describe('Add a couple of admins', function(){
+    let user1
+    let user2
+    it('should called addDevice for first user without crashing', async () => {
+      res = await addDevice({id: ids[1] });
+    });
+    it('should return success', () => {
+      expect( res ).to.have.property('message');
+    });
+
+    it('should called addDevice for second user without crashing', async () => {
+      res = await addDevice({id: ids[2] });
+    });
+    it('should return success', () => {
+      expect( res ).to.have.property('message');
+    });
+
+    it('should call toggleAdmin to the first user without crashing', async () => {
+      res = await toggleAdmin({id: ids[1]});
+    });
+
+    it('should return success', () => {
+      expect( res ).to.have.property('message');
+    });
+
+    it('should call toggleAdmin to the second user without crashing', async () => {
+      res = await toggleAdmin({id: ids[2]});
+    });
+
+    it('should return success', () => {
+      expect( res ).to.have.property('message');
+    });
+
+    it('should have changed the first user to admin', () => {
+      let CcdFile = fs.existsSync(`/etc/openvpn/ccd/${ids[1]}`)
+      expect( Boolean(CcdFile)).to.be.true;
+    });
+
+    it('should have changed the second user to admin', () => {
+      let CcdFile = fs.existsSync(`/etc/openvpn/ccd/${ids[2]}`)
+      expect( Boolean(CcdFile)).to.be.true;
+    });
+
+    it('should call toggleAdmin to the first user without crashing', async () => {
+      res = await toggleAdmin({id: ids[1]});
+    });
+
+    it('should return success', () => {
+      expect( res ).to.have.property('message');
+    });
+
+    it('should have changed the first user to non admin', () => {
+      let CcdFile = fs.existsSync(`/etc/openvpn/ccd/${ids[1]}`)
+      expect( Boolean(CcdFile)).to.be.false;
+    });
+
   });
 
   describe('Call function: removeDevice', function() {
@@ -122,7 +180,7 @@ describe('Integration test', function() {
     let user;
 
     it('should call removeDevice without crashing', async () => {
-      res = await removeDevice({id});
+      res = await removeDevice({id: ids[0]});
     });
 
     it('should return success', () => {
@@ -131,7 +189,7 @@ describe('Integration test', function() {
 
     it('should actually be deleted', async () => {
       let res = await listDevices();
-      user = res.result.find((d) => d.id == id);
+      user = res.result.find((d) => d.id == ids[0]);
       expect( Boolean(user) ).to.be.false;
     });
   });
