@@ -101,7 +101,7 @@ ENV VPN_DNS_SRV1 172.33.1.2
 ENV VPN_DNS_SRV2 8.8.8.8
 
 # location of the OTP parsing tool
-ENV DAPPNODE_OTP_URL https://otp.dappnode.io
+ENV DAPPNODE_OTP_URL http://otp.dappnode.io
 # dyndns host
 ENV DYNDNS_HOST https://ns.dappnode.io
 ENV PUBLIC_IP_URL https://ns.dappnode.io/myip

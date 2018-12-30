@@ -53,7 +53,7 @@ async function logAdminCredentials() {
   /* eslint-disable max-len */
   let msg = `
 To connect to your DAppNode scan the QR above, copy/paste link below into your browser or use VPN credentials:
-${adminOtp}
+  ${adminOtp}
 
 ${columns.map((col) => col.field.padEnd(col.value.length)).join('  ')}
 ${columns.map((col) => col.value).join('  ')}`;

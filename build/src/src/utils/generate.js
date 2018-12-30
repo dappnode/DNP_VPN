@@ -2,7 +2,7 @@ const generator = require('generate-password');
 const db = require('../db');
 const getServer = require('./getServer');
 
-const dappnodeOtpUrl = process.env.DAPPNODE_OTP_URL;
+const dappnodeOtpUrl = process.env.DAPPNODE_OTP_URL || 'otp.dappnode.io';
 const commonStaticIpPrefix = '172.33.';
 const userStaticIpPrefix = '172.33.100.';
 const userStaticIpFirstOctet = 2;
@@ -47,7 +47,7 @@ function password(passwordLength) {
 const encode = {
   // To optimize the server address, if a hex string is passed
   // it is assumed to be the subdomain of the default dyndns provider
-  server: (input) => input.split('.dyndns.dappnode.io')[0],
+  server: (input) => (input || '').split('.dyndns.dappnode.io')[0],
   psk: (input) => input,
   // If no user is provided, assume it is the default admin user
   user: (input) => input === 'dappnode_admin' ? '' : input,
@@ -95,7 +95,7 @@ async function otp({user, pass}, {min} = {}) {
       .map(encodeURIComponent)
       .join('&');
 
-    let otpUrl = (min && dappnodeOtpUrl.includes('://'))
+    let otpUrl = (min && (dappnodeOtpUrl || '').includes('://'))
       ? dappnodeOtpUrl.split('://')[1]
       : dappnodeOtpUrl;
 
