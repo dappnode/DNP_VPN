@@ -13,9 +13,14 @@ async function generateLoginMsg() {
     user: adminDevice.name,
     pass: adminDevice.password,
   });
+  const adminOtpMin = await generate.otp({
+    user: adminDevice.name,
+    pass: adminDevice.password,
+  }, {min: true});
 
   // Show the QR code
-  msg += await getQrCodeString(adminOtp);
+  // Wraps qrcode library's callback style into a promise
+  msg += await getQrCodeString(adminOtpMin);
 
   // Show credentials
   const server = await getServer();
@@ -45,7 +50,7 @@ async function generateLoginMsg() {
   /* eslint-disable max-len */
   msg += `
 To connect to your DAppNode scan the QR above, copy/paste link below into your browser or use VPN credentials:
-${adminOtp}
+  ${adminOtp}
 
 ${columns.map((col) => col.field.padEnd(col.value.length)).join('  ')}
 ${columns.map((col) => col.value).join('  ')}    `; // leave trailing spaces
@@ -56,8 +61,6 @@ ${columns.map((col) => col.value).join('  ')}    `; // leave trailing spaces
   const internalIp = await db.get('internalIp');
   msg += parseUpnpStatus(openPorts, upnpAvailable);
   msg += parsePublicIpStatus(externalIpResolves, internalIp);
-  /* eslint-enable max-len */
-
   // return msg for testing
   return msg;
 }
