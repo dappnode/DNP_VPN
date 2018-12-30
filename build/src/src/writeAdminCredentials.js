@@ -4,17 +4,26 @@ const qrcode = require('qrcode-terminal');
 const db = require('./db');
 const getServer = require('./utils/getServer');
 
+// Make sure it is the same string as in:
+// build/src/init.sh line 50:
+//   export VPN_USER=dappnode_admin
+const adminDeviceName = 'dappnode_admin';
+
 async function logAdminCredentials() {
   const deviceList = await credentialsFile.fetch();
-  const adminDevice = deviceList[0];
+  const adminDevice = deviceList.find((device) => device.name === adminDeviceName);
   const adminOtp = await generate.otp({
     user: adminDevice.name,
     pass: adminDevice.password,
   });
+  const adminOtpMin = await generate.otp({
+    user: adminDevice.name,
+    pass: adminDevice.password,
+  }, {min: true});
 
   // Show the QR code
   qrcode.setErrorLevel('S');
-  qrcode.generate(adminOtp);
+  qrcode.generate(adminOtpMin);
 
   // Show credentials
   const server = await getServer();

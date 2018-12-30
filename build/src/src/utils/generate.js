@@ -1,4 +1,3 @@
-const base64url = require('base64url');
 const generator = require('generate-password');
 const db = require('../db');
 const getServer = require('./getServer');
@@ -45,6 +44,16 @@ function password(passwordLength) {
   });
 }
 
+const encode = {
+  // To optimize the server address, if a hex string is passed
+  // it is assumed to be the subdomain of the default dyndns provider
+  server: (input) => input.split('.dyndns.dappnode.io')[0],
+  psk: (input) => input,
+  // If no user is provided, assume it is the default admin user
+  user: (input) => input === 'dappnode_admin' ? '' : input,
+  pass: (input) => input,
+  name: (input) => input,
+};
 
 /**
  * Leaving the object destructuring to ensure no extra parameters
@@ -58,24 +67,39 @@ function password(passwordLength) {
  *   'pass': pass,
  *   'psk': psk,
  * }
- *
+ * @param {Object}: {
+ *   min: true // ignores the server name and url protocol to save space
+ * }
  * @return {String} otp link
  */
-async function otp({user, pass}) {
+async function otp({user, pass}, {min} = {}) {
     const server = await getServer();
     const name = await db.get('name');
     const psk = await db.get('psk');
 
     const otpCredentials = {
       server,
-      name,
+      name: min ? '' : name,
       user,
       pass,
       psk,
     };
 
-    const otpCredentialsEncoded = base64url.encode(JSON.stringify(otpCredentials));
-    return dappnodeOtpUrl + '#otp=' + otpCredentialsEncoded;
+    const otpEncoded = [
+      encode.server(otpCredentials.server),
+      encode.psk(otpCredentials.psk),
+      encode.user(otpCredentials.user),
+      encode.pass(otpCredentials.pass),
+      encode.name(otpCredentials.name),
+    ]
+      .map(encodeURIComponent)
+      .join('&');
+
+    let otpUrl = (min && dappnodeOtpUrl.includes('://'))
+      ? dappnodeOtpUrl.split('://')[1]
+      : dappnodeOtpUrl;
+
+    return `${otpUrl}#${otpEncoded}`;
 }
 
 
