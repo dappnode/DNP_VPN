@@ -2,6 +2,7 @@ const autobahn = require('autobahn');
 const logs = require('./logs.js')(module);
 const db = require('./db');
 
+const openPorts = require('./openPorts');
 const dyndnsClient = require('./dyndnsClient');
 const calls = require('./calls');
 const fetchVpnParameters = require('./fetchVpnParameters');
@@ -166,5 +167,17 @@ function register(session, event, handler) {
 function error2obj(e) {
   return {name: e.name, message: e.message, stack: e.stack, userAction: true};
 }
+
+
+// //////////////////////////////
+//  Open ports (UPnP script)   //
+// //////////////////////////////
+
+openPorts().then(() => {
+  logs.info('Successfully ran open ports script');
+})
+.catch((e) => {
+  logs.error(`Error running open ports script: ${e.stack}`);
+});
 
 
