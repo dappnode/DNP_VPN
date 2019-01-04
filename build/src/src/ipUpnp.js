@@ -1,5 +1,5 @@
-const shell = require('utils/shell');
-const ping = require('utils/ping');
+const shell = require('./utils/shell');
+const ping = require('./utils/ping');
 const db = require('./db');
 
 /* eslint-disable max-len */
