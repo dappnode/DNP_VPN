@@ -5,11 +5,12 @@ const db = require('./db');
 /* eslint-disable max-len */
 
 async function ipUpnp() {
-    const image = await shell(`docker inspect DAppNodeCore-vpn.dnp.dappnode.eth -f '{{.Config.Image}}'`);
-    const externalIp = await shell(`docker run --rm --net=host ${image} upnpc -l | awk -F'= '  '/ExternalIPAddress/{print $2}'`);
+    const image = await shell(`docker inspect DAppNodeCore-vpn.dnp.dappnode.eth -f '{{.Config.Image}}'`) || '';
+    // the "image" output may contain a newline character. To avoid the next command to fail, trim image
+    const externalIp = await shell('docker run --rm --net=host '+image.trim()+' upnpc -l | awk -F\'= \'  \'/ExternalIPAddress/{print $2}\'');
     // A unicode escape sequence is basically atomic. You cannot really build one dynamically
     // Template literals basically perform string concatenation, so your code is equivalent to
-    const internalIp = await shell('docker run --rm --net=host '+image+' ip route get 1  | sed -n \'s/.*src ([0-9.]+).*/\1/p\'');
+    const internalIp = await shell('docker run --rm --net=host '+image.trim()+' ip route get 1  | sed -n \'s/.*src ([0-9.]+).*/\1/p\'');
 
     // DIG checkin in the future we want to remove this centralization point
     const digIp = await shell(`dig @resolver1.opendns.com -t A -4 myip.opendns.com +short`);
