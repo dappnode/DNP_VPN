@@ -9,15 +9,16 @@ const calls = require('./calls');
 const fetchVpnParameters = require('./fetchVpnParameters');
 const loginMsg = require('./loginMsg');
 const {eventBus, eventBusTag} = require('./eventBus');
+const getPublicIp = require('./utils/getPublicIp');
 
 const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws';
 const REALM = 'dappnode_admin';
 const publicIpCheckInterval = 30 * 60 * 1000;
 
 
-// /////////////////////////////
+// ////////////////////////////
 // Setup crossbar connection //
-// /////////////////////////////
+// ////////////////////////////
 
 
 const connection = new autobahn.Connection({url: URL, realm: REALM});
@@ -99,7 +100,7 @@ async function start() {
   setInterval(async () => {
     try {
       if (!await db.get('staticIp')) {
-        const ip = await dyndnsClient.getPublicIp();
+        const ip = await getPublicIp();
         if (!ip || ip !== _ip) {
           dyndnsClient.updateIp();
           _ip = ip;

@@ -99,7 +99,6 @@ ENV VPN_DNS_SRV2 8.8.8.8
 ENV DAPPNODE_OTP_URL http://otp.dappnode.io
 # dyndns host
 ENV DYNDNS_HOST https://ns.dappnode.io
-ENV PUBLIC_IP_URL https://ns.dappnode.io/myip
 ENV DYNDNS_DOMAIN dyndns.dappnode.io
 
 RUN ln -s /usr/src/app/src/getAdminCredentials.js /usr/bin/getAdminCredentials

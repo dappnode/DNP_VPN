@@ -15,9 +15,6 @@ const getInstallationStaticIp = require('./getInstallationStaticIp');
 // It acts as a cache to minimize response time.
 // The computation of this parameters is triggered from somewhere else.
 
-
-const publicIpPath = process.env.PUBLIC_IP_PATH;
-const pskPath = process.env.PSK_PATH;
 const serverNamePath = process.env.SERVER_NAME_PATH;
 
 const maxSeconds = 3 * 60; // 3 min
@@ -32,8 +29,8 @@ async function fetchVpnParameters() {
   // - ip_upnp.sh exports: internalIp, externalIp, publicIpResolved
   // =====================================================
   // > This files contain raw variables
-  const ip = await fetchVpnParameter(publicIpPath);
-  const psk = await fetchVpnParameter(pskPath);
+  const ip = process.env.PUBLIC_IP;
+  const psk = process.env.PSK;
   const name = await fetchVpnParameter(serverNamePath, 'DAppNode_server');
 
   await db.set('ip', ip);

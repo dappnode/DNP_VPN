@@ -19,23 +19,6 @@
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
-exiterr()  { echo "Error: $1" >&2; exit 1; }
-
-check_ip() {
-  IP_REGEX='^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$'
-  printf '%s' "$1" | tr -d '\n' | grep -Eq "$IP_REGEX"
-}
-
-echo 'Trying to auto discover IP of this server and redirect the ports...'
-
-# Try to auto discover IP of this server
-#[ -z "$PUBLIC_IP" ] && PUBLIC_IP=$(dig @resolver1.opendns.com -t A -4 myip.opendns.com +short)
-
-# Check IP for correct format
-check_ip "$PUBLIC_IP" || PUBLIC_IP=$(wget -t 3 -T 15 -qO- http://ipv4.icanhazip.com)
-check_ip "$PUBLIC_IP" || PUBLIC_IP=$(wget -t 3 -T 15 -4 -qO- http://ident.me)
-check_ip "$PUBLIC_IP" || exiterr "Cannot detect this server's public IP. Define it in your 'env' file as 'VPN_PUBLIC_IP'."
-
 # Export variables for use in templates
 echo "Generating VPN credentials: PSK and password..."
 export L2TP_NET=${VPN_L2TP_NET:-'172.33.0.0/16'}
@@ -43,20 +26,11 @@ export L2TP_LOCAL=${VPN_L2TP_LOCAL:-'172.33.11.1'}
 export L2TP_POOL=${VPN_L2TP_POOL:-'172.33.200.1-172.33.255.254'}
 export DNS_SRV1=${VPN_DNS_SRV1:-'8.8.8.8'}
 export DNS_SRV2=${VPN_DNS_SRV2:-'8.8.4.4'}
-export PUBLIC_IP
 
-export VPN_USER=dappnode_admin
-export VPN_PASSWORD="$([ -f ${VPN_ADMIN_PASS_PATH} ] && cat ${VPN_ADMIN_PASS_PATH} || echo $(LC_CTYPE=C tr -dc 'A-HJ-NPR-Za-km-z2-9' < /dev/urandom | head -c 20))"
-export VPN_IPSEC_PSK="$([ -f ${PSK_PATH} ] && cat ${PSK_PATH} || echo $(LC_CTYPE=C tr -dc 'A-HJ-NPR-Za-km-z2-9' < /dev/urandom | head -c 20))"
+export VPN_USER="$ADMIN_USER"
+export VPN_PASSWORD="$ADMIN_PASSWORD"
+export VPN_IPSEC_PSK="$PSK"
 export VPN_PASSWORD_ENC=$(openssl passwd -1 "$VPN_PASSWORD")
-
-# Output the IP for the user managment UI
-echo "WRITING PUBLIC IP TO SERVER-IP"
-echo "$PUBLIC_IP" > $PUBLIC_IP_PATH
-echo "WRITING PSK TO SERVER-PSK"
-echo "$VPN_IPSEC_PSK" > $PSK_PATH
-echo "WRITING VPN_PASSWORD TO ADMIN_PASS"
-echo "$VPN_PASSWORD" > $VPN_ADMIN_PASS_PATH
 
 mkdir -p /etc/xl2tpd
 
@@ -84,12 +58,6 @@ ln -s ${IPSEC_SECRETS_PATH} /etc/ipsec.secrets
 [ ! -f "${CREDENTIALS_PATH}" ] &&  envsubst < "templates/chap-secrets" > "${CREDENTIALS_PATH}"
 rm /etc/ppp/chap-secrets
 ln -s ${CREDENTIALS_PATH} /etc/ppp/chap-secrets
-
-# Output the IP for the user managment UI
-echo "WRITING PUBLIC IP TO SERVER-IP"
-echo "$PUBLIC_IP" > $PUBLIC_IP_PATH
-echo "WRITING PSK TO SERVER-PSK"
-echo "$VPN_IPSEC_PSK" > $PSK_PATH
 
 # Update sysctl settings
 SYST='/sbin/sysctl -e -q -w'
