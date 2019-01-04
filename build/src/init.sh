@@ -31,9 +31,6 @@ echo 'Trying to auto discover IP of this server and redirect the ports...'
 # Try to auto discover IP of this server
 #[ -z "$PUBLIC_IP" ] && PUBLIC_IP=$(dig @resolver1.opendns.com -t A -4 myip.opendns.com +short)
 
-# Exports $PUBLIC_IP
-source /usr/src/app/ip_upnp.sh
-
 # Check IP for correct format
 check_ip "$PUBLIC_IP" || PUBLIC_IP=$(wget -t 3 -T 15 -qO- http://ipv4.icanhazip.com)
 check_ip "$PUBLIC_IP" || PUBLIC_IP=$(wget -t 3 -T 15 -4 -qO- http://ident.me)
