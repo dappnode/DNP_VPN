@@ -23,7 +23,7 @@ const encrypt = (file, key) => {
   return base64FullMessage;
 };
 
-async function getDeviceCredentials({id}) {
+async function generate({id}) {
 
   // Check if id exists.
 
@@ -40,5 +40,5 @@ async function getDeviceCredentials({id}) {
   };
 };
 
-module.exports = getDeviceCredentials;
+module.exports = {generate};
 

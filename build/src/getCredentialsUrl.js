@@ -1,10 +1,16 @@
 #!/usr/bin/env node
 
-/* eslint-disable no-console */ /* eslint-disable max-len */
-// This module must NOT have any non-native dependencies
 const fs = require('fs');
-const getDeviceCredentials = false;
-// Get a url + QR code for the requested user.
+const getDeviceCredentials = require('./calls/getDeviceCredentials');
 
-// e.g.:
-// node getCredentialsUrl admin_dappnode
+async function main() {
+    console.log(process.argv[0]);
+    if (process.argv.length < 3) {
+        console.log('Usage: geturl <user>')
+        process.exit(0)
+    };
+    creds = await getDeviceCredentials.generate({id: process.argv[1]});
+    console.log(creds);
+};
+
+main();
