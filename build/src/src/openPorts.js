@@ -8,7 +8,6 @@ const ports = [
     {protocol: 'UDP', portNumber: 4500},
     // - SSH: 22 TCP (Ignore)
     // {protocol: 'TCP', portNumber: 22},
-    {protocol: 'UDP', portNumber: 500},
     // - ETH: 30303 TCP, 30303 UDP
     {protocol: 'TCP', portNumber: 30303},
     {protocol: 'UDP', portNumber: 30303},
