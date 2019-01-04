@@ -23,8 +23,10 @@ const parseListOutput = require('./parseListOutput');
 // - list
 // - status
 
-const image = `$(docker inspect DAppNodeCore-vpn.dnp.dappnode.eth -f '{{.Config.Image}}')`;
-const commandPrefix = `docker run --rm --net=host ${image} upnpc`;
+function upnpcCommand(cmd) {
+    return shell(`docker inspect DAppNodeCore-vpn.dnp.dappnode.eth -f '{{.Config.Image}}'`)
+        .then((image) => shell(`docker run --rm --net=host ${image.trim()} upnpc ${cmd} `));
+}
 
 const upnpc = {
     /**
@@ -40,7 +42,7 @@ const upnpc = {
      */
     open: ({protocol, portNumber}) => {
         validateKwargs({protocol, portNumber});
-        return shell(`${commandPrefix} -e DAppNode -r ${portNumber} ${protocol}`)
+        return upnpcCommand(`-e DAppNode -r ${portNumber} ${protocol}`)
         .then(parseOpenOutput);
     },
 
@@ -57,7 +59,7 @@ const upnpc = {
      */
     close: ({protocol, portNumber}) => {
         validateKwargs({protocol, portNumber});
-        return shell(`${commandPrefix} -e DAppNode -d ${portNumber} ${protocol}`)
+        return upnpcCommand(`-e DAppNode -d ${portNumber} ${protocol}`)
         .then(parseCloseOutput);
     },
 
@@ -73,7 +75,7 @@ const upnpc = {
      *   {protocol: 'TCP', exPort: '30303', inPort: '30303'},
      * ]
      */
-    list: () => shell(`${commandPrefix} -l`)
+    list: () => upnpcCommand(`-l`)
         .then(parseListOutput),
 };
 
