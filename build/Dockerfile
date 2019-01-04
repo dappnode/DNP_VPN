@@ -79,8 +79,6 @@ RUN apk add --update --no-cache \
 # - node files: package.json, client.js
 COPY src/ipsec /etc/init.d/ipsec
 
-RUN chmod 755 init.sh
-
 RUN mkdir -p /usr/src/app/secrets
 # envs for init.sh -> node communication
 ENV DB_PATH /usr/src/app/secrets/vpndb.json
@@ -103,9 +101,12 @@ ENV DYNDNS_DOMAIN dyndns.dappnode.io
 
 RUN ln -s /usr/src/app/src/getAdminCredentials.js /usr/bin/getAdminCredentials
 RUN chmod +x /usr/src/app/src/getAdminCredentials.js
+RUN chmod +x /usr/src/app/src/getPublicIpCommand.js
+RUN chmod 755 init.sh
+RUN chmod 755 entrypoint.sh
 
 # Supervisord processes:
 # > /usr/src/app/init.sh (libreswan VPN, executes xl2tpd)
 # > /usr/src/app/ipsec.sh (ipsec)
 # > node client.js (VPN user managment API)
-CMD ["supervisord"]
+ENTRYPOINT ["./entrypoint.sh"]

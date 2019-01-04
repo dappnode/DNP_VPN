@@ -20,7 +20,6 @@
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 # Export variables for use in templates
-echo "Generating VPN credentials: PSK and password..."
 export L2TP_NET=${VPN_L2TP_NET:-'172.33.0.0/16'}
 export L2TP_LOCAL=${VPN_L2TP_LOCAL:-'172.33.11.1'}
 export L2TP_POOL=${VPN_L2TP_POOL:-'172.33.200.1-172.33.255.254'}
