@@ -53,12 +53,14 @@ async function openPorts() {
         try {
             await upnpc.close(portToOpen);
         } catch (e) {
-            logs.error(`Error closing port ${portId(portToOpen)}: ${e.stack}`);
+            // Errors while closing a port before openning do not matter.
+            logs.warn(`(May not matter): Error closing port ${portId(portToOpen)}: ${e.message}`);
         }
         try {
             await upnpc.open(portToOpen);
         } catch (e) {
-            logs.error(`Error openning port ${portId(portToOpen)}: ${e.stack}`);
+            // Error stack of shell processes do not matter. The message contains all the info
+            logs.error(`Error openning port ${portId(portToOpen)}: ${e.message}`);
         }
     }
 
