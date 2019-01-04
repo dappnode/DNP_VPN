@@ -35,7 +35,7 @@ const fetchVpnParameters = require('../../src/fetchVpnParameters');
 
 chai.should();
 
-describe('fetchVpnParameters test', function() {
+describe.skip('fetchVpnParameters test', function() {
   before(() => {
     // Restart db
     try {
