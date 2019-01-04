@@ -4,6 +4,7 @@ const db = require('./db');
 
 const openPorts = require('./openPorts');
 const dyndnsClient = require('./dyndnsClient');
+const ipUpnp = require('./ipUpnp');
 const calls = require('./calls');
 const fetchVpnParameters = require('./fetchVpnParameters');
 const loginMsg = require('./loginMsg');
@@ -72,10 +73,19 @@ async function start() {
   // In that case generate a new identity and alert the user
   await dyndnsClient.generateKeys();
 
+  // Runs the ip_upnp.sh script
+  // Will store the variables internalIp, externalIp, publicIpResolved in the db
+  logs.info('Loading VPN parameters... It may take a while');
+  await ipUpnp();
+
   // fetchVpnParameters read the output files from the .sh scripts
   // and stores the values in the db
-  logs.info('Loading VPN parameters... It may take a while');
   await fetchVpnParameters();
+
+  // Run the openPorts script without await completition
+  openPorts()
+    .then(() => logs.info('Successfully ran open ports script'))
+    .catch((e) => logs.error(`Error running open ports script: ${e.stack}`));
 
   // If the user has not defined a static IP use dynamic DNS
   // > staticIp is set in `await fetchVpnParameters();`
@@ -101,7 +111,7 @@ async function start() {
     }
   }, publicIpCheckInterval);
 
-  // Print db censoring privateKey
+  // Print db for debugging
   const _db = await db.get();
   logs.info(JSON.stringify(_db, null, 2 ));
 
@@ -172,12 +182,5 @@ function error2obj(e) {
 // //////////////////////////////
 //  Open ports (UPnP script)   //
 // //////////////////////////////
-
-openPorts().then(() => {
-  logs.info('Successfully ran open ports script');
-})
-.catch((e) => {
-  logs.error(`Error running open ports script: ${e.stack}`);
-});
 
 

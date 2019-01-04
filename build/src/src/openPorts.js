@@ -21,6 +21,7 @@ const portId = (port) => `${port.portNumber} ${port.protocol}`;
 
 async function openPorts() {
     // 1. Get the list of ports and check there is a UPnP device
+    // portMappings = [ {protocol: 'UDP', exPort: '500', inPort: '500'} ]
     let currentPortMappings;
     try {
         currentPortMappings = await upnpc.list();
@@ -32,7 +33,6 @@ async function openPorts() {
             throw e;
         }
     }
-    // portMappings = [ {protocol: 'UDP', exPort: '500', inPort: '500'} ]
 
     // 2. If the port is already open, ignore
     const portsToOpen = ports.filter((port) => {

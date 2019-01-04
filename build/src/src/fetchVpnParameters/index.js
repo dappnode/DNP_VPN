@@ -9,6 +9,7 @@ const getUpnpStatus = require('./getUpnpStatus');
 const getExternalIpResolves = require('./getExternalIpResolves');
 const getInstallationStaticIp = require('./getInstallationStaticIp');
 
+/* eslint-disable max-len */
 
 // Fetch VPN parameters loads all files containing parameters and status
 // It acts as a cache to minimize response time.
@@ -18,11 +19,8 @@ const getInstallationStaticIp = require('./getInstallationStaticIp');
 const publicIpPath = process.env.PUBLIC_IP_PATH;
 const pskPath = process.env.PSK_PATH;
 const serverNamePath = process.env.SERVER_NAME_PATH;
-const internalIpPath = process.env.INTERNAL_IP_PATH;
-const externalIpPath = process.env.EXTERNAL_IP_PATH;
-const publicIpResolvedPath = process.env.PUBLIC_IP_RESOLVED_PATH;
 
-const maxAttempts = 3 * 60; // 3 min
+const maxSeconds = 3 * 60; // 3 min
 const pauseTime = 1000;
 
 async function fetchVpnParameters() {
@@ -30,28 +28,24 @@ async function fetchVpnParameters() {
   // Not providing if enforces the existance of the file
 
   // Step 1: Get variables coming from the init.sh process
+  // - init.sh exports: ip, psk
+  // - ip_upnp.sh exports: internalIp, externalIp, publicIpResolved
   // =====================================================
   // > This files contain raw variables
   const ip = await fetchVpnParameter(publicIpPath);
   const psk = await fetchVpnParameter(pskPath);
-  const internalIp = await fetchVpnParameter(internalIpPath, '');
-  const externalIp = await fetchVpnParameter(externalIpPath, '');
-  const publicIpResolved =
-    await fetchVpnParameter(publicIpResolvedPath) == '1'
-    ? true : false;
   const name = await fetchVpnParameter(serverNamePath, 'DAppNode_server');
 
   await db.set('ip', ip);
   await db.set('psk', psk);
-  await db.set('internalIp', internalIp);
-  await db.set('externalIp', externalIp);
-  await db.set('publicIpResolved', publicIpResolved);
   await db.set('name', name);
-
 
   // Step 2: Process the loaded variables
   // =============================================
   // > This files contain stringified jsons
+  const internalIp = await db.get('internalIp');
+  const externalIp = await db.get('externalIp');
+  const publicIpResolved = await db.get('publicIpResolved');
   const externalIpResolves = getExternalIpResolves(ip, internalIp, publicIpResolved);
   const {openPorts, upnpAvailable} = getUpnpStatus(ip, externalIp, internalIp);
   // Get the static ip possibly set during the installation
@@ -59,7 +53,6 @@ async function fetchVpnParameters() {
   await db.set('externalIpResolves', externalIpResolves);
   await db.set('openPorts', openPorts);
   await db.set('upnpAvailable', upnpAvailable);
-
 
   // Step 3: Get ip (maybe) set during the installation
   // ==================================================
@@ -83,25 +76,24 @@ async function fetchVpnParameters() {
 }
 
 async function fileToExist(path, fallbackValue) {
-  for (let i = 0; i < maxAttempts; i++) {
+  for (let i = 0; i < maxSeconds; i++) {
     if (fs.existsSync(path)) return;
     await pause(pauseTime);
   }
   if (fallbackValue) {
-    logs.warn('Option file '+path+' not found (after #' + maxAttempts + ' attempts) '
-      +'- Fallback value: '+fallbackValue);
+    logs.warn(`Optional file ${path} not found after ${maxSeconds} seconds. Using fallback value: ${fallbackValue}`);
     return fallbackValue;
   }
-  throw Error('Mandatory file '+path+' not found (after #' + maxAttempts + ' attempts)');
+  throw Error(`Mandatory file ${path} not found after ${maxSeconds} seconds`);
 }
 
 async function dbEntryToExist(key) {
-  for (let i = 0; i < maxAttempts; i++) {
+  for (let i = 0; i < maxSeconds; i++) {
     const value = await db.get(key);
     if (value) return value;
     await pause(pauseTime);
   }
-  throw Error(`Mandatory db entry "${key}" not found (after #${maxAttempts} attempts)`);
+  throw Error(`Mandatory db entry "${key}" not found after ${maxSeconds} seconds.`);
 }
 
 const fetchVpnParameter = (path, fallbackValue = false) =>
