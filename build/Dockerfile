@@ -109,4 +109,9 @@ RUN chmod 755 entrypoint.sh
 # > /usr/src/app/init.sh (libreswan VPN, executes xl2tpd)
 # > /usr/src/app/ipsec.sh (ipsec)
 # > node client.js (VPN user managment API)
-ENTRYPOINT ["./entrypoint.sh"]
+
+# The vpn image is used to run upnpn commands
+# Therefore the whole execution needs to be replaced by another command
+# That's why the entry point needs to be run with CMD instead of ENTRYPOINT
+# $ docker run [OPTIONS] IMAGE[:TAG|@DIGEST] [COMMAND] [ARG...]
+CMD ["./entrypoint.sh"]
