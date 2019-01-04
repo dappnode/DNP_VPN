@@ -29,8 +29,7 @@ function getPublicIp(silent) {
             // -T: timeout after 15 seconds
             // -q: quiet, suppress all output except the IP
             // O-: output ?
-            const ip = await shell(`wget -t 3 -T 15 -qO- ${url}`)
-                .then((s) => (s || '').trim())
+            const ip = await shell(`wget -t 3 -T 15 -qO- ${url}`, {trim: true})
                 .catch((e) => {
                     lastError = `Error getting IP from ${url}: ${e.message}`;
                     if (!silent) logs.error(lastError);

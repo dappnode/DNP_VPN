@@ -23,9 +23,11 @@ const parseListOutput = require('./parseListOutput');
 // - list
 // - status
 
+/* eslint-disable max-len */
+
 function upnpcCommand(cmd) {
-    return shell(`docker inspect DAppNodeCore-vpn.dnp.dappnode.eth -f '{{.Config.Image}}'`)
-        .then((image) => shell(`docker run --rm --net=host ${image.trim()} upnpc ${cmd} `));
+    return shell(`docker inspect DAppNodeCore-vpn.dnp.dappnode.eth -f '{{.Config.Image}}'`, {trim: true})
+        .then((image) => shell(`docker run --rm --net=host ${image} upnpc ${cmd} `));
 }
 
 const upnpc = {
