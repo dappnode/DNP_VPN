@@ -6,11 +6,11 @@ const shell = require('../utils/shell');
 
 const {eventBus, eventBusTag} = require('../eventBus');
 
-const revokeCommand = '/usr/local/bin/ovpn_revokeclient'
+const revokeCommand = '/usr/local/bin/ovpn_revokeclient';
 
 async function removeDevice({id}) {
-  let deviceArray = await getUserList.fetch();
-  let ccdArray = await getCCD.fetch();
+  let deviceArray = await getUserList();
+  let ccdArray = await getCCD();
 
   if (ccdArray.find((c) => c.cn === id)) throw Error('You cannot remove an admin user');
 

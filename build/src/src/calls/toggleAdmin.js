@@ -1,21 +1,21 @@
 const fs = require('fs');
 const getCCD = require('../utils/getCCD');
 const getUserList = require('../utils/getUserList');
+const getLowestIP = require('../utils/getLowestIP');
 
-const ccdPath = '/etc/openvpn/ccd'
-const ccdNetmask = '255.255.0.0'
-const masterAdmin = 'dappnode_admin'
+const ccdPath = '/etc/openvpn/ccd';
+const ccdNetmask = '255.255.0.0';
+const masterAdmin = 'dappnode_admin';
 const {eventBus, eventBusTag} = require('../eventBus');
 
 
 async function toggleAdmin({id}) {
-
-  let devices = await getUserList.fetch();
+  let devices = await getUserList();
   if (!devices.includes(id)) {
     throw Error('Device not found: '+id);
-  };
+  }
 
-  const ccdArray = await getCCD.fetch();
+  const ccdArray = await getCCD();
   let isAdmin = ccdArray.find((c) => c.cn === id);
 
   if (id === masterAdmin) {
@@ -25,11 +25,11 @@ async function toggleAdmin({id}) {
       await fs.unlinkSync(ccdPath + '/' + id);
     } catch (err) {
       throw Error('Failed to remove ccd from: ' + id);
-    };
+    }
   } else {
-    const ccdContent = `ifconfig-push ${getCCD.lowestIP(ccdArray)} ${ccdNetmask}`;
+    const ccdContent = `ifconfig-push ${getLowestIP(ccdArray)} ${ccdNetmask}`;
     fs.writeFileSync(ccdPath + '/' + id, ccdContent);
-  };
+  }
 
   // Emit packages update
   eventBus.emit(eventBusTag.emitDevices);
