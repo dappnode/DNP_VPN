@@ -23,7 +23,7 @@ const encrypt = (file, key) => {
   return base64FullMessage;
 };
 
-async function generate({id}) {
+async function getDeviceCredentials({id}) {
   // Check if id exists.
 
   const key = generateKey();
@@ -33,11 +33,11 @@ async function generate({id}) {
   const filename = generator.generate({length: 16, numbers: true});
   await fs.writeFileSync(`${credentialsDir}/${filename}`, encrypted);
   return {
-    message: `Generated credentials for ${id} at ${credentialsDir}/${filename} with ${key}`,
+    message: `Generated credentials for ${id} at ${credentialsDir}/${filename}`,
     logMessage: true,
     result: {filename, key},
   };
 }
 
-module.exports = {generate};
+module.exports = getDeviceCredentials;
 

@@ -3,7 +3,6 @@ const path = require('path');
 const ip = require('ip');
 const logs = require('../logs.js')(module);
 
-// const ccdPath = './ccd'
 const ccdPath = '/etc/openvpn/ccd';
 
 async function getCCD() {
@@ -26,5 +25,3 @@ async function getCCD() {
 
 
 module.exports = getCCD;
-
-// fetchCCD().then( (list) => console.log(lowestIP(list)));
