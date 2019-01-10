@@ -1,5 +1,5 @@
 const {eventBus, eventBusTag} = require('../eventBus');
-const shell = require('../utils/shell');
+const buildClient = require('../utils/buildClient'); //
 const getUserList = require('../utils/getUserList');
 
 async function addDevice({id}) {
@@ -13,7 +13,7 @@ async function addDevice({id}) {
   let userArray = await getUserList();
 
   if ( ! userArray.includes((id)) ) {
-    await shell(`easyrsa build-client-full ${id} nopass`);
+    await buildClient(id);
   } else {
     throw Error(`Device name exists: ${id}`);
   }

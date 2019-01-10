@@ -1,10 +1,13 @@
 const {secretbox, randomBytes} = require('tweetnacl');
-const generator = require('generate-password');
-const shell = require('../utils/shell');
+const crypto = require('crypto');
 const fs = require('fs');
+const getClient = require('../utils/getClient');
+const {promisify} = require('util');
+const readFileAsync = promisify(fs.readFile);
 
-const fetchCredsCommand = '/usr/local/bin/ovpn_getclient';
-const credentialsDir = '/var/spool/openvpn';
+const credentialsDir = process.env.DEV ? './mockFiles/creds' : '/var/spool/openvpn';
+const saltPath = process.env.DEV ? './mockFiles/salt' : process.env.SALT_PATH;
+
 
 const newNonce = () => randomBytes(secretbox.nonceLength);
 const generateKey = () => Buffer.from(randomBytes(secretbox.keyLength)).toString('base64');
@@ -24,13 +27,11 @@ const encrypt = (file, key) => {
 };
 
 async function getDeviceCredentials({id}) {
-  // Check if id exists.
-
   const key = generateKey();
-  const data = await shell(`${fetchCredsCommand} ${id}`);
+  const data = await getClient(id);
   const encrypted = encrypt(data, key);
-  // save as random filename
-  const filename = generator.generate({length: 16, numbers: true});
+  const salt = readFileAsync(saltPath, 'utf-8');
+  const filename = crypto.createHash('sha256').update(salt+id).digest('hex').substring(1, 16);
   await fs.writeFileSync(`${credentialsDir}/${filename}`, encrypted);
   return {
     message: `Generated credentials for ${id} at ${credentialsDir}/${filename}`,
@@ -40,4 +41,3 @@ async function getDeviceCredentials({id}) {
 }
 
 module.exports = getDeviceCredentials;
-

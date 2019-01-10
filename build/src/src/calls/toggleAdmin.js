@@ -2,12 +2,11 @@ const fs = require('fs');
 const getCCD = require('../utils/getCCD');
 const getUserList = require('../utils/getUserList');
 const getLowestIP = require('../utils/getLowestIP');
-
-const ccdPath = '/etc/openvpn/ccd';
-const ccdNetmask = '255.255.0.0';
-const masterAdmin = 'dappnode_admin';
 const {eventBus, eventBusTag} = require('../eventBus');
 
+const ccdPath = process.env.DEV ? './mockFiles/ccd' : '/etc/openvpn/ccd';
+const ccdNetmask = '255.255.0.0';
+const masterAdmin = 'dappnode_admin';
 
 async function toggleAdmin({id}) {
   let devices = await getUserList();
@@ -27,7 +26,7 @@ async function toggleAdmin({id}) {
       throw Error('Failed to remove ccd from: ' + id);
     }
   } else {
-    const ccdContent = `ifconfig-push ${getLowestIP(ccdArray)} ${ccdNetmask}`;
+    const ccdContent = `ifconfig-push ${getLowestIP(ccdArray)} ${ccdNetmask}\r\n`;
     fs.writeFileSync(ccdPath + '/' + id, ccdContent);
   }
 

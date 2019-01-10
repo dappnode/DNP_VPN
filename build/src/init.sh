@@ -35,6 +35,12 @@ fi
 
 mkdir -p ${OPENVPN_CRED_DIR} ${OPENVPN_CCD_DIR}
 
+# Generate salt for credentials, clean them if not present
+if [ ! -e "${SALT_PATH}" ]; then
+    openssl rand -hex 8 > ${SALT_PATH}
+    rm -rf ${OPENVPN_CRED_DIR}/*
+fi
+
 # Create admin user
 if [ ! -e "${OPENVPN_ADMIN_PROFILE}" ]; then
     easyrsa build-client-full dappnode_admin nopass

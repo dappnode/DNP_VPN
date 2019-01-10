@@ -2,7 +2,7 @@
 FROM node:8.14.0-alpine
 
 RUN apk add --update wget openvpn iptables bash easy-rsa \
-    bind-tools supervisor miniupnpc docker && \
+    bind-tools supervisor miniupnpc docker openssl && \
     ln -s /usr/share/easy-rsa/easyrsa /usr/local/bin && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/* /var/cache/distfiles/*
 
@@ -22,6 +22,7 @@ ENV DB_PATH /usr/src/app/secrets/vpndb.json
 ENV LOGIN_MSG_PATH /usr/src/app/loginMsgFile.txt
 ENV INSTALLATION_STATIC_IP /usr/src/app/config/static_ip
 ENV KEYPAIR_PATH /usr/src/app/secrets/keypair
+ENV SALT_PATH /usr/src/app/secrets/salt
 ENV PUBLIC_IP_PATH /usr/src/app/secrets/server-ip
 ENV SERVER_NAME_PATH /etc/vpnname
 ENV INTERNAL_IP_PATH /usr/src/app/secrets/internal-ip
@@ -48,4 +49,4 @@ RUN chmod a+x /usr/local/bin/*
 # Supervisor run:
 # node src/client.js
 # ovpn_run
-CMD ["supervisord"]
+CMD ["supervisord","-c","supervisord.conf"]

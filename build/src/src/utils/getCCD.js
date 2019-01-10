@@ -3,7 +3,10 @@ const path = require('path');
 const ip = require('ip');
 const logs = require('../logs.js')(module);
 
-const ccdPath = '/etc/openvpn/ccd';
+const ccdPath = process.env.DEV ? './mockFiles/ccd' : '/etc/openvpn/ccd';
+
+// Each file in the CCD directory has the format:
+//
 
 async function getCCD() {
   const ccdlist = [];
