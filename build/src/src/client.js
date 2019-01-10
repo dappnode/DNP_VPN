@@ -1,6 +1,7 @@
 const autobahn = require('autobahn');
 const logs = require('./logs.js')(module);
 const db = require('./db');
+const crypto = require('crypto');
 
 const dyndnsClient = require('./dyndnsClient');
 const calls = require('./calls');
@@ -95,6 +96,13 @@ async function start() {
       logs.error(`Error on dyndns interval: ${e.stack || e.message}`);
     }
   }, publicIpCheckInterval);
+
+  // Generate salt
+  if (!await db.get('salt')) {
+    logs.info('Generating salt...');
+    const salt = crypto.randomBytes(8).toString('hex');
+    await db.set('salt', salt);
+  }
 
   // Print db censoring privateKey
   const _db = await db.get();
