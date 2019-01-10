@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Script to delete the credentials file of a client once connected
+
+SALT=$(jq -r ".salt" ${DB_PATH})
+FILE=$(echo -n ${SALT}${common_name} | sha256sum | cut -c -16)
+
+if [ -e ${OPENVPN_CRED_DIR}/${FILE} ]; then
+    rm ${OPENVPN_CRED_DIR}/${FILE}
+fi

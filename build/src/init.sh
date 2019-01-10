@@ -1,10 +1,5 @@
 #!/bin/bash
 
-OPENVPN_CONF=/etc/openvpn/openvpn.conf
-OPENVPN_ADMIN_PROFILE=/etc/openvpn/pki/issued/dappnode_admin.crt
-OPENVPN_CRED_DIR=/var/spool/openvpn
-OPENVPN_CCD_DIR=/etc/openvpn/ccd
-
 check_ip() {
   IP_REGEX='^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$'
   printf '%s' "$1" | tr -d '\n' | grep -Eq "$IP_REGEX"
@@ -29,8 +24,6 @@ if [ ! -e "${OPENVPN_CONF}" ]; then
     -p "route 172.33.0.0 255.255.0.0" \
     -n "172.33.1.2"
     EASYRSA_REQ_CN=${HOSTNAME} ovpn_initpki nopass
-    echo "client-config-dir ${OPENVPN_CCD_DIR}" >> /etc/openvpn/openvpn.conf
-    echo "ifconfig-pool-persist ipp.txt 1" >> /etc/openvpn/openvpn.conf
 fi
 
 mkdir -p ${OPENVPN_CRED_DIR} ${OPENVPN_CCD_DIR}

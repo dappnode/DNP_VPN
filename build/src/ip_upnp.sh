@@ -40,7 +40,7 @@ fi
 
 # Test PUBLIC_IP resolution
 PUBLIC_IP_RESOLVED=0
-count=10
+count=5
 max=3
 i=0
 

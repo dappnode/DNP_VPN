@@ -2,14 +2,9 @@ const {secretbox, randomBytes} = require('tweetnacl');
 const crypto = require('crypto');
 const fs = require('fs');
 const db = require('../db');
-
 const getClient = require('../utils/getClient');
-// const {promisify} = require('util');
-// const readFileAsync = promisify(fs.readFile);
 
-const credentialsDir = process.env.DEV ? './mockFiles/creds' : '/var/spool/openvpn';
-// const saltPath = process.env.DEV ? './mockFiles/salt' : process.env.SALT_PATH;
-
+const credentialsDir = process.env.DEV ? './mockFiles/creds' : process.env.OPENVPN_CRED_DIR;
 
 const newNonce = () => randomBytes(secretbox.nonceLength);
 const generateKey = () => Buffer.from(randomBytes(secretbox.keyLength)).toString('base64');

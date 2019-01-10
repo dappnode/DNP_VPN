@@ -2,7 +2,7 @@
 FROM node:8.14.0-alpine
 
 RUN apk add --update wget openvpn iptables bash easy-rsa \
-    bind-tools supervisor miniupnpc docker openssl && \
+    bind-tools supervisor miniupnpc docker openssl jq && \
     ln -s /usr/share/easy-rsa/easyrsa /usr/local/bin && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/* /var/cache/distfiles/*
 
@@ -14,10 +14,14 @@ ENV EASYRSA_VARS_FILE $OPENVPN/vars
 ENV EASYRSA_CRL_DAYS 3650
 ENV EASYRSA_BATCH yes
 ENV EASYRSA_ALGO ec
-ENV EASYRSA_CURVE secp256k1
+ENV EASYRSA_CURVE prime256v1
 
 RUN mkdir -p /usr/src/app/secrets
 # VPN management parameters
+ENV OPENVPN_CONF $OPENVPN/openvpn.conf
+ENV OPENVPN_ADMIN_PROFILE $OPENVPN/pki/issued/dappnode_admin.crt
+ENV OPENVPN_CRED_DIR /var/spool/openvpn
+ENV OPENVPN_CCD_DIR $OPENVPN/ccd
 ENV DB_PATH /usr/src/app/secrets/vpndb.json
 ENV LOGIN_MSG_PATH /usr/src/app/loginMsgFile.txt
 ENV INSTALLATION_STATIC_IP /usr/src/app/config/static_ip
