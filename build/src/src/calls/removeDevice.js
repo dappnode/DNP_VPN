@@ -10,7 +10,7 @@ async function removeDevice({id}) {
   if (ccdArray.find((c) => c.cn === id)) throw Error('You cannot remove an admin user');
 
   if (!deviceArray.includes(id)) {
-    throw Error('Device name not found: '+id);
+    throw Error(`Device name not found: ${id}`);
   } else {
     await removeClient(id);
   }
@@ -18,7 +18,7 @@ async function removeDevice({id}) {
   eventBus.emit(eventBusTag.emitDevices);
 
   return {
-    message: 'Removed device '+id,
+    message: `Removed device: ${id}`,
     logMessage: true,
     userAction: true,
   };

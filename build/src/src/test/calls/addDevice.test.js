@@ -23,7 +23,7 @@ describe('Call function: addDevice', function() {
         expect( res.message ).to.deep.equal(`Added device: ${id}`);
     });
 
-    it('should return fail message when the user does exist', async () => {
+    it('should return error message when the user does exist', async () => {
         let id = 'tom';
         let error = '--- addDevice did not throw ---';
         try {
