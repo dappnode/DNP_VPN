@@ -2,23 +2,42 @@ language: node_js
 dist: trusty
 sudo: required
 
-# Test envs will overwrite defaults
-env:
-  - DAPPNODE=rocks
+jobs:
+  include:
+    # Test that it builds correctly
+    ###############################
+    - stage: build test
+      services:
+        - docker
+      script:
+        - docker-compose -f "$(find . -maxdepth 1 -name "docker-compose*")" build
 
-node_js:
-  - "node"
-
-cache:
-  directories:
-    - build/src/node_modules
-install:
-  # This is a dockerized application, the node app is in /build/src
-  - cd ./build/src
-  - npm install
-before_script:
-  - npm run lint
-script:
-  - npm run test
-after_success:
-  - COVERALLS_REPO_TOKEN=$coveralls_repo_token npm run coverage
+    # Deploy stage
+    # - code below is common between DAppNode packages
+    ##################################################
+    - stage: release
+      services:
+        - docker
+      script: skip
+      node_js: lts/*
+      before_deploy:
+        - wget https://raw.githubusercontent.com/dappnode/DAppNode/master/scripts/before_deploy.sh
+        - source before_deploy.sh
+      deploy:
+        provider: releases
+        prerelease: true
+        api_key: "$GITHUB_TOKEN"
+        file_glob: true
+        # $RELEASE_VERSION is exported on before_deploy.sh
+        file: build_${RELEASE_VERSION}/*
+        skip_cleanup: true
+        # $TRAVIS_TAG is exported on before_deploy.sh
+        name: "$TRAVIS_TAG"
+        body: "# Changelog"
+        on:
+          branch: master
+          tags: true
+          condition: "$TRAVIS_TAG =~ ^release*$"
+      after_deploy:
+        - wget https://raw.githubusercontent.com/dappnode/DAppNode/master/scripts/after_deploy.sh
+        - source after_deploy.sh
