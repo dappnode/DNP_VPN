@@ -35,6 +35,7 @@ source /usr/src/app/ip_upnp.sh
 
 # Check IP for correct format
 check_ip "$PUBLIC_IP" || PUBLIC_IP=$(wget -t 3 -T 15 -qO- http://ipv4.icanhazip.com)
+check_ip "$PUBLIC_IP" || PUBLIC_IP=$(wget -t 3 -T 15 -4 -qO- http://ident.me)
 check_ip "$PUBLIC_IP" || exiterr "Cannot detect this server's public IP. Define it in your 'env' file as 'VPN_PUBLIC_IP'."
 
 # Export variables for use in templates
