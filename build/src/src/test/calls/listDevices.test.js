@@ -15,23 +15,21 @@ describe('Call function: listDevices', function() {
                         {id: 'mobile', admin: false},
                         {id: 'guest', admin: false},
                         {id: 'tom', admin: true}];
+    // sinon.replace(,));   <--- to replace an inside function
+    const getUserList = sinon.stub();
+    getUserList.resolves(userList);
+    const getCCD = sinon.stub();
+    getCCD.resolves(ccdList);
+    const listDevices = proxyquire('../../calls/listDevices', {
+        '../utils/getUserList': getUserList,
+        '../utils/getCCD': getCCD,
+    });
 
-    describe('Call function listDevices', function() {
-        it('should return success message and the users array', async () => {
-            // sinon.replace(,));   <--- to replace an inside function
-            const getUserList = sinon.stub();
-            getUserList.resolves(userList);
-            const getCCD = sinon.stub();
-            getCCD.resolves(ccdList);
-            const listDevices = proxyquire('../../calls/listDevices', {
-                '../utils/getUserList': getUserList,
-                '../utils/getCCD': getCCD,
-            });
-            let res = await listDevices();
-            expect( res ).to.have.property('message');
-            expect( res ).to.have.property('result');
-            expect( res.result ).to.be.an('array');
-            expect( res.result ).to.deep.equal(userResult);
-        });
+    it('should return success message and the users array', async () => {
+        let res = await listDevices();
+        expect( res ).to.have.property('message');
+        expect( res ).to.have.property('result');
+        expect( res.result ).to.be.an('array');
+        expect( res.result ).to.deep.equal(userResult);
     });
 });
