@@ -8,6 +8,13 @@ const ccdPath = process.env.DEV ? './mockFiles/ccd' : '/etc/openvpn/ccd';
 const ccdNetmask = '255.255.0.0';
 const masterAdmin = 'dappnode_admin';
 
+/**
+ * Gives/removes admin rights to the provided device id.
+ *
+ * @param {Object} kwargs: {id}
+ * @return {Object} A formated success message.
+ * result: empty
+ */
 async function toggleAdmin({id}) {
   let devices = await getUserList();
   if (!devices.includes(id)) {

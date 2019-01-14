@@ -3,6 +3,13 @@ const getCCD = require('../utils/getCCD');
 const removeClient = require('../utils/removeClient');
 const {eventBus, eventBusTag} = require('../eventBus');
 
+/**
+ * Removes the device with the provided id, if exists.
+ *
+ * @param {Object} kwargs: {id}
+ * @return {Object} A formated success message.
+ * result: empty
+ */
 async function removeDevice({id}) {
   let deviceArray = await getUserList();
   let ccdArray = await getCCD();

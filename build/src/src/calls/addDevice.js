@@ -2,6 +2,14 @@ const {eventBus, eventBusTag} = require('../eventBus');
 const buildClient = require('../utils/buildClient'); //
 const getUserList = require('../utils/getUserList');
 
+/**
+ * Creates a new device with the provided id.
+ * Generates certificates and keys needed for OpenVPN.
+ *
+ * @param {Object} kwargs: {id}
+ * @return {Object} A formated success message.
+ * result: empty
+ */
 async function addDevice({id}) {
   if (id === '') {
     throw Error('The new device name cannot be empty');
