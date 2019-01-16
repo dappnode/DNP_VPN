@@ -20,7 +20,7 @@ echo "$PUBLIC_IP" > $PUBLIC_IP_PATH
 # -p "route 172.33.0.0 255.255.0.0": Route to push to the client
 
 if [ ! -e "${OPENVPN_CONF}" ]; then
-    ovpn_genconfig -c -d -u udp://${HOSTNAME} -s 172.33.8.0/23 \
+    ovpn_genconfig -c -d -u udp://${HOSTNAME} -s 172.33.8.0/22 \
     -p "route 172.33.0.0 255.255.0.0" \
     -n "172.33.1.2"
     EASYRSA_REQ_CN=${HOSTNAME} ovpn_initpki nopass

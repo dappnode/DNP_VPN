@@ -1,6 +1,7 @@
 const {eventBus, eventBusTag} = require('../eventBus');
 const buildClient = require('../utils/buildClient'); //
 const getUserList = require('../utils/getUserList');
+const userLimit = 500;
 
 /**
  * Creates a new device with the provided id.
@@ -19,6 +20,10 @@ async function addDevice({id}) {
   }
 
   let userArray = await getUserList();
+
+  if (userArray.size() >= userLimit) {
+    throw Error(`You have reached the maximum user limit (${userLimit})`);
+  }
 
   if ( ! userArray.includes((id)) ) {
     await buildClient(id);

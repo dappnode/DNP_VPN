@@ -5,9 +5,6 @@ const logs = require('../logs.js')(module);
 
 const ccdPath = process.env.DEV ? './mockFiles/ccd' : '/etc/openvpn/ccd';
 
-// Each file in the CCD directory has the format:
-//
-
 async function getCCD() {
   const ccdlist = [];
   await fs.readdirSync(ccdPath).forEach(async (filename) => {
@@ -25,6 +22,5 @@ async function getCCD() {
   });
   return ccdlist;
 }
-
 
 module.exports = getCCD;

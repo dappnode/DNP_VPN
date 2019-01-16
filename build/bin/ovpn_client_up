@@ -8,3 +8,5 @@ FILE=$(echo -n ${SALT}${common_name} | sha256sum | cut -c -16)
 if [ -e ${OPENVPN_CRED_DIR}/${FILE} ]; then
     rm ${OPENVPN_CRED_DIR}/${FILE}
 fi
+
+exit 0

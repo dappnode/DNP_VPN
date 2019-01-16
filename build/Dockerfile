@@ -18,12 +18,12 @@ ENV EASYRSA_CURVE prime256v1
 
 RUN mkdir -p /usr/src/app/secrets
 # VPN management parameters
-ENV DEFAULT_ADMIN_USER
+ENV DEFAULT_ADMIN_USER dappnode_admin
 ENV OPENVPN_CONF $OPENVPN/openvpn.conf
 ENV OPENVPN_ADMIN_PROFILE $OPENVPN/pki/issued/$DEFAULT_ADMIN_USER.crt
 ENV OPENVPN_CRED_DIR /var/spool/openvpn
 ENV OPENVPN_CCD_DIR $OPENVPN/ccd
-ENV OPENVPN_CREDENTIALS_PORT 8080
+ENV OPENVPN_CRED_PORT 8080
 ENV DB_PATH /usr/src/app/secrets/vpndb.json
 ENV LOGIN_MSG_PATH /usr/src/app/loginMsgFile.txt
 ENV INSTALLATION_STATIC_IP /usr/src/app/config/static_ip

@@ -9,35 +9,18 @@ const getDeviceCredentials = require('../calls/getDeviceCredentials');
 async function generateLoginMsg() {
   let msg = '\n\n';
 
-  // Check if txt exists
-
   const adminUser = process.env.DEFAULT_ADMIN_USER;
   const adminCreds = await getDeviceCredentials({id: adminUser});
-  const credsPort = process.env.OPENVPN_CREDENTIALS_PORT;
-
-  // Check if static IP is present.
-  const hostname = await db.get('domain');
-  const credsURL = `http://${hostname}:${credsPort}/#id=${adminCreds.result.filename}&key=${adminCreds.result.key}\n`;
-  // const deviceList = await credentialsFile.fetch();
-  // const adminDevice = deviceList[0];
-  // const adminOtp = await generate.otp({
-  //   user: adminDevice.name,
-  //   pass: adminDevice.password,
-  // });
-  // const adminOtpMin = await generate.otp({
-  //   user: adminDevice.name,
-  //   pass: adminDevice.password,
-  // }, {min: true});
 
   // Show the QR code
   // Wraps qrcode library's callback style into a promise
-  msg += await getQrCodeString(credsURL);
+  msg += await getQrCodeString(adminCreds.url);
 
   // Show credentials
   /* eslint-disable max-len */
   msg += `
 To connect to your DAppNode scan the QR above or copy/paste link below into your browser:
-  ${credsURL}`;
+  ${adminCreds.url}\n`;
 
   return msg;
 }
