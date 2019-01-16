@@ -14,13 +14,13 @@ async function generateLoginMsg() {
 
   // Show the QR code
   // Wraps qrcode library's callback style into a promise
-  msg += await getQrCodeString(adminCreds.url);
+  msg += await getQrCodeString(adminCreds.result.url);
 
   // Show credentials
   /* eslint-disable max-len */
   msg += `
 To connect to your DAppNode scan the QR above or copy/paste link below into your browser:
-  ${adminCreds.url}\n`;
+  ${adminCreds.result.url}\n`;
 
   return msg;
 }

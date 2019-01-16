@@ -21,7 +21,9 @@ async function addDevice({id}) {
 
   let userArray = await getUserList();
 
-  if (userArray.size() >= userLimit) {
+  //console.log(userArray);
+
+  if (userArray.length >= userLimit) {
     throw Error(`You have reached the maximum user limit (${userLimit})`);
   }
 

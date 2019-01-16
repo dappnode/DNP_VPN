@@ -43,4 +43,7 @@ fi
 # Enable Proxy ARP (needs privileges)
 echo 1 > /proc/sys/net/ipv4/conf/eth0/proxy_arp
 
+# Save environment
+env > /etc/env.sh
+
 /usr/local/bin/ovpn_run

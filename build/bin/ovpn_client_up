@@ -2,6 +2,9 @@
 
 # Script to delete the credentials file of a client once connected
 
+# Import global variables first
+source /etc/env.sh
+
 SALT=$(jq -r ".salt" ${DB_PATH})
 FILE=$(echo -n ${SALT}${common_name} | sha256sum | cut -c -16)
 
