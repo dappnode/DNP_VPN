@@ -2,7 +2,7 @@
 FROM node:8.14.0-alpine
 
 RUN apk add --update wget openvpn iptables bash easy-rsa \
-    bind-tools supervisor miniupnpc docker openssl jq && \
+    bind-tools supervisor miniupnpc docker openssl jq sed && \
     ln -s /usr/share/easy-rsa/easyrsa /usr/local/bin && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/* /var/cache/distfiles/*
 

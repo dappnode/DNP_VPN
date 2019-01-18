@@ -44,6 +44,6 @@ fi
 echo 1 > /proc/sys/net/ipv4/conf/eth0/proxy_arp
 
 # Save environment
-env > /etc/env.sh
+env | sed '/affinity/d' > /etc/env.sh
 
 /usr/local/bin/ovpn_run

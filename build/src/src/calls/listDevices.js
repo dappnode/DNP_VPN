@@ -22,7 +22,7 @@ async function listDevices() {
     let deviceList = [];
 
     userList.forEach((user) => {
-      deviceList.push({id: user, admin: ccd.some((obj) => obj.cn === user)});
+      deviceList.push({id: user, admin: ccd.some((obj) => obj.cn === user), ip: ''});
      });
 
     return {

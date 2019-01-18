@@ -11,8 +11,8 @@ const ovpnListCommand = '/usr/local/bin/ovpn_listclients';
 async function getUserList() {
   const output = await shell(ovpnListCommand);
   const users = [];
-  // Select users from first field which are not revoked.
-  output.toString().split('\n').filter((line) => ! (line.startsWith('name,') || line.endsWith('REVOKED'))).map((element) => {
+  // Select users from first field.
+    output.toString().split('\n').filter((line) => ! (line.startsWith('name,')) ).map((element) => {
     if (element) users.push(element.split(',')[0]);
   });
   return users;
