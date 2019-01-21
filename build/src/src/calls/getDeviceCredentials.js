@@ -46,7 +46,7 @@ async function getDeviceCredentials({id}) {
   const hostname = await db.get('domain');
   const filename = crypto.createHash('sha256').update(salt+id).digest('hex').substring(0, 16);
   await fs.writeFileSync(`${credentialsDir}/${filename}`, encrypted);
-  const url = `http://${hostname}:${credentialsPort}/${filename}#${key}`
+  const url = `http://${hostname}:${credentialsPort}/?id=${filename}#${encodeURIComponent(key)}`;
   return {
     message: `Generated credentials for ${id} at ${credentialsDir}/${filename}`,
     logMessage: true,
