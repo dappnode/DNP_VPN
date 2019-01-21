@@ -119,8 +119,7 @@ async function start() {
   // ///////////////////////
   // Finished initialization
   // ///////////////////////
-  // ///////////////////////
-  //
+
   // The following code generates a text file with the message to be printed out
   // for the user to connect to DAppNode. It contains the information to print and
   // also serves as flag to signal the end of the initialization
@@ -170,15 +169,12 @@ function register(session, event, handler) {
     };
 
   return session.register(event, wrapErrors(handler)).then(
-    function(reg) {logs.info('CROSSBAR: registered '+event);},
-    function(err) {logs.error('CROSSBAR: error registering '+event+'. Error message: '+err.error);}
+    (reg) => {logs.info('CROSSBAR: registered '+event);},
+    (err) => {logs.error('CROSSBAR: error registering '+event+'. Error message: '+err.error);}
   );
 }
 
-function error2obj(e) {
-  return {name: e.name, message: e.message, stack: e.stack, userAction: true};
-}
-
+const error2obj = (e) => ({name: e.name, message: e.message, stack: e.stack, userAction: true});
 
 // //////////////////////////////
 //  Open ports (UPnP script)   //
