@@ -77,7 +77,9 @@ async function start() {
   // Runs the ip_upnp.sh script
   // Will store the variables internalIp, externalIp, publicIpResolved in the db
   logs.info('Loading VPN parameters... It may take a while');
-  await ipUpnp();
+  await ipUpnp()
+    .then(() => logs.info('Successfully ran ipUPnP script'))
+    .catch((e) => logs.error(`Error running ipUPnP script: ${e.stack}`));
 
   // fetchVpnParameters read the output files from the .sh scripts
   // and stores the values in the db
