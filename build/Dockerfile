@@ -48,6 +48,7 @@ VOLUME ["/etc/openvpn"]
 # Internally uses port 1194/udp, remap using `docker run -p 443:1194/tcp`
 EXPOSE 1194/udp
 
+RUN ln -s /usr/src/app/src/vpncli.js /usr/local/bin/vpncli
 ADD ./bin /usr/local/bin
 RUN chmod a+x /usr/local/bin/*
 

@@ -14,8 +14,10 @@
   "author": "dappLion & vdo",
   "license": "ISC",
   "dependencies": {
-    "autobahn": "^18.3.2",
+    "autobahn": "^18.10.2",
     "base64url": "^3.0.0",
+    "chalk": "^2.4.2",
+    "cmd": "^0.1.0",
     "create-error": "^0.3.1",
     "eth-crypto": "^1.2.4",
     "file-system": "^2.2.2",
@@ -24,6 +26,7 @@
     "ip-regex": "^3.0.0",
     "lowdb": "^1.0.0",
     "node-fetch": "^2.1.2",
+    "prettyjson": "^1.2.1",
     "qrcode-terminal": "^0.12.0",
     "tweetnacl": "^1.0.0",
     "winston": "^3.0.0"
