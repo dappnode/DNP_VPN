@@ -28,7 +28,6 @@ ENV DB_PATH /usr/src/app/secrets/vpndb.json
 ENV LOGIN_MSG_PATH /usr/src/app/loginMsgFile.txt
 ENV INSTALLATION_STATIC_IP /usr/src/app/config/static_ip
 ENV KEYPAIR_PATH /usr/src/app/secrets/keypair
-ENV SALT_PATH /usr/src/app/secrets/salt
 ENV PUBLIC_IP_PATH /usr/src/app/secrets/server-ip
 ENV SERVER_NAME_PATH /etc/vpnname
 ENV INTERNAL_IP_PATH /usr/src/app/secrets/internal-ip
