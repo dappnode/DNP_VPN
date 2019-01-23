@@ -43,16 +43,17 @@ if [ ! -e "${OPENVPN_CONF}" ]; then
     EASYRSA_REQ_CN=${VPNHOSTNAME} ovpn_initpki nopass
 fi
 
-mkdir -p ${OPENVPN_CRED_DIR} ${OPENVPN_CCD_DIR}
-
 # Create admin user
 if [ ! -e "${OPENVPN_ADMIN_PROFILE}" ]; then
-    easyrsa build-client-full dappnode_admin nopass
-    echo "ifconfig-push 172.33.10.20 172.33.10.254" > ${OPENVPN_CCD_DIR}/dappnode_admin
+    easyrsa build-client-full ${DEFAULT_ADMIN_USER} nopass
+    echo "ifconfig-push 172.33.10.20 172.33.10.254" > ${OPENVPN_CCD_DIR}/${DEFAULT_ADMIN_USER}
 fi
 
 # Enable Proxy ARP (needs privileges)
 echo 1 > /proc/sys/net/ipv4/conf/eth0/proxy_arp
+
+# Migrate users from v1
+/usr/local/bin/migrate_v2
 
 # Save environment
 env | sed '/affinity/d' > /etc/env.sh
