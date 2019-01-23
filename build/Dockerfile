@@ -36,6 +36,10 @@ ENV PUBLIC_IP_RESOLVED_PATH /usr/src/app/secrets/public-ip_resolved
 ENV DYNDNS_HOST https://ns.dappnode.io
 ENV PUBLIC_IP_URL https://ns.dappnode.io/myip
 ENV DYNDNS_DOMAIN dyndns.dappnode.io
+# Used for v2 updates
+ENV CHAP_SECRETS_PATH /usr/src/app/secrets/chap-secrets
+
+RUN mkdir -p ${OPENVPN_CRED_DIR} ${OPENVPN_CCD_DIR}
 
 WORKDIR /usr/src/app
 COPY src/package.json .
@@ -48,6 +52,7 @@ VOLUME ["/etc/openvpn"]
 # Internally uses port 1194/udp, remap using `docker run -p 443:1194/tcp`
 EXPOSE 1194/udp
 
+RUN ln -s /usr/src/app/src/vpncli.js /usr/local/bin/vpncli
 ADD ./bin /usr/local/bin
 RUN chmod a+x /usr/local/bin/*
 

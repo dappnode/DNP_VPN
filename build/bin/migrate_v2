@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ -e $CHAP_SECRETS_PATH ]; then
+    echo "CHAP secrets detected. Migrating users..."
+    USERS=($(cat $CHAP_SECRETS_PATH | awk '{print $1}' | grep -v "$DEFAULT_ADMIN_USER" | tr "\n" " " | tr -d '"'))
+    ADMINS=($(cat $CHAP_SECRETS_PATH | grep "172\.33\.10\."| awk '{print $1}' | grep -v "$DEFAULT_ADMIN_USER" | tr "\n" " " | tr -d '"'))
+    for i in "${USERS[@]}"; do
+        vpncli add $i
+    done
+    for i in "${ADMINS[@]}"; do
+        vpncli toggle $i
+    done
+    mv $CHAP_SECRETS_PATH $CHAP_SECRETS_PATH.old 
+else
+    echo "CHAP secrets not detected. Skipping migration."
+fi

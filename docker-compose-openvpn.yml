@@ -7,8 +7,9 @@ networks:
                 - subnet: 172.33.0.0/16
 
 volumes:
-    openvpndnpdappnodeeth_data: {}
-    openvpndnpdappnodeeth_shared: {}
+    vpndnpdappnodeeth_data: {}
+    vpndnpdappnodeeth_config: {}
+    vpndnpdappnodeeth_shared: {}
 
 services:
     openvpn.dnp.dappnode.eth:
@@ -21,8 +22,9 @@ services:
             - '/var/run/docker.sock:/var/run/docker.sock'
             - '/etc/hostname:/etc/vpnname:ro'
             - '/usr/src/dappnode/config:/usr/src/app/config:ro'
-            - 'openvpndnpdappnodeeth_data:/etc/openvpn'
-            - 'openvpndnpdappnodeeth_shared:/var/spool/openvpn'
+            - 'vpndnpdappnodeeth_data:/usr/src/app/secrets'
+            - 'vpndnpdappnodeeth_config:/etc/openvpn'
+            - 'vpndnpdappnodeeth_shared:/var/spool/openvpn'
         ports:
             - '1194:1194/udp'
         dns: 172.33.1.2
