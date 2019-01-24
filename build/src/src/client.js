@@ -6,7 +6,6 @@ const crypto = require('crypto');
 const dyndnsClient = require('./dyndnsClient');
 const calls = require('./calls');
 const fetchVpnParameters = require('./fetchVpnParameters');
-const loginMsg = require('./loginMsg');
 const {eventBus, eventBusTag} = require('./eventBus');
 
 const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws';
@@ -114,12 +113,6 @@ async function start() {
   // ///////////////////////
   // Finished initialization
   // ///////////////////////
-  // ///////////////////////
-  //
-  // The following code generates a text file with the message to be printed out
-  // for the user to connect to DAppNode. It contains the information to print and
-  // also serves as flag to signal the end of the initialization
-  logs.info(await loginMsg.write());
 }
 
 
@@ -173,5 +166,3 @@ function register(session, event, handler) {
 function error2obj(e) {
   return {name: e.name, message: e.message, stack: e.stack, userAction: true};
 }
-
-

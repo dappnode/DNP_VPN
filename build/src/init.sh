@@ -45,7 +45,8 @@ fi
 
 # Create admin user
 if [ ! -e "${OPENVPN_ADMIN_PROFILE}" ]; then
-    easyrsa build-client-full ${DEFAULT_ADMIN_USER} nopass
+    vpncli add ${DEFAULT_ADMIN_USER}
+    vpncli get ${DEFAULT_ADMIN_USER}
     echo "ifconfig-push 172.33.10.20 172.33.10.254" > ${OPENVPN_CCD_DIR}/${DEFAULT_ADMIN_USER}
 fi
 

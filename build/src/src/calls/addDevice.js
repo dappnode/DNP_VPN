@@ -1,5 +1,5 @@
 const {eventBus, eventBusTag} = require('../eventBus');
-const buildClient = require('../utils/buildClient'); //
+const buildClient = require('../utils/buildClient');
 const getUserList = require('../utils/getUserList');
 const userLimit = 500;
 
@@ -20,8 +20,6 @@ async function addDevice({id}) {
   }
 
   let userArray = await getUserList();
-
-  //console.log(userArray);
 
   if (userArray.length >= userLimit) {
     throw Error(`You have reached the maximum user limit (${userLimit})`);

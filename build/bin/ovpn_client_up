@@ -12,4 +12,10 @@ if [ -e ${OPENVPN_CRED_DIR}/${FILE} ]; then
     rm ${OPENVPN_CRED_DIR}/${FILE}
 fi
 
+# Reset login text
+if [ ${common_name} = ${DEFAULT_ADMIN_USER} ]; then
+    echo "The admin credentials expired. Use the command below to generate a new link:" > $LOGIN_MSG_PATH
+    echo "vpncli get dappnode_admin" >> $LOGIN_MSG_PATH
+fi
+
 exit 0
