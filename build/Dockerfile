@@ -25,7 +25,7 @@ ENV OPENVPN_CRED_DIR /var/spool/openvpn
 ENV OPENVPN_CCD_DIR $OPENVPN/ccd
 ENV OPENVPN_CRED_PORT 8080
 ENV DB_PATH /usr/src/app/secrets/vpndb.json
-ENV LOGIN_MSG_PATH /usr/src/app/loginMsgFile.txt
+ENV LOGIN_MSG_PATH /usr/src/app/secrets/loginMsgFile.txt
 ENV INSTALLATION_STATIC_IP /usr/src/app/config/static_ip
 ENV KEYPAIR_PATH /usr/src/app/secrets/keypair
 ENV PUBLIC_IP_PATH /usr/src/app/secrets/server-ip
@@ -52,6 +52,7 @@ VOLUME ["/etc/openvpn"]
 # Internally uses port 1194/udp, remap using `docker run -p 443:1194/tcp`
 EXPOSE 1194/udp
 
+RUN ln -s /usr/src/app/src/getAdminCredentials.js /usr/local/bin/getAdminCredentials
 RUN ln -s /usr/src/app/src/vpncli.js /usr/local/bin/vpncli
 ADD ./bin /usr/local/bin
 RUN chmod a+x /usr/local/bin/*

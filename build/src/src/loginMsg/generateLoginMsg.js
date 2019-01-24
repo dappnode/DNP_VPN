@@ -1,26 +1,17 @@
-// const credentialsFile = require('../utils/credentialsFile');
-// const generate = require('../utils/generate');
 const qrcode = require('qrcode-terminal');
-const db = require('../db');
-// const getServer = require('../utils/getServer');
-const getDeviceCredentials = require('../calls/getDeviceCredentials');
 
-
-async function generateLoginMsg() {
+async function generateLoginMsg(url) {
   let msg = '\n\n';
-
-  const adminUser = process.env.DEFAULT_ADMIN_USER;
-  const adminCreds = await getDeviceCredentials({id: adminUser});
 
   // Show the QR code
   // Wraps qrcode library's callback style into a promise
-  msg += await getQrCodeString(adminCreds.result.url);
+  msg += await getQrCodeString(url);
 
   // Show credentials
   /* eslint-disable max-len */
   msg += `
 To connect to your DAppNode scan the QR above or copy/paste link below into your browser:
-  ${adminCreds.result.url}\n`;
+  ${url}\n`;
 
   return msg;
 }
@@ -54,6 +45,5 @@ function parsePublicIpStatus(externalIpResolves, internalIp) {
     return '';
   }
 }
-
 
 module.exports = generateLoginMsg;

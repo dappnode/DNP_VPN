@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+/* eslint-disable no-console */ /* eslint-disable max-len */
+
 const cmd = require('commander');
 const chalk = require('chalk');
 const addDevice = require('./calls/addDevice');
@@ -7,7 +9,10 @@ const getDeviceCredentials = require('./calls/getDeviceCredentials');
 const listDevices = require('./calls/listDevices');
 const removeDevice = require('./calls/removeDevice');
 const toggleAdmin = require('./calls/toggleAdmin');
+const loginMsg = require('./loginMsg');
 const prettyjson = require('prettyjson');
+
+const adminUser = process.env.DEFAULT_ADMIN_USER ? process.env.DEFAULT_ADMIN_USER : 'dappnode_admin'
 
 cmd.option('ls', 'List devices.')
     .option('get <id>', 'Generate device URL to download config file.')
@@ -34,13 +39,20 @@ if (cmd.add) {
 else if (cmd.get) {
     getDeviceCredentials({id: cmd.get}).then((res) => {
         if (res.result) {
-            console.log(chalk.green(`Credentials generated for ${cmd.get}: ${res.result.url}`));
+            if (cmd.get != adminUser) {
+                console.log(chalk.green(`Credentials generated for ${cmd.get}: ${res.result.url}`));
+            }
+            else {
+                loginMsg.write(res.result.url).then( (msg) => {
+                    console.log(msg);
+                });
+            }
         } else {
             console.log(chalk.red(`Failed: ${res.message}`));
         }
     },
     (err) => {
-        console.log(chalk.red(err))
+        console.log(chalk.red(err));
     });
 }
 else if (cmd.ls) {
