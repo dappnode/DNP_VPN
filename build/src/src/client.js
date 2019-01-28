@@ -1,15 +1,20 @@
 const autobahn = require('autobahn');
 const logs = require('./logs.js')(module);
 const db = require('./db');
-
-const openPorts = require('./openPorts');
-const dyndnsClient = require('./dyndnsClient');
-const ipUpnp = require('./ipUpnp');
 const calls = require('./calls');
-const fetchVpnParameters = require('./fetchVpnParameters');
-const loginMsg = require('./loginMsg');
 const {eventBus, eventBusTag} = require('./eventBus');
+// Modules
+const dyndnsClient = require('./dyndnsClient');
+const upnpc = require('./upnpc');
+// Scripts
+const openPorts = require('./openPorts');
+const loginMsg = require('./loginMsg');
+// Utils
+const getInternalIp = require('./utils/getInternalIp');
+const getServerName = require('./utils/getServerName');
 const getPublicIp = require('./utils/getPublicIp');
+const ping = require('./utils/ping');
+
 
 const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws';
 const REALM = 'dappnode_admin';
@@ -68,47 +73,56 @@ async function start() {
     +'   realm: '+connection._options.realm);
   connection.open();
 
-  // init.sh
-  // 1. Create VPN's address + publicKey + privateKey if it doesn't exist yet
-  // Also, verify if the privateKey is corrupted or lost.
-  // In that case generate a new identity and alert the user
-  await dyndnsClient.generateKeys();
+  // 1. Directly connected to the internet: Public IP is the interface IP
+  // 2. Behind a router: Needs to get the public IP, open ports and get the internal IP
+  // 2A. UPnP available: Get public IP without a centralize service. Can open ports
+  // 2B. No UPnP: Open ports manually, needs a centralized service to get the public IP
+  // 2C. No NAT-Loopback: Public IP can't be resolved within the same network. User needs 2 profiles
 
-  // Runs the ip_upnp.sh script
-  // Will store the variables internalIp, externalIp, publicIpResolved in the db
-  logs.info('Loading VPN parameters... It may take a while');
-  await ipUpnp()
-    .then(() => logs.info('Successfully ran ipUPnP script'))
-    .catch((e) => logs.error(`Error running ipUPnP script: ${e.stack}`));
+  // Check if the static IP is set. If so, don't use any centralized IP-related service
+  // The publicIp will be obtained in the entrypoint.sh and exported as PUBLIC_IP
+  const publicIp = process.env.PUBLIC_IP || await getPublicIp();
+  const intenalIp = await getInternalIp();
+  const behindRouter = intenalIp !== publicIp;
+  const upnpAvailable = behindRouter && await upnpc.isAvailable();
+  const noNatLoopback = behindRouter && !(await ping(publicIp));
+  const alertUserToOpenPorts = behindRouter && !upnpAvailable;
 
-  // fetchVpnParameters read the output files from the .sh scripts
-  // and stores the values in the db
-  await fetchVpnParameters();
+  await db.set('ip', publicIp);
+  await db.set('psk', process.env.PSK);
+  await db.set('name', await getServerName());
+  await db.set('upnpAvailable', upnpAvailable);
+  await db.set('noNatLoopback', noNatLoopback);
+  await db.set('alertToOpenPorts', alertUserToOpenPorts);
 
-  // Run the openPorts script without await completition
-  openPorts()
-    .then(() => logs.info('Successfully ran open ports script'))
-    .catch((e) => logs.error(`Error running open ports script: ${e.stack}`));
-
-  // If the user has not defined a static IP use dynamic DNS
-  // > staticIp is set in `await fetchVpnParameters();`
-  if (!await db.get('staticIp')) {
-    logs.info('Registering to the dynamic DNS...');
-    await dyndnsClient.updateIp();
+  if (upnpAvailable) {
+    // Run the openPorts script without await completition
+    openPorts()
+    .then(() => logs.info('Open ports script - Successfully completed'))
+    .catch((e) => logs.error(`Open ports script - Error: ${e.stack}`));
+  } else {
+    logs.info('Open ports script - skipping, UPnP is not available');
   }
 
+  // Create VPN's address + publicKey + privateKey if it doesn't exist yet (with static ip or not)
+  // + Verify if the privateKey is corrupted or lost. Then create a new identity and alert the user
+  await dyndnsClient.generateKeys();
+
   // Watch for IP changes, if so update the IP. On error, asume the IP changed.
+  // If the user has not defined a static IP use dynamic DNS
+  // > staticIp is set in `getPublicIp()`
   let _ip = '';
-  setInterval(async () => {
+  setIntervalAndRun(async () => {
     try {
-      if (!await db.get('staticIp')) {
-        const ip = await getPublicIp();
-        if (!ip || ip !== _ip) {
-          dyndnsClient.updateIp();
-          _ip = ip;
-        }
-        if (ip) await db.set('ip', ip);
+      // If the static IP is defined, skip registering to dyndns
+      if (await db.get('staticIp')) return;
+      // Otherwise, obtain the public IP and register
+      const ip = await getPublicIp();
+      if (!ip || ip !== _ip) {
+        dyndnsClient.updateIp();
+        _ip = ip;
       }
+      if (ip) await db.set('ip', ip);
     } catch (e) {
       logs.error(`Error on dyndns interval: ${e.stack || e.message}`);
     }
@@ -181,5 +195,10 @@ const error2obj = (e) => ({name: e.name, message: e.message, stack: e.stack, use
 // //////////////////////////////
 //  Open ports (UPnP script)   //
 // //////////////////////////////
+
+function setIntervalAndRun(fn, t) {
+  fn();
+  return (setInterval(fn, t));
+}
 
 

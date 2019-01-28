@@ -1,18 +1,20 @@
 const chai = require('chai');
 const expect = require('chai').expect;
 const fs = require('fs');
+const shell = require('../../src/utils/shell');
 
 chai.should();
 
-const testFoler = './mockFiles';
-process.env.INSTALLATION_STATIC_IP = `${testFoler}/staticIp`;
+const testFolder = './mockFiles';
+const filePath = `${testFolder}/staticIp`;
+process.env.INSTALLATION_STATIC_IP = filePath;
 
-const getInstallationStaticIp = require('../../src/fetchVpnParameters/getInstallationStaticIp');
+const getInstallationStaticIp = require('../../src/utils/getInstallationStaticIp');
 
 describe('Util: getInstallationStaticIp', function() {
   before(() => {
     try {
-        fs.mkdirSync(testFoler);
+        fs.mkdirSync(testFolder);
       } catch (e) {
         //
       }
@@ -24,31 +26,27 @@ describe('Util: getInstallationStaticIp', function() {
   });
 
   it('should return null if the file is empty', async () => {
-    fs.writeFileSync(process.env.INSTALLATION_STATIC_IP, '');
+    fs.writeFileSync(filePath, '');
     const staticIp = await getInstallationStaticIp();
     expect(staticIp).to.equal(null);
   });
 
   it('should return null if the ip is incorrect', async () => {
-    fs.writeFileSync(process.env.INSTALLATION_STATIC_IP, '333.45.43.1111');
+    fs.writeFileSync(filePath, '333.45.43.1111');
     const staticIp = await getInstallationStaticIp();
     expect(staticIp).to.equal(null);
   });
 
   it('should return the ip if the ip is valid', async () => {
-    fs.writeFileSync(process.env.INSTALLATION_STATIC_IP, '85.4.52.53');
+    const ip = '85.84.83.82';
+    fs.writeFileSync(filePath, ip);
     const staticIp = await getInstallationStaticIp();
-    expect(staticIp).to.equal('85.4.52.53');
+    expect(staticIp).to.equal(ip);
   });
 
-  after(() => {
+  after(async () => {
     try {
-      fs.unlinkSync(process.env.INSTALLATION_STATIC_IP);
-    } catch (e) {
-      //
-    }
-    try {
-      fs.rmdirSync(testFoler);
+        await shell(`rm -rf ${testFolder}`);
     } catch (e) {
       //
     }
