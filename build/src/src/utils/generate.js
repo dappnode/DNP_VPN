@@ -1,6 +1,6 @@
 const generator = require('generate-password');
 const db = require('../db');
-const getServer = require('./getServer');
+const getPublicEndpoint = require('./getPublicEndpoint');
 
 const dappnodeOtpUrl = process.env.DAPPNODE_OTP_URL || 'otp.dappnode.io';
 const commonStaticIpPrefix = '172.33.';
@@ -73,7 +73,7 @@ const encode = {
  * @return {String} otp link
  */
 async function otp({user, pass}, {min} = {}) {
-    const server = await getServer();
+    const server = await getPublicEndpoint();
     const name = await db.get('name');
     const psk = await db.get('psk');
 

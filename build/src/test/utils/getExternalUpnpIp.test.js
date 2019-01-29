@@ -29,8 +29,8 @@ i protocol exPort->inAddr:inPort description remoteHost leaseTime
 GetGenericPortMappingEntry() returned 713 (SpecifiedArrayIndexInvalid)
 `;
 
-describe('Util: getExternalIp', () => {
-    const getExternalIp = proxyquire('../../src/utils/getExternalIp', {
+describe('Util: getExternalUpnpIp', () => {
+    const getExternalUpnpIp = proxyquire('../../src/utils/getExternalUpnpIp', {
         './shell': async (cmd) => {
             if (cmd.trim() === expectedCmd.trim()) {
                 return cmdOutput;
@@ -42,7 +42,7 @@ describe('Util: getExternalIp', () => {
     });
 
     it('should get normal otp', async () => {
-        const internalIp = await getExternalIp();
+        const internalIp = await getExternalUpnpIp();
         expect(internalIp).to.equal('85.84.83.82');
     });
 });

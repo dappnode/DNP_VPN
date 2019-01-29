@@ -76,7 +76,7 @@ RUN apk add --update --no-cache \
 # - supervisord.conf
 # - ipsec
 # - VPN setup shell: init.sh, templates/
-# - node files: package.json, client.js
+# - node files: package.json, index.js
 COPY src/ipsec /etc/init.d/ipsec
 
 RUN mkdir -p /usr/src/app/secrets
@@ -108,7 +108,7 @@ RUN chmod 755 entrypoint.sh
 # Supervisord processes:
 # > /usr/src/app/init.sh (libreswan VPN, executes xl2tpd)
 # > /usr/src/app/ipsec.sh (ipsec)
-# > node client.js (VPN user managment API)
+# > node index.js (VPN user managment API)
 
 # The vpn image is used to run upnpn commands
 # Therefore the whole execution needs to be replaced by another command

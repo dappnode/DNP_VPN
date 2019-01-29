@@ -11,33 +11,32 @@ const urls = [
 ];
 
 /**
- * Implements a custom race control flow to get the public IP:
- * - First url to reply a valid IP will resolve the promise
- * - If the first url to replies an invalid IP, it is ignored
+ * Attempts to get an IP from the above list of urls sequentially
+ * - If the first link doesn't return a valid IP, the second url is attempted
  * - If all urls have replied invalid IPs, then an error is returned
  *
  * @param {Boolean} silent suppress logs
  * @return {String} public IP: 85.84.83.82
  */
-function getPublicIpFromUrls(silent) {
-    return new Promise(async (resolve, reject) => {
-        let foundValidIp;
-        let lastError;
-        await Promise.all(urls.map(async (url) => {
+async function getPublicIpFromUrls({silent} = {}) {
+    let errors = [];
+    for (const url of urls) {
+        try {
             // wget
             // -t: tries 3 times
             // -T: timeout after 15 seconds
             // -q: quiet, suppress all output except the IP
             // O-: output ?
-            const ip = await shell(`wget -t 3 -T 15 -qO- ${url}`, {trim: true})
-                .catch((e) => {
-                    lastError = `Error getting IP from ${url}: ${e.message}`;
-                    if (!silent) logs.error(lastError);
-                });
-            if (isIp(ip)) resolve(foundValidIp = ip);
-        }));
-        if (!foundValidIp) reject(Error(`No valid IP was returned by urls: ${urls.join(', ')}. ${lastError ? `Last error: ${lastError.trim()}` : ''}`));
-    });
+            const ip = await shell(`wget -t 3 -T 15 -qO- ${url}`, {trim: true});
+            if (isIp(ip)) return ip;
+            else throw Error(`Invalid IP format: ${ip}`);
+        } catch (e) {
+            const error = `Error getting IP from ${url}: ${e.message}`;
+            errors.push(error);
+            if (!silent) logs.error(error);
+        }
+    }
+    if (!silent) logs.error(`No valid IP was returned by urls:\n${errors.join('\n')}`);
 }
 
 module.exports = getPublicIpFromUrls;

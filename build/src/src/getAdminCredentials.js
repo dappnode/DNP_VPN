@@ -15,7 +15,7 @@ It may take a while, press CTRL + C to skip this process
 `);
 
 // Wait for the loginMsg to exist.
-// This is created at client.js line ~116
+// This is created at index.js line ~116
 // serves as flag to signal the end of the initialization
 check();
 

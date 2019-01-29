@@ -1,8 +1,8 @@
-const credentialsFile = require('../utils/credentialsFile');
-const generate = require('../utils/generate');
 const qrcode = require('qrcode-terminal');
 const db = require('../db');
-const getServer = require('../utils/getServer');
+const credentialsFile = require('../utils/credentialsFile');
+const generate = require('../utils/generate');
+const getPublicEndpoint = require('../utils/getPublicEndpoint');
 
 async function generateLoginMsg() {
   let msg = '\n\n';
@@ -23,7 +23,7 @@ async function generateLoginMsg() {
   msg += await getQrCodeString(adminOtpMin);
 
   // Show credentials
-  const server = await getServer();
+  const server = await getPublicEndpoint();
   const psk = await db.get('psk');
   const columns = [
     {

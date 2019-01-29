@@ -7,7 +7,7 @@ const {exec} = require('child_process');
 let db = require('../../src/db');
 const EthCrypto = require('eth-crypto');
 
-process.env.DYNDNS_DOMAIN = 'dyn.test.io';
+process.env.DYNDNS_DOMAIN = 'dyndns.dapptest.io';
 const dbPath = './vpndb';
 
 const generateKeys = require('../../src/dyndnsClient/generateKeys');
@@ -50,7 +50,7 @@ describe('generateKeys', function() {
       const {domain, address} = _db;
       const [subdomain, ...host] = domain.split('.');
       expect(address.toLowerCase()).to.include(subdomain);
-      expect(host.join('.')).to.equal('dyn.test.io');
+      expect(host.join('.')).to.equal(process.env.DYNDNS_DOMAIN);
     });
 
     it('should return the same identity the second time ', async () => {

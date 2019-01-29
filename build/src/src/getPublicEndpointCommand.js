@@ -1,11 +1,11 @@
-const getPublicIp = require('./utils/getPublicIp');
+const getPublicEndpoint = require('./utils/getPublicEndpoint');
 
 /* eslint-disable no-console */
 
 // set silent = true
-getPublicIp(true)
+getPublicEndpoint()
     .then(console.log)
     .catch((e) => {
-        console.log(e);
+        // console.log(e);
         process.exit(1);
     });
