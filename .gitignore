@@ -1,5 +1,4 @@
 # dedicated files
-build/src/index
 build_*
 build/src/node_modules/
 build/src/mockFiles/
