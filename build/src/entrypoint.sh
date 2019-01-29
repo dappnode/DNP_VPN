@@ -13,7 +13,4 @@ export PUBLIC_ENDPOINT="$(node src/getPublicEndpointCommand)"
 echo "Fetched VPN credentials: ADMIN admin user: $ADMIN_USER, public endpoint: $PUBLIC_ENDPOINT"
 
 # Supervisord processes:
-# > /usr/src/app/init.sh (libreswan VPN, executes xl2tpd)
-# > /usr/src/app/ipsec.sh (ipsec)
-# > node index.js (VPN user managment API)
 supervisord

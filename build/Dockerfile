@@ -56,8 +56,9 @@ RUN ln -s /usr/src/app/src/getAdminCredentials.js /usr/local/bin/getAdminCredent
 RUN ln -s /usr/src/app/src/vpncli.js /usr/local/bin/vpncli
 ADD ./bin /usr/local/bin
 RUN chmod a+x /usr/local/bin/*
+RUN chmod 755 /usr/src/app/init.sh
 
 # Supervisor run:
-# node src/client.js
+# node src/index.js
 # ovpn_run
-CMD ["supervisord","-c","supervisord.conf"]
+CMD ["./entrypoint.sh"]

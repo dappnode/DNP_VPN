@@ -5,6 +5,7 @@ async function generateLoginMsg(url) {
 
   // Show the QR code
   // Wraps qrcode library's callback style into a promise
+  if (!url) throw Error('generateLoginMsg: url is empty or not defined')
   msg += await getQrCodeString(url);
 
   // Show credentials

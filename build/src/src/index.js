@@ -130,7 +130,3 @@ db.get('upnpAvailable').then((upnpAvailable) => {
 db.get().then((_db) => {
   logs.info(JSON.stringify(_db, null, 2));
 });
-
-loginMsg.write().then((msg) => {
-  logs.info(msg);
-});

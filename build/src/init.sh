@@ -2,6 +2,7 @@
 
 # Check in db if node has a static IP, use dynamic DNS domain instead.
 VPNHOSTNAME=${PUBLIC_ENDPOINT}
+echo "init.sh received PUBLIC_ENDPOINT $PUBLIC_ENDPOINT"
 
 # Initialize config and PKI 
 # -c: Client to Client

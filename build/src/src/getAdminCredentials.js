@@ -13,17 +13,13 @@ console.log('\nLoading VPN parameters... '
     +'It may take a while, press CTRL + C to skip this process \n');
 
 // Wait for the loginMsg to exist
-check();
-
-function check() {
-    let count = 0;
-    fs.readFile(loginMsgPath, 'utf8', (err, loginMsg) => {
+let count = 0;
+fs.readFile(loginMsgPath, 'utf8', (err, loginMsgData) => {
     if (err) {
         if (err.code !== 'ENOENT') console.error(`Error reading loginMsgFile ${err.message}`);
         if (count++ > maxAttempts) console.error(`loginMsgFile missing after ${maxAttempts} attempts`);
         else setTimeout(check, pauseTime);
     } else {
-        console.log(loginMsg);
+        console.log(loginMsgData);
     }
-  });
-}
+});
