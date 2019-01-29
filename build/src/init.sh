@@ -1,35 +1,7 @@
 #!/bin/bash
 
-check_ip() {
-  IP_REGEX='^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$'
-  printf '%s' "$1" | tr -d '\n' | grep -Eq "$IP_REGEX"
-}
-
-# Initalize UPnP
-source /usr/src/app/ip_upnp.sh
-
-# Check IP for correct format FIXME: needed?
-check_ip "$PUBLIC_IP" || PUBLIC_IP=$(wget -t 3 -T 15 -qO- http://ipv4.icanhazip.com)
-check_ip "$PUBLIC_IP" || exiterr "Cannot detect this server's public IP. Define it in your 'env' file as 'VPN_PUBLIC_IP'."
-echo "WRITING PUBLIC IP TO SERVER-IP"
-echo "$PUBLIC_IP" > $PUBLIC_IP_PATH
-
-# Wait for database
-echo "Waiting for database to be created..."
-while [ ! -f ${DB_PATH} ]
-do
-  sleep 3
-done
-
 # Check in db if node has a static IP, use dynamic DNS domain instead.
-VPNHOSTNAME=${HOSTNAME}
-STATICIP=$(jq -r '.staticIp // empty' $DB_PATH)
-DOMAIN=$(jq -r '.domain // empty' $DB_PATH)
-if [[ ! -z $STATICIP ]]; then
-    VPNHOSTNAME=${STATICIP}
-elif [[ ! -z $DOMAIN ]]; then
-    VPNHOSTNAME=${DOMAIN}
-fi
+VPNHOSTNAME=${PUBLIC_ENDPOINT}
 
 # Initialize config and PKI 
 # -c: Client to Client

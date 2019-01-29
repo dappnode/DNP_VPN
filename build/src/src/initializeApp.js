@@ -1,4 +1,6 @@
 const db = require('./db');
+const logs = require('./logs.js')(module);
+const crypto = require('crypto');
 // Modules
 const dyndnsClient = require('./dyndnsClient');
 // Utils
@@ -44,4 +46,13 @@ async function initializeApp() {
     // - Verify if the privateKey is corrupted or lost. Then create a new identity and alert the user
     // - Updates the domain: db.set('domain', domain)
     await dyndnsClient.generateKeys();
+
+    // Generate salt
+    if (await db.get('salt')) {
+        logs.info('Salt is already generated, skipping its generation');
+    } else {
+        const salt = crypto.randomBytes(8).toString('hex');
+        await db.set('salt', salt);
+        logs.info(`Successfully generated salt of 8 bytes: ${salt}`);
+    }
 }

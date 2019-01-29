@@ -48,7 +48,7 @@ async function getDeviceCredentials({id}) {
   const encrypted = encrypt(data, key);
   const _db = await db.get();
   // Check if static ip
-  const hostname = _db.staticIp ? _db.staticIp : _db.domain;
+  const hostname = _db.staticIp || _db.domain;
 
   if (!_db.salt) throw Error('Salt not present.');
 
