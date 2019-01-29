@@ -14,6 +14,7 @@ function write(credentialsArray) {
 
 
 /**
+ * @param {String} path
  * @return {Array} Array of objects:
  * [
  *   {
@@ -32,10 +33,10 @@ function fetch(path) {
   .filter((line) => !line.trim() && !line.startsWith('# '))
   // Convert each line to an object + strip quotation marks
   .map((credentialsString) => {
-    let [name, _, password, ip] = credentialsString.trim()
+    let [name, , password, ip] = credentialsString.trim()
     .split(' ')
-    .map(s => s.replace(/['"]+/g, ''))
-    return { name, password, ip };
+    .map((s) => s.replace(/['"]+/g, ''));
+    return {name, password, ip};
   });
 }
 
