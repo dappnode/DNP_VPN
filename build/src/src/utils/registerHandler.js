@@ -1,4 +1,4 @@
-const logs = require('./logs.js')(module);
+const logs = require('../logs.js')(module);
 
 function registerHandler(session, event, handler) {
     const wrapErrors = (handler) =>

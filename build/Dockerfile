@@ -101,7 +101,7 @@ ENV DYNDNS_DOMAIN dyndns.dappnode.io
 
 RUN ln -s /usr/src/app/src/getAdminCredentials.js /usr/bin/getAdminCredentials
 RUN chmod +x /usr/src/app/src/getAdminCredentials.js
-RUN chmod +x /usr/src/app/src/getPublicIpCommand.js
+RUN chmod +x /usr/src/app/src/getPublicEndpointCommand.js
 RUN chmod 755 init.sh
 RUN chmod 755 entrypoint.sh
 
