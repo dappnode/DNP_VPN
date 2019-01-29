@@ -8,7 +8,7 @@ const guestsName = 'Guests';
 
 async function toggleGuestUsers() {
     // Fetch devices data from the chap_secrets file
-    let credentialsArray = await credentialsFile.fetch();
+    let credentialsArray = credentialsFile.fetch();
     const guestUsers = credentialsArray.find((u) => u.name === guestsName);
     if (guestUsers) {
         // Remove guest users credentials
@@ -28,7 +28,7 @@ async function toggleGuestUsers() {
         });
     }
 
-    await credentialsFile.write(credentialsArray);
+    credentialsFile.write(credentialsArray);
 
     // Emit packages update
     eventBus.emit(eventBusTag.emitDevices);

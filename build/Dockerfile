@@ -56,7 +56,7 @@ RUN ln -s /usr/src/app/src/getAdminCredentials.js /usr/local/bin/getAdminCredent
 RUN ln -s /usr/src/app/src/vpncli.js /usr/local/bin/vpncli
 ADD ./bin /usr/local/bin
 RUN chmod a+x /usr/local/bin/*
-RUN chmod 755 /usr/src/app/init.sh
+RUN chmod 755 /usr/src/app/entrypoint.sh
 
 # Supervisor run:
 # node src/index.js
