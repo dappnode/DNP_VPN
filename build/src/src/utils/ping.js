@@ -4,7 +4,7 @@ const shell = require('./shell');
 // const resolved = await ping('83.53.19.120')
 // > will return true / false
 
-const count = 10;
+const count = 5;
 const max = 3;
 
 /**
