@@ -1,6 +1,6 @@
 const db = require('../db');
 const dyndnsClient = require('../dyndnsClient');
-const loginMsg = require('../loginMsg');
+// const loginMsg = require('../loginMsg');
 const {eventBus, eventBusTag} = require('../eventBus');
 
 async function setStaticIp({staticIp}) {
@@ -8,7 +8,7 @@ async function setStaticIp({staticIp}) {
     await db.set('staticIp', staticIp);
 
     // loginMsg must be rewritten to reflect the staticIp change
-    await loginMsg.write();
+    // await loginMsg.write();
 
     // Parse action to display a feedback message
     let message;

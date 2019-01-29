@@ -6,28 +6,24 @@ const fs = require('fs');
 
 const loginMsgPath = process.env.LOGIN_MSG_PATH || './loginMsgFile.txt';
 
-const maxSeconds = 3 * 60; // 3 min
+const maxAttempts = 3 * 60; // 3 min
 const pauseTime = 1000;
 
-console.log(`
-Loading VPN parameters...
-It may take a while, press CTRL + C to skip this process
-`);
+console.log('\nLoading VPN parameters... '
+    +'It may take a while, press CTRL + C to skip this process \n');
 
-// Wait for the loginMsg to exist.
-// This is created at index.js line ~116
-// serves as flag to signal the end of the initialization
+// Wait for the loginMsg to exist
 check();
 
-let count = 0;
 function check() {
-  fs.readFile(loginMsgPath, 'utf8', (err, loginMsg) => {
+    let count = 0;
+    fs.readFile(loginMsgPath, 'utf8', (err, loginMsg) => {
     if (err) {
-      if (err.code !== 'ENOENT') console.error(`Error reading loginMsgFile ${err.message}`);
-      if (count++ > maxSeconds) console.error(`loginMsgFile missing after ${maxSeconds} seconds`);
-      else setTimeout(check, pauseTime);
+        if (err.code !== 'ENOENT') console.error(`Error reading loginMsgFile ${err.message}`);
+        if (count++ > maxAttempts) console.error(`loginMsgFile missing after ${maxAttempts} attempts`);
+        else setTimeout(check, pauseTime);
     } else {
-      console.log(loginMsg);
+        console.log(loginMsg);
     }
   });
 }

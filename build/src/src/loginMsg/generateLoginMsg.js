@@ -1,67 +1,18 @@
 const qrcode = require('qrcode-terminal');
-const db = require('../db');
-const credentialsFile = require('../utils/credentialsFile');
-const generate = require('../utils/generate');
-const getPublicEndpoint = require('../utils/getPublicEndpoint');
 
-async function generateLoginMsg() {
+async function generateLoginMsg(url) {
   let msg = '\n\n';
-
-  const deviceList = await credentialsFile.fetch();
-  const adminDevice = deviceList[0];
-  const adminOtp = await generate.otp({
-    user: adminDevice.name,
-    pass: adminDevice.password,
-  });
-  const adminOtpMin = await generate.otp({
-    user: adminDevice.name,
-    pass: adminDevice.password,
-  }, {min: true});
 
   // Show the QR code
   // Wraps qrcode library's callback style into a promise
-  msg += await getQrCodeString(adminOtpMin);
+  msg += await getQrCodeString(url);
 
   // Show credentials
-  const server = await getPublicEndpoint();
-  const psk = await db.get('psk');
-  const columns = [
-    {
-      field: 'VPN-Type',
-      value: 'L2TP/IPSec',
-    },
-    {
-      field: 'PSK',
-      value: psk || '',
-    },
-    {
-      field: 'name',
-      value: adminDevice.name || '',
-    },
-    {
-      field: 'password',
-      value: adminDevice.password || '',
-    },
-    {
-      field: 'Server address',
-      value: server || '',
-    },
-  ];
   /* eslint-disable max-len */
   msg += `
-To connect to your DAppNode scan the QR above, copy/paste link below into your browser or use VPN credentials:
-  ${adminOtp}
+To connect to your DAppNode scan the QR above or copy/paste link below into your browser:
+  ${url}\n`;
 
-${columns.map((col) => col.field.padEnd(col.value.length)).join('  ')}
-${columns.map((col) => col.value).join('  ')}    `; // leave trailing spaces
-
-  const openPorts = await db.get('openPorts');
-  const upnpAvailable = await db.get('upnpAvailable');
-  const externalIpResolves = await db.get('externalIpResolves');
-  const internalIp = await db.get('internalIp');
-  msg += parseUpnpStatus(openPorts, upnpAvailable);
-  msg += parsePublicIpStatus(externalIpResolves, internalIp);
-  // return msg for testing
   return msg;
 }
 
@@ -79,7 +30,7 @@ function parseUpnpStatus(openPorts, upnpAvailable) {
     //   upnp: true, // true => UPnP is able to open them automatically
     // },
     return '\n ALERT: You may not be able to connect. '
-      +'Turn your router\'s UPnP on or open the VPN ports (500 and 4500) manually';
+      +'Turn your router\'s UPnP on or open the VPN port (1194/udp) manually';
   } else {
     return '';
   }
@@ -94,6 +45,5 @@ function parsePublicIpStatus(externalIpResolves, internalIp) {
     return '';
   }
 }
-
 
 module.exports = generateLoginMsg;

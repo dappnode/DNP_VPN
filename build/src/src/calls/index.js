@@ -5,13 +5,12 @@
  */
 module.exports = {
     addDevice: require('./addDevice'),
+    getDeviceCredentials: require('./getDeviceCredentials'),
     removeDevice: require('./removeDevice'),
     toggleAdmin: require('./toggleAdmin'),
     listDevices: require('./listDevices'),
     getParams: require('./getParams'),
     setStaticIp: require('./setStaticIp'),
     statusExternalIp: require('./statusExternalIp'),
-    statusUPnP: require('./statusUPnP'),
-    toggleGuestUsers: require('./toggleGuestUsers'),
-    resetGuestUsersPassword: require('./resetGuestUsersPassword'),
+    statusUPnP: require('./statusUPnP')
 };

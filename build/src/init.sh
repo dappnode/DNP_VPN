@@ -1,117 +1,62 @@
-#!/bin/sh
-#
-# Docker script to configure and start an IPsec VPN server
-#
-# DO NOT RUN THIS SCRIPT ON YOUR PC OR MAC! THIS IS ONLY MEANT TO BE RUN
-# IN A DOCKER CONTAINER!
-#
-# This file is part of IPsec VPN Docker image, available at:
-# https://github.com/hwdsl2/docker-ipsec-vpn-server
-#
-# Copyright (C) 2016-2017 Lin Song <linsongui@gmail.com>
-# Based on the work of Thomas Sarlandie (Copyright 2012)
-#
-# This work is licensed under the Creative Commons Attribution-ShareAlike 3.0
-# Unported License: http://creativecommons.org/licenses/by-sa/3.0/
-#
-# Attribution required: please include my name in any derivative and let me
-# know how you have improved it!
+#!/bin/bash
 
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+check_ip() {
+  IP_REGEX='^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$'
+  printf '%s' "$1" | tr -d '\n' | grep -Eq "$IP_REGEX"
+}
 
-# Export variables for use in templates
-export L2TP_NET=${VPN_L2TP_NET:-'172.33.0.0/16'}
-export L2TP_LOCAL=${VPN_L2TP_LOCAL:-'172.33.11.1'}
-export L2TP_POOL=${VPN_L2TP_POOL:-'172.33.200.1-172.33.255.254'}
-export DNS_SRV1=${VPN_DNS_SRV1:-'8.8.8.8'}
-export DNS_SRV2=${VPN_DNS_SRV2:-'8.8.4.4'}
+# Initalize UPnP
+source /usr/src/app/ip_upnp.sh
 
-export VPN_USER="$ADMIN_USER"
-export VPN_PASSWORD="$ADMIN_PASSWORD"
-export VPN_IPSEC_PSK="$PSK"
-export VPN_PASSWORD_ENC=$(openssl passwd -1 "$VPN_PASSWORD")
+# Check IP for correct format FIXME: needed?
+check_ip "$PUBLIC_IP" || PUBLIC_IP=$(wget -t 3 -T 15 -qO- http://ipv4.icanhazip.com)
+check_ip "$PUBLIC_IP" || exiterr "Cannot detect this server's public IP. Define it in your 'env' file as 'VPN_PUBLIC_IP'."
+echo "WRITING PUBLIC IP TO SERVER-IP"
+echo "$PUBLIC_IP" > $PUBLIC_IP_PATH
 
-mkdir -p /etc/xl2tpd
+# Wait for database
+echo "Waiting for database to be created..."
+while [ ! -f ${DB_PATH} ]
+do
+  sleep 3
+done
 
-# Create IPsec (Libreswan) config
-#   ${L2TP_NET}  ${XAUTH_NET}  ${XAUTH_POOL}  ${DNS_SRV1}  ${DNS_SRV2}  ${PUBLIC_IP}
-envsubst < "templates/ipsec.conf" > "/etc/ipsec.conf"
-
-# Create xl2tpd config
-#   ${L2TP_POOL}  ${L2TP_LOCAL}
-envsubst < "templates/xl2tpd.conf" > "/etc/xl2tpd/xl2tpd.conf"
-
-# Set xl2tpd options
-#   ${DNS_SRV1}  ${DNS_SRV2}
-envsubst < "templates/options.xl2tpd" > "/etc/ppp/options.xl2tpd"
-
-# Specify IPsec PSK
-#   ${VPN_IPSEC_PSK}
-IPSEC_SECRETS_PATH="/usr/src/app/secrets/ipsec.secrets"
-[ ! -f "${IPSEC_SECRETS_PATH}" ] && envsubst < "templates/ipsec.secrets" > "${IPSEC_SECRETS_PATH}"
-rm /etc/ipsec.secrets
-ln -s ${IPSEC_SECRETS_PATH} /etc/ipsec.secrets
-
-# Create VPN credentials
-#   ${VPN_USER}  ${VPN_PASSWORD}
-[ ! -f "${CREDENTIALS_PATH}" ] &&  envsubst < "templates/chap-secrets" > "${CREDENTIALS_PATH}"
-rm /etc/ppp/chap-secrets
-ln -s ${CREDENTIALS_PATH} /etc/ppp/chap-secrets
-
-# Update sysctl settings
-SYST='/sbin/sysctl -e -q -w'
-if [ "$(getconf LONG_BIT)" = "64" ]; then
-  SHM_MAX=68719476736
-  SHM_ALL=4294967296
-else
-  SHM_MAX=4294967295
-  SHM_ALL=268435456
+# Check in db if node has a static IP, use dynamic DNS domain instead.
+VPNHOSTNAME=${HOSTNAME}
+STATICIP=$(jq -r '.staticIp // empty' $DB_PATH)
+DOMAIN=$(jq -r '.domain // empty' $DB_PATH)
+if [[ ! -z $STATICIP ]]; then
+    VPNHOSTNAME=${STATICIP}
+elif [[ ! -z $DOMAIN ]]; then
+    VPNHOSTNAME=${DOMAIN}
 fi
-$SYST kernel.msgmnb=65536
-$SYST kernel.msgmax=65536
-$SYST kernel.shmmax=$SHM_MAX
-$SYST kernel.shmall=$SHM_ALL
-$SYST net.ipv4.ip_forward=1
-$SYST net.ipv4.conf.all.accept_source_route=0
-$SYST net.ipv4.conf.all.accept_redirects=0
-$SYST net.ipv4.conf.all.send_redirects=0
-$SYST net.ipv4.conf.all.rp_filter=0
-$SYST net.ipv4.conf.default.accept_source_route=0
-$SYST net.ipv4.conf.default.accept_redirects=0
-$SYST net.ipv4.conf.default.send_redirects=0
-$SYST net.ipv4.conf.default.rp_filter=0
-$SYST net.ipv4.conf.eth0.send_redirects=0
-$SYST net.ipv4.conf.eth0.rp_filter=0
 
-# Create IPTables rules
-iptables -I INPUT 1 -p udp --dport 1701 -m policy --dir in --pol none -j DROP
-iptables -I INPUT 2 -m conntrack --ctstate INVALID -j DROP
-iptables -I INPUT 3 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-iptables -I INPUT 4 -p udp -m multiport --dports 500,4500 -j ACCEPT
-iptables -I INPUT 5 -p udp --dport 1701 -m policy --dir in --pol ipsec -j ACCEPT
-iptables -I INPUT 6 -p udp --dport 1701 -j DROP
-iptables -I FORWARD 1 -m conntrack --ctstate INVALID -j DROP
-iptables -I FORWARD 2 -i eth+ -o ppp+ -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-iptables -I FORWARD 3 -i ppp+ -o eth+ -j ACCEPT
-iptables -I FORWARD 4 -i ppp+ -o ppp+ -s "$L2TP_NET" -d "$L2TP_NET" -j ACCEPT
-# Uncomment if you wish to disallow traffic between VPN clients themselves
-# iptables -I FORWARD 2 -i ppp+ -o ppp+ -s "$L2TP_NET" -d "$L2TP_NET" -j DROP
-# iptables -I FORWARD 3 -s "$XAUTH_NET" -d "$XAUTH_NET" -j DROP
-iptables -A FORWARD -j DROP
-#iptables -t nat -I POSTROUTING -s "$L2TP_NET" -o eth+ -j MASQUERADE
+# Initialize config and PKI 
+# -c: Client to Client
+# -d: disable default route (disables NAT without '-N')
+# -p "route 172.33.0.0 255.255.0.0": Route to push to the client
 
-# Update file attributes
-chmod 600 /etc/ipsec.secrets /etc/ppp/chap-secrets
+if [ ! -e "${OPENVPN_CONF}" ]; then
+    ovpn_genconfig -c -d -u udp://${VPNHOSTNAME} -s 172.33.8.0/22 \
+    -p "route 172.33.0.0 255.255.0.0" \
+    -n "172.33.1.2"
+    EASYRSA_REQ_CN=${VPNHOSTNAME} ovpn_initpki nopass
+fi
 
-# Load IPsec NETKEY kernel module
-modprobe af_key
+# Create admin user
+if [ ! -e "${OPENVPN_ADMIN_PROFILE}" ]; then
+    vpncli add ${DEFAULT_ADMIN_USER}
+    vpncli get ${DEFAULT_ADMIN_USER}
+    echo "ifconfig-push 172.33.10.20 172.33.10.254" > ${OPENVPN_CCD_DIR}/${DEFAULT_ADMIN_USER}
+fi
 
-# Start services
-mkdir -p /var/run/pluto /var/run/xl2tpd
-rm -f /var/run/xl2tpd.pid
+# Enable Proxy ARP (needs privileges)
+echo 1 > /proc/sys/net/ipv4/conf/eth0/proxy_arp
 
-touch /var/run/dnp_vpn 
- 
-# Initialize xl2tpd in the background
-echo "EXECUTING LIBRESWAN"
-exec /usr/sbin/xl2tpd -D -c /etc/xl2tpd/xl2tpd.conf
+# Migrate users from v1
+/usr/local/bin/migrate_v2
+
+# Save environment
+env | sed '/affinity/d' > /etc/env.sh
+
+/usr/local/bin/ovpn_run

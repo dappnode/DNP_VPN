@@ -6,8 +6,8 @@ const generateLoginMsg = require('./generateLoginMsg');
 
 const loginMsgPath = process.env.LOGIN_MSG_PATH || './loginMsgFile.txt';
 
-const write = async () => {
-    const loginMsg = await generateLoginMsg();
+const write = async (url) => {
+    const loginMsg = await generateLoginMsg(url);
     await promisify(fs.writeFile)(loginMsgPath, loginMsg, 'utf8');
     return loginMsg; // return for testing
 };
