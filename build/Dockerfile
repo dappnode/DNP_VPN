@@ -1,12 +1,57 @@
-# Smallest base image
-FROM node:8.14.0-alpine
+# BUILD #
+FROM node:8.14.0-alpine as build
 
 WORKDIR /usr/src/app
 
-RUN apk add --update wget openvpn iptables bash easy-rsa \
-    bind-tools supervisor miniupnpc docker openssl jq sed && \
+RUN apk add --update --no-cache \
+    build-base python docker git libpcap-dev linux-headers bash
+
+COPY src/package*.json ./
+RUN npm install
+# Run the copy in two steps to cache the npm install
+COPY src .
+
+# BASE #
+# Smallest base image
+FROM alpine:3.8
+
+WORKDIR /usr/src/app
+
+RUN apk add --update openvpn iptables bash easy-rsa \
+    bind-tools supervisor miniupnpc openssl jq sed && \
     ln -s /usr/share/easy-rsa/easyrsa /usr/local/bin && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/* /var/cache/distfiles/*
+
+RUN ALPINE_GLIBC_BASE_URL="https://github.com/sgerrand/alpine-pkg-glibc/releases/download" && \
+    ALPINE_GLIBC_PACKAGE_VERSION="2.28-r0" && \
+    ALPINE_GLIBC_BASE_PACKAGE_FILENAME="glibc-$ALPINE_GLIBC_PACKAGE_VERSION.apk" && \
+    ALPINE_GLIBC_BIN_PACKAGE_FILENAME="glibc-bin-$ALPINE_GLIBC_PACKAGE_VERSION.apk" && \
+    ALPINE_GLIBC_I18N_PACKAGE_FILENAME="glibc-i18n-$ALPINE_GLIBC_PACKAGE_VERSION.apk" && \
+    apk add --no-cache --virtual=.build-dependencies wget ca-certificates && \
+    wget -nv \
+        "https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub" \
+        -O "/etc/apk/keys/sgerrand.rsa.pub" && \
+    wget -nv \
+        "$ALPINE_GLIBC_BASE_URL/$ALPINE_GLIBC_PACKAGE_VERSION/$ALPINE_GLIBC_BASE_PACKAGE_FILENAME" \
+        "$ALPINE_GLIBC_BASE_URL/$ALPINE_GLIBC_PACKAGE_VERSION/$ALPINE_GLIBC_BIN_PACKAGE_FILENAME" \
+        "$ALPINE_GLIBC_BASE_URL/$ALPINE_GLIBC_PACKAGE_VERSION/$ALPINE_GLIBC_I18N_PACKAGE_FILENAME" && \
+    apk add --no-cache \
+        "$ALPINE_GLIBC_BASE_PACKAGE_FILENAME" \
+        "$ALPINE_GLIBC_BIN_PACKAGE_FILENAME" \
+        "$ALPINE_GLIBC_I18N_PACKAGE_FILENAME" && \
+    \
+    rm "/etc/apk/keys/sgerrand.rsa.pub" && \
+    /usr/glibc-compat/bin/localedef --force --inputfile POSIX --charmap UTF-8 "$LANG" || true && \
+    echo "export LANG=$LANG" > /etc/profile.d/locale.sh && \
+    \
+    apk del glibc-i18n && \
+    \
+    rm "/root/.wget-hsts" && \
+    apk del .build-dependencies && \
+    rm \
+        "$ALPINE_GLIBC_BASE_PACKAGE_FILENAME" \
+        "$ALPINE_GLIBC_BIN_PACKAGE_FILENAME" \
+        "$ALPINE_GLIBC_I18N_PACKAGE_FILENAME"
 
 RUN mkdir -p /usr/src/app/secrets
 
@@ -47,10 +92,9 @@ ENV EASYRSA=/usr/share/easy-rsa \
 
 RUN mkdir -p ${OPENVPN_CRED_DIR} ${OPENVPN_CCD_DIR}
 
-COPY src/package.json .
-RUN npm install --production
-# Add the project afterwards for caching
-COPY src .
+COPY --from=build /usr/local/bin/node /usr/local/bin/node
+COPY --from=build /usr/src/app /usr/src/app
+COPY --from=build /usr/bin/docker /usr/bin/docker
 ADD ./bin /usr/local/bin
 
 VOLUME ["/etc/openvpn"]
