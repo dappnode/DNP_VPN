@@ -1,10 +1,11 @@
 const shell = require('./shell');
 const getVpnImage = require('./getVpnImage');
 const isIp = require('is-ip');
+const logs = require('../logs.js')(module);
 
 /* eslint-disable max-len */
 
-async function getInternalIp() {
+async function getInternalIp({silent} = {}) {
     try {
         const vpnImage = await getVpnImage();
         const output = await shell('docker run --rm --net=host '+vpnImage+' ip route get 1', {trim: true});
@@ -15,8 +16,7 @@ async function getInternalIp() {
         const internalIp = ((output || '').match(/src\s((\d+\.?){4})/) || [])[1];
         return isIp(internalIp) ? internalIp : null;
     } catch (e) {
-        e.message = `Error getting internal IP: ${e.message}`;
-        throw e;
+        if (!silent) logs.error(`Error getting internal IP: ${e.message}`);
     }
 }
 

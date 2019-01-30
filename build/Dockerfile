@@ -32,7 +32,7 @@ RUN apk add --update \
     miniupnpc \
     openssl \
     jq \
-    sed \
+    sed
 RUN ln -s /usr/share/easy-rsa/easyrsa /usr/local/bin && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/* /var/cache/distfiles/*
 

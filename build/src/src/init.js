@@ -1,10 +1,10 @@
 const db = require('./db');
 const logs = require('./logs.js')(module);
 const crypto = require('crypto');
-const fs = require('fs')
+const fs = require('fs');
 // Modules
 const dyndnsClient = require('./dyndnsClient');
-const migrateOldUsers = require('./migrateOldUsers')
+const migrateOldUsers = require('./migrateOldUsers');
 // Utils
 const getServerName = require('./utils/getServerName');
 const getInternalIp = require('./utils/getInternalIp');
@@ -12,6 +12,7 @@ const getStaticIp = require('./utils/getStaticIp');
 const getExternalUpnpIp = require('./utils/getExternalUpnpIp');
 const getPublicIpFromUrls = require('./utils/getPublicIpFromUrls');
 const ping = require('./utils/ping');
+const shell = require('./utils/shell');
 
 /* eslint-disable max-len */
 
@@ -63,33 +64,33 @@ async function initializeApp() {
     // //////////////////
 
     const {
-        OPENVPN_CONF, 
+        OPENVPN_CONF,
         OPENVPN_ADMIN_PROFILE,
         OPENVPN_CCD_DIR,
-        DEFAULT_ADMIN_USER
-    } = process.env
+        DEFAULT_ADMIN_USER,
+    } = process.env;
 
-    // Initialize config and PKI 
+    // Initialize config and PKI
     // -c: Client to Client
     // -d: disable default route (disables NAT without '-N')
     // -p "route 172.33.0.0 255.255.0.0": Route to push to the client
     if (!fs.existsSync(OPENVPN_CONF)) {
-        await shell(`ovpn_genconfig -c -d -u udp://${publicIp} -s 172.33.8.0/22 -p "route 172.33.0.0 255.255.0.0" -n "172.33.1.2" EASYRSA_REQ_CN=${publicIp} ovpn_initpki nopass`)
+        await shell(`ovpn_genconfig -c -d -u udp://${publicIp} -s 172.33.8.0/22 -p "route 172.33.0.0 255.255.0.0" -n "172.33.1.2" EASYRSA_REQ_CN=${publicIp} ovpn_initpki nopass`);
     }
 
     // Create admin user
     if (!fs.existsSync(OPENVPN_ADMIN_PROFILE)) {
-        vpncli.add(DEFAULT_ADMIN_USER)
-        vpncli.get(DEFAULT_ADMIN_USER)
-        await shell(`echo "ifconfig-push 172.33.10.20 172.33.10.254" > ${OPENVPN_CCD_DIR}/${DEFAULT_ADMIN_USER}`)
+        vpncli.add(DEFAULT_ADMIN_USER);
+        vpncli.get(DEFAULT_ADMIN_USER);
+        await shell(`echo "ifconfig-push 172.33.10.20 172.33.10.254" > ${OPENVPN_CCD_DIR}/${DEFAULT_ADMIN_USER}`);
     }
 
     // Enable Proxy ARP (needs privileges)
-    await shell(`echo 1 > /proc/sys/net/ipv4/conf/eth0/proxy_arp`)
+    await shell(`echo 1 > /proc/sys/net/ipv4/conf/eth0/proxy_arp`);
 
     // Migrate users from v1
-    await migrateOldUsers()
+    await migrateOldUsers();
 
     // Save environment
-    await shell(`env | sed '/affinity/d' > /etc/env.sh`)
+    await shell(`env | sed '/affinity/d' > /etc/env.sh`);
 }
