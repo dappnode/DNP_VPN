@@ -1,10 +1,8 @@
 const db = require('./db');
 const logs = require('./logs.js')(module);
 const crypto = require('crypto');
-const fs = require('fs')
 // Modules
 const dyndnsClient = require('./dyndnsClient');
-const migrateOldUsers = require('./migrateOldUsers')
 // Utils
 const getServerName = require('./utils/getServerName');
 const getInternalIp = require('./utils/getInternalIp');
@@ -12,6 +10,7 @@ const getStaticIp = require('./utils/getStaticIp');
 const getExternalUpnpIp = require('./utils/getExternalUpnpIp');
 const getPublicIpFromUrls = require('./utils/getPublicIpFromUrls');
 const ping = require('./utils/ping');
+const pause = require('./utils/pause');
 
 /* eslint-disable max-len */
 
@@ -27,7 +26,14 @@ async function initializeApp() {
     // Check if the static IP is set. If so, don't use any centralized IP-related service
     // The publicIp will be obtained in the entrypoint.sh and exported as PUBLIC_IP
     const staticIp = await getStaticIp();
-    const intenalIp = await getInternalIp();
+    let intenalIp;
+    while (!intenalIp) {
+        intenalIp = await getInternalIp();
+        if (!intenalIp) {
+            logs.warn('Internal IP is not available yet, retrying in 60 seconds');
+            await pause(60 * 1000);
+        }
+    }
     // If the host is exposed to the internet and the staticIp is set, avoid calling UPnP
     const externalIp = staticIp && staticIp === intenalIp && await getExternalUpnpIp();
     const publicIp = staticIp || externalIp || await getPublicIpFromUrls();

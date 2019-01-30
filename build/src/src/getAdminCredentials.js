@@ -14,12 +14,17 @@ console.log('\nLoading VPN parameters... '
 
 // Wait for the loginMsg to exist
 let count = 0;
-fs.readFile(loginMsgPath, 'utf8', (err, loginMsgData) => {
-    if (err) {
-        if (err.code !== 'ENOENT') console.error(`Error reading loginMsgFile ${err.message}`);
-        if (count++ > maxAttempts) console.error(`loginMsgFile missing after ${maxAttempts} attempts`);
-        else setTimeout(check, pauseTime);
-    } else {
-        console.log(loginMsgData);
-    }
-});
+const interval = setInterval(() => {
+    fs.readFile(loginMsgPath, 'utf8', (err, loginMsgData) => {
+        if (err) {
+            if (err.code !== 'ENOENT') console.error(`Error reading loginMsgFile ${err.message}`);
+            if (count++ > maxAttempts) {
+                console.error(`loginMsgFile missing after ${maxAttempts} attempts`);
+                clearInterval(interval);
+            }
+        } else {
+            console.log(loginMsgData);
+        }
+    });
+}, pauseTime);
+

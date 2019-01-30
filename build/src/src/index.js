@@ -7,7 +7,6 @@ const {eventBus, eventBusTag} = require('./eventBus');
 const dyndnsClient = require('./dyndnsClient');
 // Scripts
 const openPorts = require('./openPorts');
-const loginMsg = require('./loginMsg');
 // Utils
 const getExternalUpnpIp = require('./utils/getExternalUpnpIp');
 const getPublicIpFromUrls = require('./utils/getPublicIpFromUrls');
