@@ -1,8 +1,0 @@
-version: "3.4"
-
-services:
-  vpn.dnp.dappnode.eth:
-    build: ./build
-    image: "vpn.dnp.dappnode.eth:0.2.0-build"
-    container_name: DAppNodeCore-vpn.dnp.dappnode.eth
-    privileged: true
