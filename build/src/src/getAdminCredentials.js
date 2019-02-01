@@ -14,7 +14,6 @@ console.log('\nLoading VPN parameters... '
 
 // Wait for the loginMsg to exist
 check();
-
 function check() {
     let count = 0;
     fs.readFile(loginMsgPath, 'utf8', (err, loginMsg) => {
@@ -27,3 +26,4 @@ function check() {
     }
   });
 }
+

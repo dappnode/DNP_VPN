@@ -1,0 +1,45 @@
+{
+  "name": "vpn.dnp.dappnode.eth",
+  "version": "0.2.0",
+  "description": "Dappnode package responsible for providing the VPN (OpenVPN) connection",
+  "avatar": "/ipfs/QmWwMb3XhuCH6JnCF6m6EQzA4mW9pHHtg7rqAfhDr2ofi8",
+  "type": "dncore",
+  "image": {
+    "path": "",
+    "hash": "",
+    "size": 0,
+    "volumes": [
+      "/etc/hostname:/etc/vpnname:ro",
+      "/lib/modules:/lib/modules:ro",
+      "/var/run/docker.sock:/var/run/docker.sock",
+      "/usr/src/dappnode/config:/usr/src/app/config:ro",
+      "vpndnpdappnodeeth_data:/usr/src/app/secrets",
+      "vpndnpdappnodeeth_config:/etc/openvpn",
+      "vpndnpdappnodeeth_shared:/var/spool/openvpn"
+    ],
+    "ports": ["4500:4500/udp", "500:500/udp"],
+    "privileged": "true",
+    "restart": "always",
+    "subnet": "172.33.0.0/16",
+    "ipv4_address": "172.33.1.4"
+  },
+  "author": "DAppNode Association <admin@dappnode.io> (https://github.com/dappnode)",
+  "contributors": [
+    "Eduardo Antuña <eduadiez@gmail.com> (https://github.com/eduadiez)",
+    "DAppLion <dapplion@giveth.io> (https://github.com/dapplion)",
+    "Alex Floyd <alex@giveth.io> (https://github.com/mex20)"
+  ],
+  "keywords": ["DAppNodeCore", "VPN", "OpenVPN"],
+  "homepage": {
+    "userui": "https://dappnode.github.io/DAppNode_OTP",
+    "homepage": "https://github.com/dappnode/DNP_VPN#readme"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dappnode/DNP_VPN"
+  },
+  "bugs": {
+    "url": "https://github.com/dappnode/DNP_VPN/issues"
+  },
+  "license": "GPL-3.0"
+}

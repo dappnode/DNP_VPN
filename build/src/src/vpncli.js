@@ -32,59 +32,45 @@ if (cmd.add) {
             console.log(chalk.green(res.message));
         }
     },
-    (err) => {
-        console.log(chalk.red(err));
-    });
-}
-else if (cmd.get) {
+    printError);
+} else if (cmd.get) {
     getDeviceCredentials({id: cmd.get}).then((res) => {
         if (res.result) {
             if (cmd.get != adminUser) {
                 console.log(chalk.green(`Credentials generated for ${cmd.get}: ${res.result.url}`));
-            }
-            else {
-                loginMsg.write(res.result.url).then( (msg) => {
-                    console.log(msg);
-                });
+            } else {
+                loginMsg.write(res.result.url).then(console.log);
             }
         } else {
             console.log(chalk.red(`Failed: ${res.message}`));
         }
     },
-    (err) => {
-        console.log(chalk.red(err));
-    });
-}
-else if (cmd.ls) {
+    printError);
+} else if (cmd.ls) {
     listDevices().then((res) => {
         if (res.result) {
             console.log(chalk.green(prettyjson.render(res.result)));
         }
     },
-    (err) => {
-        console.log(chalk.red(err));
-    });
-}
-else if (cmd.rm) {
+    printError);
+} else if (cmd.rm) {
     removeDevice({id: cmd.rm}).then((res) => {
         if (res.message) {
             console.log(chalk.green(res.message));
         }
     },
-    (err) => {
-        console.log(chalk.red(err));
-    });
-}
-else if (cmd.toggle) {
+    printError);
+} else if (cmd.toggle) {
     toggleAdmin({id: cmd.toggle}).then((res) => {
         if (res.message) {
             console.log(chalk.green(res.message));
         }
     },
-    (err) => {
-        console.log(chalk.red(err));
-    });
-}
-else {
+    printError);
+} else {
     console.log(chalk.yellow('Command unknown!'));
+}
+
+function printError(err) {
+    console.log(chalk.red(err));
 }

@@ -1,0 +1,131 @@
+const autobahn = require('autobahn');
+const logs = require('./logs.js')(module);
+const db = require('./db');
+const calls = require('./calls');
+const {eventBus, eventBusTag} = require('./eventBus');
+// Modules
+const dyndnsClient = require('./dyndnsClient');
+// Scripts
+const openPorts = require('./openPorts');
+// Utils
+const getExternalUpnpIp = require('./utils/getExternalUpnpIp');
+const getPublicIpFromUrls = require('./utils/getPublicIpFromUrls');
+const registerHandler = require('./utils/registerHandler');
+const setIntervalAndRun = require('./utils/setIntervalAndRun');
+
+
+/**
+ * 1. Setup crossbar connection
+ * ============================
+ *
+ * Will register the VPN user managment node app to the the DAppNode's crossbar WAMP
+ * It automatically registers all handlers exported in the calls/index.js file
+ * Each handler is wrapped with a custom function to format its success and error messages
+ */
+const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws';
+const REALM = 'dappnode_admin';
+
+const connection = new autobahn.Connection({url: URL, realm: REALM});
+
+connection.onopen = function(session, details) {
+  logs.info('CONNECTED to DAppnode\'s WAMP '+
+      '\n   url '+URL+
+      '\n   realm: '+REALM+
+      '\n   session ID: '+details.authid);
+
+  registerHandler(session, 'ping.vpn.dnp.dappnode.eth', (x) => x);
+  for (const callId of Object.keys(calls)) {
+    registerHandler(session, callId+'.vpn.dnp.dappnode.eth', calls[callId]);
+  }
+
+  /**
+   * Emits the directory
+   */
+  const eventDevices = 'devices.vpn.dnp.dappnode.eth';
+  eventBus.on(eventBusTag.emitDevices, () => {
+    try {
+      calls.listDevices().then((res) => {
+        // res.result = devices = {Array}
+        session.publish(eventDevices, res.result);
+      });
+    } catch (e) {
+      logs.error('Error publishing directory: '+e.stack);
+    }
+  });
+};
+
+connection.onclose = function(reason, details) {
+  logs.error('Connection closed, reason: '+reason+' details '+JSON.stringify(details));
+};
+
+logs.info('Attempting to connect to.... \n'
+    +'   url: '+connection._options.url+'\n'
+    +'   realm: '+connection._options.realm);
+
+connection.open();
+
+
+/**
+ * 2. Register to dyndns every interval
+ * ====================================
+ *
+ * Watch for IP changes, if so update the IP. On error, asume the IP changed.
+ * If the user has not defined a static IP use dynamic DNS
+ * > staticIp is set in `initializeApp.js`
+ */
+const publicIpCheckInterval = 30 * 60 * 1000;
+
+let _ip = '';
+setIntervalAndRun(async () => {
+  try {
+    // If the static IP is defined, skip registering to dyndns
+    if (await db.get('staticIp')) return;
+    // Otherwise, obtain the public IP from UPnP or a provider and register
+    let ip;
+    if (await db.get('upnpAvailable')) ip = await getExternalUpnpIp();
+    if (!ip) ip = await getPublicIpFromUrls();
+    if (!ip || ip !== _ip) {
+      await dyndnsClient.updateIp();
+      _ip = ip;
+    }
+    if (ip) await db.set('ip', ip);
+  } catch (e) {
+    logs.error(`Error on dyndns interval: ${e.stack || e.message}`);
+  }
+}, publicIpCheckInterval);
+
+
+/**
+ * 3. Open ports if UPnP is available
+ * ==================================
+ *
+ * `upnpAvailable` is set in `initializeApp.js`.
+ * If UPnP is available the openPorts functions calls UPnP sequentially to
+ * open all ports declared in its object.
+ */
+
+db.get('upnpAvailable').then((upnpAvailable) => {
+  if (upnpAvailable) {
+    openPorts()
+    .then(() => logs.info('Open ports script - Successfully completed'))
+    .catch((e) => logs.error(`Open ports script - Error: ${e.stack}`));
+  } else {
+    logs.info('Open ports script - skipping, UPnP is not available');
+  }
+});
+
+
+/**
+ * 4. Log debug info
+ * =================
+ *
+ * - Print db for debugging
+ * - Write loginMsg:
+ *   The following code generates a text file with the message to be printed out
+ *   for the user to connect to DAppNode. It contains the information to print and
+ *   also serves as flag to signal the end of the initialization
+ */
+
+db.get().then((_db) => {
+  logs.info(JSON.stringify(_db, null, 2));
+});

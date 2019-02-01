@@ -1,5 +1,11 @@
-# db
+# dedicated files
+build_*
+build/src/node_modules/
+build/src/mockFiles/
+build/src/db.json
+build/src/vpndb/
 build/src/vpndb.json
+uploader
 
 # Logs
 logs

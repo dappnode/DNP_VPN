@@ -68,12 +68,12 @@ async function updateIp() {
         // };
         const data = res.data || {};
         if (res.code === 200) {
-            logs.info(`dyndns client success: ${data.message}`);
+            logs.info(`dyndns: Updated IP successfully: ${data.message}`);
             await db.set('domain', data.domain);
             return data.domain;
         } else {
             const errorMsg = data.message || JSON.stringify(data);
-            logs.error(`dyndns client error code ${res.code}: ${errorMsg}`);
+            logs.error(`dyndns: Error code ${res.code} on IP update: ${errorMsg}`);
         }
     } catch (e) {
         logs.error(`httpGetRequest error: ${e.stack || e.message}`);
