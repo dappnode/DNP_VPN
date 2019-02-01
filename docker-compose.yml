@@ -26,8 +26,7 @@ services:
             - "vpndnpdappnodeeth_config:/etc/openvpn"
             - "vpndnpdappnodeeth_shared:/var/spool/openvpn"
         ports:
-            - '4500:4500/udp'
-            - '500:500/udp'
+            - '1194:1194/udp'
         dns: 172.33.1.2
         networks:
             network:
