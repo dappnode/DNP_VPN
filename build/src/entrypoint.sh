@@ -39,4 +39,4 @@ echo 1 > /proc/sys/net/ipv4/conf/eth0/proxy_arp
 env | sed '/affinity/d' > /etc/env.sh
 
 # Supervisord processes:
-supervisord
+supervisord -c supervisord.conf
