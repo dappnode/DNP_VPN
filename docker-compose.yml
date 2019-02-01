@@ -21,6 +21,8 @@ services:
             - '/usr/src/dappnode/config:/usr/src/app/config:ro'
             - '/lib/modules:/lib/modules:ro'
             - 'vpndnpdappnodeeth_data:/usr/src/app/secrets'
+            - "vpndnpdappnodeeth_config:/etc/openvpn"
+            - "vpndnpdappnodeeth_shared:/var/spool/openvpn"
         ports:
             - '4500:4500/udp'
             - '500:500/udp'

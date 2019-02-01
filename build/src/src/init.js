@@ -14,6 +14,8 @@ const getPublicIpFromUrls = require('./utils/getPublicIpFromUrls');
 const ping = require('./utils/ping');
 const shell = require('./utils/shell');
 
+throw Error('This script is a WIP, should not be imported');
+
 /* eslint-disable max-len */
 
 initializeApp();
