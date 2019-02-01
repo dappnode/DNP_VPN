@@ -8,6 +8,8 @@ networks:
                     subnet: 172.33.0.0/16
 volumes:
     vpndnpdappnodeeth_data: {}
+    vpndnpdappnodeeth_config: {}
+    vpndnpdappnodeeth_shared: {}
 services:
     vpn.dnp.dappnode.eth:
         build: ./build

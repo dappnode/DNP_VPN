@@ -117,14 +117,10 @@ VOLUME ["/etc/openvpn"]
 # Internally uses port 1194/udp, remap using `docker run -p 443:1194/tcp`
 EXPOSE 1194/udp
 
-# Move all executables to the same folder `/usr/src/app/pre-bin` chmod a and then move them to `/usr/local/bin`
-RUN mkdir -p /usr/src/app/pre-bin && \
-    ln -s /usr/src/app/src/getAdminCredentials.js /usr/src/app/pre-bin/getAdminCredentials && \
-    ln -s /usr/src/app/src/vpncli.js /usr/src/app/pre-bin/vpncli
-ADD ./bin /usr/src/app/pre-bin/
-RUN chmod a+x /usr/src/app/pre-bin/* && \
-    mv /usr/src/app/pre-bin/* /usr/local/bin && \
-    rm -rf /usr/src/app/pre-bin/
+RUN ln -s /usr/src/app/src/getAdminCredentials.js /usr/local/bin/getAdminCredentials && \
+    ln -s /usr/src/app/src/vpncli.js /usr/local/bin/vpncli
+
+ADD ./bin /usr/local/bin
 
 # Will setup the app, initialize variables and then call supervisord
 # Supervisor runs:
