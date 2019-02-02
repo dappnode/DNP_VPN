@@ -40,7 +40,7 @@ jobs:
       services:
         - docker
       before_script:
-        - cp -a build/bin /usr/bin
+        - sudo cp -a build/bin/. /usr/bin
       script:
         - npm run test:int
 
