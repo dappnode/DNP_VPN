@@ -14,6 +14,14 @@ describe('Integration test', () => {
 
   // Create config files
   before(async () => {
+    // Verify test setup
+    // Only run on linux
+    if (process.platform !== 'linux') {
+      throw Error('The integration test must be run in a linux platform');
+    }
+    if (fs.existsSync('/usr/bin/ovpn_genconfig')) {
+      throw Error('OpenVPN binaries where not found in /usr/bin/');
+    }
     try {
        await shell('ovpn_genconfig -c -d -u udp://test -s 172.33.8.0/23');
        await shell('EASYRSA_REQ_CN=test ovpn_initpki nopass');

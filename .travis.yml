@@ -40,9 +40,7 @@ jobs:
       services:
         - docker
       before_script:
-        - chmod +x test/before_install.sh
-        - chmod +x test/test_integration.sh
-        - test/before_install.sh
+        - cp -a build/bin /usr/bin
       script:
         - npm run test:int
 
