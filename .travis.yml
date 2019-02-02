@@ -27,21 +27,9 @@ jobs:
         - npm install
       before_script:
         - npm run lint
-      script:
-        - npm run test
-
-    # integration tests
-    ###################
-    - stage: test
-      env:
-        - INTEGRATION_TEST
-      node_js:
-        - "8.9.4"
-      services:
-        - docker
-      before_script:
         - sudo cp -a build/bin/. /usr/bin
       script:
+        - npm run test
         - npm run test:int
 
     # Test that it builds correctly
