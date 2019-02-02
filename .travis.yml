@@ -2,23 +2,89 @@ language: node_js
 dist: trusty
 sudo: required
 
-# Test envs will overwrite defaults
-env:
-  - DAPPNODE=rocks
+stages:
+  - name: test
+  - name: build-test
+    if: tag != "release"
+  - name: release
+    if: tag = "release"
 
-node_js:
-  - "node"
+jobs:
+  include:
+    # In app tests
+    ##############
+    - stage: test
+      env:
+        - IN_APP_TEST
+      node_js:
+        - "node"
+      cache:
+        directories:
+          - build/src/node_modules
+      install:
+        # This is a dockerized application, the node app is in /build/src
+        - cd ./build/src
+        - npm install
+      before_script:
+        - npm run lint
+      script:
+        - npm run test
 
-cache:
-  directories:
-    - build/src/node_modules
-install:
-  # This is a dockerized application, the node app is in /build/src
-  - cd ./build/src
-  - npm install
-before_script:
-  - npm run lint
-script:
-  - npm run test
-after_success:
-  - COVERALLS_REPO_TOKEN=$coveralls_repo_token npm run coverage
+    # integration tests
+    ###################
+    - stage: test
+      env:
+        - INTEGRATION_TEST
+      node_js:
+        - "8.9.4"
+      services:
+        - docker
+      before_script:
+        - chmod +x test/before_install.sh
+        - chmod +x test/test_integration.sh
+        - test/before_install.sh
+      script:
+        - npm run test:int
+
+    # Test that it builds correctly
+    ###############################
+    - stage: build-test
+      name: build-test
+      services:
+        - docker
+      script:
+        - docker-compose build
+
+    # Deploy stage
+    # - code below is common between DAppNode packages
+    ##################################################
+    - stage: release
+      name: release
+      services:
+        - docker
+      script:
+        - npm install -g @dappnode/dappnodesdk
+        - docker-compose build
+        - dappnodesdk publish patch -p infura
+      node_js: lts/*
+      before_deploy:
+        - wget https://raw.githubusercontent.com/dappnode/DAppNode/master/scripts/before_deploy.sh
+        - source before_deploy.sh
+      deploy:
+        provider: releases
+        prerelease: true
+        api_key: "$GITHUB_TOKEN"
+        file_glob: true
+        # $RELEASE_VERSION is exported on before_deploy.sh
+        file: build_${RELEASE_VERSION}/*
+        skip_cleanup: true
+        # $TRAVIS_TAG is exported on before_deploy.sh
+        name: "$TRAVIS_TAG"
+        body: "# Changelog"
+        on:
+          branch: master
+          tags: true
+          condition: "$TRAVIS_TAG =~ ^release*$"
+      after_deploy:
+        - wget https://raw.githubusercontent.com/dappnode/DAppNode/master/scripts/after_deploy.sh
+        - source after_deploy.sh
