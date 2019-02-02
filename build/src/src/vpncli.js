@@ -12,7 +12,7 @@ const toggleAdmin = require('./calls/toggleAdmin');
 const loginMsg = require('./loginMsg');
 const prettyjson = require('prettyjson');
 
-const adminUser = process.env.DEFAULT_ADMIN_USER ? process.env.DEFAULT_ADMIN_USER : 'dappnode_admin'
+const adminUser = process.env.DEFAULT_ADMIN_USER ? process.env.DEFAULT_ADMIN_USER : 'dappnode_admin';
 
 cmd.option('ls', 'List devices.')
     .option('get <id>', 'Generate device URL to download config file.')

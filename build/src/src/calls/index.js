@@ -12,5 +12,5 @@ module.exports = {
     getParams: require('./getParams'),
     setStaticIp: require('./setStaticIp'),
     statusExternalIp: require('./statusExternalIp'),
-    statusUPnP: require('./statusUPnP')
+    statusUPnP: require('./statusUPnP'),
 };

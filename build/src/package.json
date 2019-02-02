@@ -1,6 +1,6 @@
 {
-  "name": "dnp_openvpn_api",
-  "version": "0.1.0",
+  "name": "dnp_vpn",
+  "version": "0.2.0",
   "description": "",
   "main": "client.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "dev": "DEV=true DAPPNODE_OTP_URL=https://dappnode.github.io/DAppNode_OTP/ node src/client.js",
     "test": "DEV=true mocha --recursive",
     "coverage": "./node_modules/.bin/nyc report --reporter=text-lcov | ./node_modules/.bin/coveralls",
-    "lint": "./node_modules/.bin/eslint ./** --fix"
+    "lint": "./node_modules/.bin/eslint ./src/** --fix"
   },
   "keywords": [],
   "author": "dappLion & vdo",
