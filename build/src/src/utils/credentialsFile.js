@@ -30,7 +30,7 @@ function fetch(path) {
   // Split by line breaks
   .split(/\r?\n/)
   // Ignore empty lines if any. Also, ignore faulty lines that start by "# " (observed many cases)
-  .filter((line) => !line.trim() && !line.startsWith('# '))
+  .filter((line) => line.trim() && !line.startsWith('# '))
   // Convert each line to an object + strip quotation marks
   .map((credentialsString) => {
     let [name, , password, ip] = credentialsString.trim()
