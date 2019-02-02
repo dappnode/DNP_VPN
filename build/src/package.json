@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/client.js",
     "dev": "DEV=true DAPPNODE_OTP_URL=https://dappnode.github.io/DAppNode_OTP/ node src/client.js",
-    "test": "DEV=true mocha --recursive",
+    "test": "DEV=true mocha './{,!(node_modules)/**}/*.test.js'",
+    "test:int": "DEV=true mocha './{,!(node_modules)/**}/*.test.int.js'",
     "coverage": "./node_modules/.bin/nyc report --reporter=text-lcov | ./node_modules/.bin/coveralls",
     "lint": "./node_modules/.bin/eslint ./src/** --fix"
   },
