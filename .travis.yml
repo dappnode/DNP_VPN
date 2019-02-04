@@ -8,7 +8,6 @@ stages:
     if: tag != "release"
   - name: release
     if: tag = "release"
-
 jobs:
   include:
     # In app tests
@@ -23,23 +22,37 @@ jobs:
           - build/src/node_modules
       install:
         # This is a dockerized application, the node app is in /build/src
+        #- sudo apt update
+        #- sudo apt install easy-rsa openvpn
+        #- sudo cp -a build/bin/* /usr/local/bin/
         - cd ./build/src
         - npm install
       before_script:
         - npm run lint
-        - sudo cp -a build/bin/. /usr/bin
       script:
         - npm run test
-        - npm run test:int
+       #- npm run test:int
 
     # Test that it builds correctly
     ###############################
-    - stage: build-test
-      name: build-test
+    #- stage: build-test
+    #  name: build-test
+    #  services:
+    #    - docker
+    #  script:
+    #    - docker-compose build
+
+    # Test integration (in docker)
+    ##############################
+    - stage: int-test
+      name: int-test
       services:
         - docker
+      before_script:
+        - docker build -f build/Dockerfile -t vpn.dnp.dappnode.eth:int-test-base build 
       script:
-        - docker-compose build
+        - docker build -t int-test -f tests/Dockerfile .
+        - docker run int-test
 
     # Deploy stage
     # - code below is common between DAppNode packages

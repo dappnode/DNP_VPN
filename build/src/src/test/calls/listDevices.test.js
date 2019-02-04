@@ -11,10 +11,10 @@ describe('Call function: listDevices', function() {
     const userList = ['dappnode_admin', 'mobile', 'guest', 'tom'];
     const ccdList = [{cn: 'dappnode_admin', ip: '172.33.0.1'},
                     {cn: 'tom', ip: '172.33.0.2'}];
-    const userResult = [{id: 'dappnode_admin', admin: true},
-                        {id: 'mobile', admin: false},
-                        {id: 'guest', admin: false},
-                        {id: 'tom', admin: true}];
+    const userResult = [{id: 'dappnode_admin', admin: true, ip: ''},
+                        {id: 'mobile', admin: false, ip: ''},
+                        {id: 'guest', admin: false, ip: ''},
+                        {id: 'tom', admin: true, ip: ''}];
     // sinon.replace(,));   <--- to replace an inside function
     const getUserList = sinon.stub();
     getUserList.resolves(userList);

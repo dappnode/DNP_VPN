@@ -19,8 +19,8 @@ describe('Integration test', () => {
     if (process.platform !== 'linux') {
       throw Error('The integration test must be run in a linux platform');
     }
-    if (fs.existsSync('/usr/bin/ovpn_genconfig')) {
-      throw Error('OpenVPN binaries where not found in /usr/bin/');
+    if (! fs.existsSync('/usr/local/bin/ovpn_genconfig')) {
+      throw Error('OpenVPN binaries were not found in /usr/local/bin/');
     }
     try {
        await shell('ovpn_genconfig -c -d -u udp://test -s 172.33.8.0/23');
@@ -34,9 +34,9 @@ describe('Integration test', () => {
 
 
   describe('Call function: createAddDevice', () => {
-    it('should called addDevice without crashing and return success', async () => {
+    it('should called addDevice without crashing and return message', async () => {
       const res = await addDevice({id: ids[0]});
-      expect( res ).to.have.property('message', 'should return success');
+      expect( res ).to.have.property('message', `Added device: ${ids[0]}`);
     });
 
     let user;
@@ -65,9 +65,9 @@ describe('Integration test', () => {
   });
 
   describe('Call function: toggleAdmin', () => {
-    it('should call toggleAdmin without crashing and return success', async () => {
+    it('should call toggleAdmin without crashing and return message', async () => {
       const res = await toggleAdmin({id: ids[0]});
-      expect(res).to.have.property('message', 'should return success');
+      expect(res).to.have.property('message', `Given admin credentials to ${ids[0]}`);
     });
 
     let user;
@@ -98,7 +98,7 @@ describe('Integration test', () => {
   describe('Undo admin', () => {
     it('should call toggleAdmin without crashing and return success', async () => {
       const res = await toggleAdmin({id: ids[0]});
-      expect(res).to.have.property('message');
+      expect(res).to.have.property('message', `Removed admin credentials from ${ids[0]}`);
     });
 
     let user;
@@ -119,22 +119,22 @@ describe('Integration test', () => {
   describe('Add a couple of admins', () => {
     it('should called addDevice for first user', async () => {
       const res = await addDevice({id: ids[1]});
-      expect(res).to.have.property('message', 'should return success');
+      expect(res).to.have.property('message', `Added device: ${ids[1]}`);
     });
 
     it('should called addDevice for second user', async () => {
       const res = await addDevice({id: ids[2]});
-      expect(res).to.have.property('message', 'should return success');
+      expect(res).to.have.property('message', `Added device: ${ids[2]}`);
     });
 
     it('should call toggleAdmin to the first user', async () => {
       const res = await toggleAdmin({id: ids[1]});
-      expect(res).to.have.property('message', 'should return success');
+      expect(res).to.have.property('message', `Given admin credentials to ${ids[1]}`);
     });
 
     it('should call toggleAdmin to the second user', async () => {
       const res = await toggleAdmin({id: ids[2]});
-      expect(res).to.have.property('message', 'should return success');
+      expect(res).to.have.property('message', `Given admin credentials to ${ids[2]}`);
     });
 
     it('should have changed the first user to admin', () => {
@@ -149,7 +149,7 @@ describe('Integration test', () => {
 
     it('should call toggleAdmin to the first user', async () => {
       const res = await toggleAdmin({id: ids[1]});
-      expect(res).to.have.property('message', 'should return success');
+      expect(res).to.have.property('message', `Removed admin credentials from ${ids[1]}`);
     });
 
     it('should have changed the first user to non admin', () => {
@@ -161,13 +161,13 @@ describe('Integration test', () => {
   describe('Call function: removeDevice', () => {
     it('should call removeDevice without crashing', async () => {
       const res = await removeDevice({id: ids[0]});
-      expect(res).to.have.property('message', 'should return success');
+      expect(res).to.have.property('message', `Removed device: ${ids[0]}`);
     });
 
     it('should actually be deleted', async () => {
       const res = await listDevices();
       const user = res.result.find((d) => d.id == ids[0]);
-      expect(user).to.be.ok;
+      expect(user).to.not.be.ok;
     });
   });
 });
