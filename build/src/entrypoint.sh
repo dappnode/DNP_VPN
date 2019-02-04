@@ -33,7 +33,7 @@ fi
 echo 1 > /proc/sys/net/ipv4/conf/eth0/proxy_arp
 
 # Migrate users from v1
-/usr/local/bin/migrate_v2
+migrateOldUsers
 
 # Save environment
 env | sed '/affinity/d' > /etc/env.sh
