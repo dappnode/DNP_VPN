@@ -10,6 +10,7 @@ COPY src/package*.json ./
 # Note: npm package `eth-crypto` added size is 62MB
 RUN npm install --production
 # Reduces the app dir size from 94.5MB to 71.8MB
+RUN npm config set unsafe-perm true
 RUN npm install -g modclean && modclean -r
 # Run the copy in two steps to cache the npm install
 COPY src .
