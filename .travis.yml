@@ -4,17 +4,15 @@ sudo: required
 
 stages:
   - name: test
-  - name: build-test
-    if: tag != "release"
   - name: release
     if: tag = "release"
+
 jobs:
   include:
     # In app tests
     ##############
     - stage: test
-      env:
-        - IN_APP_TEST
+      name: unit-tests
       node_js:
         - "node"
       cache:
@@ -22,34 +20,22 @@ jobs:
           - build/src/node_modules
       install:
         # This is a dockerized application, the node app is in /build/src
-        #- sudo apt update
-        #- sudo apt install easy-rsa openvpn
-        #- sudo cp -a build/bin/* /usr/local/bin/
         - cd ./build/src
         - npm install
       before_script:
         - npm run lint
       script:
         - npm run test
-       #- npm run test:int
-
-    # Test that it builds correctly
-    ###############################
-    #- stage: build-test
-    #  name: build-test
-    #  services:
-    #    - docker
-    #  script:
-    #    - docker-compose build
 
     # Test integration (in docker)
+    # - Also tests the build
     ##############################
-    - stage: int-test
-      name: int-test
+    - stage: test
+      name: integration-tests
       services:
         - docker
       before_script:
-        - docker build -f build/Dockerfile -t vpn.dnp.dappnode.eth:int-test-base build 
+        - docker build -f build/Dockerfile -t vpn.dnp.dappnode.eth:int-test-base build
       script:
         - docker build -t int-test -f tests/Dockerfile .
         - docker run int-test
