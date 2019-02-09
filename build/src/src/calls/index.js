@@ -8,6 +8,7 @@ module.exports = {
     getDeviceCredentials: require('./getDeviceCredentials'),
     removeDevice: require('./removeDevice'),
     toggleAdmin: require('./toggleAdmin'),
+    resetDevice: require('./resetDevice'),
     listDevices: require('./listDevices'),
     getParams: require('./getParams'),
     setStaticIp: require('./setStaticIp'),

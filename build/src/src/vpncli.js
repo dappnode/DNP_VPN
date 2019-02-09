@@ -8,6 +8,7 @@ const addDevice = require('./calls/addDevice');
 const getDeviceCredentials = require('./calls/getDeviceCredentials');
 const listDevices = require('./calls/listDevices');
 const removeDevice = require('./calls/removeDevice');
+const resetDevice = require('./calls/resetDevice');
 const toggleAdmin = require('./calls/toggleAdmin');
 const loginMsg = require('./loginMsg');
 const prettyjson = require('prettyjson');
@@ -19,6 +20,7 @@ cmd.option('ls', 'List devices.')
     .option('add <id>', 'Add device.')
     .option('rm <id>', 'Remove device.')
     .option('toggle <id>', 'Give/remove admin rights to device.')
+    .option('reset <id>', 'Reset device credentials.')
     .parse(process.argv);
 
 if (process.argv.length === 2) {
@@ -62,6 +64,13 @@ if (cmd.add) {
     printError);
 } else if (cmd.toggle) {
     toggleAdmin({id: cmd.toggle}).then((res) => {
+        if (res.message) {
+            console.log(chalk.green(res.message));
+        }
+    },
+    printError);
+} else if (cmd.reset) {
+    resetDevice({id: cmd.reset}).then((res) => {
         if (res.message) {
             console.log(chalk.green(res.message));
         }

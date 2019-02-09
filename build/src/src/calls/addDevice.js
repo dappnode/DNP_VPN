@@ -31,7 +31,7 @@ async function addDevice({id}) {
     throw Error(`Device name exists: ${id}`);
   }
 
-  // Emit packages update
+  // Emit devices update
   eventBus.emit(eventBusTag.emitDevices);
 
   return {

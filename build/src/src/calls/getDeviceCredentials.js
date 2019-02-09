@@ -3,8 +3,6 @@ const crypto = require('crypto');
 const fs = require('fs');
 const db = require('../db');
 const getClient = require('../utils/getClient');
-const buildClient = require('../utils/buildClient');
-const removeClient = require('../utils/removeClient');
 
 const credentialsDir = process.env.DEV ? './mockFiles/creds' : process.env.OPENVPN_CRED_DIR;
 const credentialsPort = process.env.DEV ? '8080' : process.env.OPENVPN_CRED_PORT;
@@ -41,9 +39,7 @@ const encrypt = (file, key) => {
  */
 async function getDeviceCredentials({id}) {
   const key = generateKey();
-  // Regenerate user (revoke old credentials)
-  await removeClient(id);
-  await buildClient(id);
+
   const data = await getClient(id);
   const encrypted = encrypt(data, key);
   const _db = await db.get();
