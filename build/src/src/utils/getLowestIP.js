@@ -1,7 +1,6 @@
 const ip = require('ip');
 
-// We start from 20th to prevent collision with previous VPN admin users.
-const ipRange = ['172.33.10.21', '172.33.10.250'];
+const ipRange = ['172.33.10.2', '172.33.11.250'];
 
 function getLowestIP(ccdList) {
     let lowest = ip.toLong(ipRange[0]);

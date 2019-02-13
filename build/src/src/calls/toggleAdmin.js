@@ -5,7 +5,7 @@ const getLowestIP = require('../utils/getLowestIP');
 const {eventBus, eventBusTag} = require('../eventBus');
 
 const ccdPath = process.env.DEV ? './mockFiles/ccd' : '/etc/openvpn/ccd';
-const ccdPeer = '172.33.10.254';
+const ccdMask = '255.255.252.0';
 const masterAdmin = 'dappnode_admin';
 
 /**
@@ -33,7 +33,7 @@ async function toggleAdmin({id}) {
       throw Error('Failed to remove ccd from: ' + id);
     }
   } else {
-    const ccdContent = `ifconfig-push ${getLowestIP(ccdArray)} ${ccdPeer}\r\n`;
+    const ccdContent = `ifconfig-push ${getLowestIP(ccdArray)} ${ccdMask}\r\n`;
     fs.writeFileSync(ccdPath + '/' + id, ccdContent);
   }
 
