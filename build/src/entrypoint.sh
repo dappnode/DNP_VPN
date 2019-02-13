@@ -26,7 +26,7 @@ fi
 if [ ! -e "${OPENVPN_ADMIN_PROFILE}" ]; then
     vpncli add ${DEFAULT_ADMIN_USER}
     vpncli get ${DEFAULT_ADMIN_USER}
-    echo "ifconfig-push 172.33.10.20 172.33.10.254" > ${OPENVPN_CCD_DIR}/${DEFAULT_ADMIN_USER}
+    echo "ifconfig-push 172.33.10.1 255.255.252.0" > ${OPENVPN_CCD_DIR}/${DEFAULT_ADMIN_USER}
 fi
 
 # Enable Proxy ARP (needs privileges)
