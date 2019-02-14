@@ -39,7 +39,3 @@ for name in issued/*.crt; do
         echo "$name,$begin,$end,$status"
     fi
 done
-
-if [ -e crl.pem -a -e cacheck.pem ]; then
-    rm cacheck.pem
-fi
