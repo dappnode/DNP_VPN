@@ -1,5 +1,5 @@
 const shell = require('../utils/shell');
-const validateKwargs = require('../validateKwargs');
+const validateKwargs = require('./validateKwargs');
 const parseOpenOutput = require('./parseOpenOutput');
 const parseCloseOutput = require('./parseCloseOutput');
 const parseListOutput = require('./parseListOutput');
