@@ -1,5 +1,5 @@
 const parseGeneralErrors = require('./parseGeneralErrors');
-const validateKwargs = require('../utils/validateKwargs');
+const validateKwargs = require('./validateKwargs');
 
 /* eslint-disable max-len */
 
@@ -51,28 +51,27 @@ const validateKwargs = require('../utils/validateKwargs');
  * ]
  */
 function parseListOutput(terminalOutput) {
-    validateKwargs({terminalOutput});
-    parseGeneralErrors(terminalOutput);
+  validateKwargs({terminalOutput});
+  parseGeneralErrors(terminalOutput);
 
-    // 1. Cut to the start of the table
-    const validLineRegex = RegExp(/\d+\s+(UDP|TCP)\s+\d+->(\d+\.){3}\d+:\d+\s+.DAppNode/);
-    return terminalOutput.trim().split(/\r?\n/)
-    // Filter by lines that have the table format above
-    .filter((line) =>
-        line && typeof line === 'string' && validLineRegex.test(line)
-    )
-    // Parse the line to extract the protocol and port mapping
-    .map((line) => {
+  // 1. Cut to the start of the table
+  const validLineRegex = RegExp(/\d+\s+(UDP|TCP)\s+\d+->(\d+\.){3}\d+:\d+\s+.DAppNode/);
+  return (
+    terminalOutput
+      .trim()
+      .split(/\r?\n/)
+      // Filter by lines that have the table format above
+      .filter((line) => line && typeof line === 'string' && validLineRegex.test(line))
+      // Parse the line to extract the protocol and port mapping
+      .map((line) => {
         const [, protocol, mapping] = line.trim().split(/\s+/);
         const exPort = mapping.split('->')[0];
         const [, inPort] = (mapping.split('->')[1] || '').split(':');
         return {protocol, exPort, inPort};
-    })
-    // Make sure that the result is correct, otherwise remove it
-    .filter(({protocol, exPort, inPort}) =>
-        (protocol === 'UDP' || protocol === 'TCP') && !isNaN(exPort) && !isNaN(inPort)
-    );
+      })
+      // Make sure that the result is correct, otherwise remove it
+      .filter(({protocol, exPort, inPort}) => (protocol === 'UDP' || protocol === 'TCP') && !isNaN(exPort) && !isNaN(inPort))
+  );
 }
 
 module.exports = parseListOutput;
-

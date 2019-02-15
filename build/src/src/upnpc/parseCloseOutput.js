@@ -1,5 +1,5 @@
 const parseGeneralErrors = require('./parseGeneralErrors');
-const validateKwargs = require('../utils/validateKwargs');
+const validateKwargs = require('./validateKwargs');
 
 /* eslint-disable max-len */
 
@@ -48,24 +48,24 @@ const validateKwargs = require('../utils/validateKwargs');
  * @return {*}
  */
 function parseCloseOutput(terminalOutput) {
-    validateKwargs({terminalOutput});
-    parseGeneralErrors(terminalOutput);
+  validateKwargs({terminalOutput});
+  parseGeneralErrors(terminalOutput);
 
-    // Get the last line of the output
-    const lines = terminalOutput.trim().split(/\r?\n/);
-    const lastLine = lines[lines.length - 1];
+  // Get the last line of the output
+  const lines = terminalOutput.trim().split(/\r?\n/);
+  const lastLine = lines[lines.length - 1];
 
-    // Check if it contains "failed"
-    if (lastLine.includes('failed')) {
-        const errorMessage = 'failed '+(lastLine.split('failed')[1] || '').trim();
-        throw Error(`Error closing port: ${errorMessage}`);
-    }
+  // Check if it contains "failed"
+  if (lastLine.includes('failed')) {
+    const errorMessage = 'failed ' + (lastLine.split('failed')[1] || '').trim();
+    throw Error(`Error closing port: ${errorMessage}`);
+  }
 
-    // Check if is contains "returned.0"
-    const okRegex = RegExp(/returned.+0/);
-    if (okRegex.test(lastLine)) {
-        return true;
-    }
+  // Check if is contains "returned.0"
+  const okRegex = RegExp(/returned.+0/);
+  if (okRegex.test(lastLine)) {
+    return true;
+  }
 }
 
 module.exports = parseCloseOutput;

@@ -1,5 +1,5 @@
 const parseGeneralErrors = require('./parseGeneralErrors');
-const validateKwargs = require('../utils/validateKwargs');
+const validateKwargs = require('./validateKwargs');
 
 /* eslint-disable max-len */
 
@@ -35,18 +35,18 @@ const validateKwargs = require('../utils/validateKwargs');
  * @return {*}
  */
 function parseOpenOutput(terminalOutput) {
-    validateKwargs({terminalOutput});
-    parseGeneralErrors(terminalOutput);
+  validateKwargs({terminalOutput});
+  parseGeneralErrors(terminalOutput);
 
-    // Get the last line of the output
-    const lines = terminalOutput.trim().split(/\r?\n/);
-    const lastLine = lines[lines.length - 1];
+  // Get the last line of the output
+  const lines = terminalOutput.trim().split(/\r?\n/);
+  const lastLine = lines[lines.length - 1];
 
-    // Check if is contains "is redirected"
-    const okRegex = RegExp(/is.redirected/);
-    if (okRegex.test(lastLine)) {
-        return true;
-    }
+  // Check if is contains "is redirected"
+  const okRegex = RegExp(/is.redirected/);
+  if (okRegex.test(lastLine)) {
+    return true;
+  }
 }
 
 module.exports = parseOpenOutput;

@@ -7,11 +7,11 @@
 // No IGD UPnP Device found on the network !
 
 function parseGeneralErrors(terminalOutput) {
-    const noDeviceFoundRegex = RegExp(/no.+device found/);
-    if (noDeviceFoundRegex.test((terminalOutput || '').toLowerCase())) {
-        throw Error('NOUPNP: No UPnP device available');
-    }
-    return terminalOutput;
+  const noDeviceFoundRegex = RegExp(/no.+device found/);
+  if (noDeviceFoundRegex.test((terminalOutput || '').toLowerCase())) {
+    throw Error('NOUPNP: No UPnP device available');
+  }
+  return terminalOutput;
 }
 
 module.exports = parseGeneralErrors;
