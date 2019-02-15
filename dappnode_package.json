@@ -17,7 +17,7 @@
       "vpndnpdappnodeeth_config:/etc/openvpn",
       "vpndnpdappnodeeth_shared:/var/spool/openvpn"
     ],
-    "ports": ["4500:4500/udp", "500:500/udp"],
+    "ports": ["1194:1194/udp"],
     "privileged": "true",
     "restart": "always",
     "subnet": "172.33.0.0/16",

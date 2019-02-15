@@ -3,9 +3,8 @@ const logs = require('./logs.js')(module);
 
 // Ports to open:
 const ports = [
-    // - VPN: 500 UDP, 4500 UDP
-    {protocol: 'UDP', portNumber: 500},
-    {protocol: 'UDP', portNumber: 4500},
+    // - OpenVPN: 1194 UDP
+    {protocol: 'UDP', portNumber: 1194},
     // - SSH: 22 TCP (Ignore)
     // {protocol: 'TCP', portNumber: 22},
     // - ETH: 30303 TCP, 30303 UDP

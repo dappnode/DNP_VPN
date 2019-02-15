@@ -19,13 +19,12 @@ Status : Connected, uptime=3521439s, LastConnectionError :
 MaxBitRateDown : 0 bps   MaxBitRateUp 0 bps
 ExternalIPAddress = 85.84.83.82
 i protocol exPort->inAddr:inPort description remoteHost leaseTime
-0 UDP   500->192.168.1.34:500   'DAppNode' '' 0
-1 UDP  4500->192.168.1.34:4500  'DAppNode' '' 0
-2 TCP    22->192.168.1.42:22    'DAppNode' '' 0
-3 UDP 30303->192.168.1.34:30303 'DAppNode' '' 0
-4 TCP 30303->192.168.1.34:30303 'DAppNode' '' 0
-5 TCP  4001->192.168.1.34:4001  'DAppNode' '' 0
-6 UDP  4002->192.168.1.34:4002  'DAppNode' '' 0
+0 UDP  1194->192.168.1.34:1194  'DAppNode' '' 0
+1 TCP    22->192.168.1.42:22    'DAppNode' '' 0
+2 UDP 30303->192.168.1.34:30303 'DAppNode' '' 0
+3 TCP 30303->192.168.1.34:30303 'DAppNode' '' 0
+4 TCP  4001->192.168.1.34:4001  'DAppNode' '' 0
+5 UDP  4002->192.168.1.34:4002  'DAppNode' '' 0
 GetGenericPortMappingEntry() returned 713 (SpecifiedArrayIndexInvalid)
 `;
 
