@@ -5,7 +5,7 @@ const db = require('../db');
 const getClient = require('../utils/getClient');
 
 const credentialsDir = process.env.DEV ? './mockFiles/creds' : process.env.OPENVPN_CRED_DIR;
-const credentialsPort = process.env.DEV ? '8080' : process.env.OPENVPN_CRED_PORT;
+const credentialsPort = process.env.DEV ? '8090' : process.env.OPENVPN_CRED_PORT;
 
 const newNonce = () => randomBytes(secretbox.nonceLength);
 const generateKey = () => Buffer.from(randomBytes(secretbox.keyLength)).toString('base64');

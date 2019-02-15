@@ -91,7 +91,7 @@ ENV EASYRSA=/usr/share/easy-rsa \
     OPENVPN_ADMIN_PROFILE=$OPENVPN/pki/issued/$DEFAULT_ADMIN_USER.crt \
     OPENVPN_CRED_DIR=/var/spool/openvpn \
     OPENVPN_CCD_DIR=$OPENVPN/ccd \
-    OPENVPN_CRED_PORT=8080 \
+    OPENVPN_CRED_PORT=8090 \
 # VPN management parameters - Node paths
     DB_PATH=/usr/src/app/secrets/vpndb.json \
     LOGIN_MSG_PATH=/usr/src/app/secrets/loginMsgFile.txt \
