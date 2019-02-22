@@ -12,23 +12,40 @@ const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws';
 const REALM = 'dappnode_admin';
 const publicIpCheckInterval = 30 * 60 * 1000;
 
+/**
+ * 0. Print version data for debugging (current version, branch and commit)
+ * { "version": "0.1.21",
+ *   "branch": "master",
+ *   "commit": "ab991e1482b44065ee4d6f38741bd89aeaeb3cec" }
+ */
+let versionData = {};
+try {
+  versionData = require('../.version.json');
+  logs.info(`Version info: \n${JSON.stringify(versionData, null, 2)}`);
+} catch (e) {
+  logs.error(`Error printing current version ${e.stack}`);
+}
 
 // /////////////////////////////
 // Setup crossbar connection //
 // /////////////////////////////
 
-
 const connection = new autobahn.Connection({url: URL, realm: REALM});
 
 connection.onopen = function(session, details) {
-  logs.info('CONNECTED to DAppnode\'s WAMP '+
-      '\n   url '+URL+
-      '\n   realm: '+REALM+
-      '\n   session ID: '+details.authid);
+  logs.info(
+    'CONNECTED to DAppnode\'s WAMP ' +
+      '\n   url ' +
+      URL +
+      '\n   realm: ' +
+      REALM +
+      '\n   session ID: ' +
+      details.authid
+  );
 
-  register(session, 'ping.vpn.dnp.dappnode.eth', (x) => x);
+  register(session, 'ping.vpn.dnp.dappnode.eth', () => versionData);
   for (const callId of Object.keys(calls)) {
-    register(session, callId+'.vpn.dnp.dappnode.eth', calls[callId]);
+    register(session, callId + '.vpn.dnp.dappnode.eth', calls[callId]);
   }
 
   /**
@@ -42,27 +59,30 @@ connection.onopen = function(session, details) {
         session.publish(eventDevices, res.result);
       });
     } catch (e) {
-      logs.error('Error publishing directory: '+e.stack);
+      logs.error('Error publishing directory: ' + e.stack);
     }
   });
 };
 
 connection.onclose = function(reason, details) {
-  logs.error('Connection closed, reason: '+reason+' details '+JSON.stringify(details));
+  logs.error('Connection closed, reason: ' + reason + ' details ' + JSON.stringify(details));
 };
-
 
 // //////////////////////////////
 //  Open crossbar connection  //
 // //////////////////////////////
 
-
 start();
 
 async function start() {
-  logs.info('Attempting to connect to.... \n'
-    +'   url: '+connection._options.url+'\n'
-    +'   realm: '+connection._options.realm);
+  logs.info(
+    'Attempting to connect to.... \n' +
+      '   url: ' +
+      connection._options.url +
+      '\n' +
+      '   realm: ' +
+      connection._options.realm
+  );
   connection.open();
 
   // init.sh
@@ -78,7 +98,7 @@ async function start() {
 
   // If the user has not defined a static IP use dynamic DNS
   // > staticIp is set in `await fetchVpnParameters();`
-  if (!await db.get('staticIp')) {
+  if (!(await db.get('staticIp'))) {
     logs.info('Registering to the dynamic DNS...');
     await dyndnsClient.updateIp();
   }
@@ -87,7 +107,7 @@ async function start() {
   let _ip = '';
   setInterval(async () => {
     try {
-      if (!await db.get('staticIp')) {
+      if (!(await db.get('staticIp'))) {
         const ip = await dyndnsClient.getPublicIp();
         if (!ip || ip !== _ip) {
           dyndnsClient.updateIp();
@@ -102,7 +122,7 @@ async function start() {
 
   // Print db censoring privateKey
   const _db = await db.get();
-  logs.info(JSON.stringify(_db, null, 2 ));
+  logs.info(JSON.stringify(_db, null, 2));
 
   // ///////////////////////
   // Finished initialization
@@ -115,10 +135,8 @@ async function start() {
   logs.info(await loginMsg.write());
 }
 
-
 // /////////////////////////////
 // Connection helper functions
-
 
 function register(session, event, handler) {
   const wrapErrors = (handler) =>
@@ -140,7 +158,7 @@ function register(session, event, handler) {
         logToDappmanager({level: 'info', event, ...res, kwargs});
         const eventShort = event.replace('.vpn.dnp.dappnode.eth', '');
         if (res.logMessage) {
-          logs.info('Result of '+eventShort+': '+res.message);
+          logs.info('Result of ' + eventShort + ': ' + res.message);
         }
         return JSON.stringify({
           success: true,
@@ -149,7 +167,7 @@ function register(session, event, handler) {
         });
       } catch (err) {
         logToDappmanager({level: 'error', event, ...error2obj(err), kwargs});
-        logs.error('Event: '+event+', Error: '+err);
+        logs.error('Event: ' + event + ', Error: ' + err);
         return JSON.stringify({
           success: false,
           message: err.message,
@@ -158,13 +176,15 @@ function register(session, event, handler) {
     };
 
   return session.register(event, wrapErrors(handler)).then(
-    function(reg) {logs.info('CROSSBAR: registered '+event);},
-    function(err) {logs.error('CROSSBAR: error registering '+event+'. Error message: '+err.error);}
+    function(reg) {
+      logs.info('CROSSBAR: registered ' + event);
+    },
+    function(err) {
+      logs.error('CROSSBAR: error registering ' + event + '. Error message: ' + err.error);
+    }
   );
 }
 
 function error2obj(e) {
   return {name: e.name, message: e.message, stack: e.stack, userAction: true};
 }
-
-

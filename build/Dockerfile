@@ -7,16 +7,22 @@ RUN apk add --update --no-cache \
     git \
     libpcap-dev \
     linux-headers \
-    bash
+    bash \
+    jq
 
 RUN git clone https://github.com/xelerance/xl2tpd.git && cd xl2tpd && make
 
 WORKDIR /usr/src/app
 
-COPY src/package*.json ./
+COPY build/src/package*.json ./
 RUN npm install
 # Run the copy in two steps to cache the npm install
-COPY src .
+COPY build/src .
+
+# Get this DNP version and git hash. Results in /usr/src/app/.version.json
+ADD .git .git
+ADD dappnode_package.json .
+RUN ./getVersionData.sh
 
 FROM alpine:3.8
 
@@ -77,11 +83,7 @@ RUN apk add --update --no-cache \
 # - ipsec
 # - VPN setup shell: init.sh, templates/
 # - node files: package.json, client.js
-COPY src/ipsec /etc/init.d/ipsec
-
-RUN chmod 755 init.sh
-RUN chmod 755 ip_upnp.sh
-RUN chmod 755 check_upnp.sh
+COPY build/src/ipsec /etc/init.d/ipsec
 
 RUN mkdir -p /usr/src/app/secrets
 # envs for init.sh -> node communication
@@ -108,7 +110,6 @@ ENV PUBLIC_IP_URL https://ns.dappnode.io/myip
 ENV DYNDNS_DOMAIN dyndns.dappnode.io
 
 RUN ln -s /usr/src/app/src/getAdminCredentials.js /usr/bin/getAdminCredentials
-RUN chmod +x /usr/src/app/src/getAdminCredentials.js
 
 # Supervisord processes:
 # > /usr/src/app/init.sh (libreswan VPN, executes xl2tpd)

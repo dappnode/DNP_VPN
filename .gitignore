@@ -7,3 +7,5 @@ build/src/vpndb.json
 .vscode
 uploader
 .gitignore
+# Version data file
+.version.json
