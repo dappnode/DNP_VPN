@@ -13,6 +13,19 @@ const getPublicIpFromUrls = require('./utils/getPublicIpFromUrls');
 const registerHandler = require('./utils/registerHandler');
 const setIntervalAndRun = require('./utils/setIntervalAndRun');
 
+/**
+ * 0. Print version data for debugging (current version, branch and commit)
+ * { "version": "0.1.21",
+ *   "branch": "master",
+ *   "commit": "ab991e1482b44065ee4d6f38741bd89aeaeb3cec" }
+ */
+let versionData = {};
+try {
+  versionData = require('../.version.json');
+  logs.info(`Version info: \n${JSON.stringify(versionData, null, 2)}`);
+} catch (e) {
+  logs.error(`Error printing current version ${e.stack}`);
+}
 
 /**
  * 1. Setup crossbar connection
@@ -28,14 +41,11 @@ const REALM = 'dappnode_admin';
 const connection = new autobahn.Connection({url: URL, realm: REALM});
 
 connection.onopen = function(session, details) {
-  logs.info('CONNECTED to DAppnode\'s WAMP '+
-      '\n   url '+URL+
-      '\n   realm: '+REALM+
-      '\n   session ID: '+details.authid);
+  logs.info('CONNECTED to DAppnode\'s WAMP ' + '\n   url ' + URL + '\n   realm: ' + REALM + '\n   session ID: ' + details.authid);
 
-  registerHandler(session, 'ping.vpn.dnp.dappnode.eth', (x) => x);
+  registerHandler(session, 'ping.vpn.dnp.dappnode.eth', () => versionData);
   for (const callId of Object.keys(calls)) {
-    registerHandler(session, callId+'.vpn.dnp.dappnode.eth', calls[callId]);
+    registerHandler(session, callId + '.vpn.dnp.dappnode.eth', calls[callId]);
   }
 
   /**
@@ -49,21 +59,18 @@ connection.onopen = function(session, details) {
         session.publish(eventDevices, res.result);
       });
     } catch (e) {
-      logs.error('Error publishing directory: '+e.stack);
+      logs.error('Error publishing directory: ' + e.stack);
     }
   });
 };
 
 connection.onclose = function(reason, details) {
-  logs.error('Connection closed, reason: '+reason+' details '+JSON.stringify(details));
+  logs.error('Connection closed, reason: ' + reason + ' details ' + JSON.stringify(details));
 };
 
-logs.info('Attempting to connect to.... \n'
-    +'   url: '+connection._options.url+'\n'
-    +'   realm: '+connection._options.realm);
+logs.info('Attempting to connect to.... \n' + '   url: ' + connection._options.url + '\n' + '   realm: ' + connection._options.realm);
 
 connection.open();
-
 
 /**
  * 2. Register to dyndns every interval
@@ -94,7 +101,6 @@ setIntervalAndRun(async () => {
   }
 }, publicIpCheckInterval);
 
-
 /**
  * 3. Open ports if UPnP is available
  * ==================================
@@ -107,13 +113,12 @@ setIntervalAndRun(async () => {
 db.get('upnpAvailable').then((upnpAvailable) => {
   if (upnpAvailable) {
     openPorts()
-    .then(() => logs.info('Open ports script - Successfully completed'))
-    .catch((e) => logs.error(`Open ports script - Error: ${e.stack}`));
+      .then(() => logs.info('Open ports script - Successfully completed'))
+      .catch((e) => logs.error(`Open ports script - Error: ${e.stack}`));
   } else {
     logs.info('Open ports script - skipping, UPnP is not available');
   }
 });
-
 
 /**
  * 4. Log debug info

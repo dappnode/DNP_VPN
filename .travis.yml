@@ -35,7 +35,8 @@ jobs:
       services:
         - docker
       before_script:
-        - docker build -f build/Dockerfile -t vpn.dnp.dappnode.eth:int-test-base build
+        # Fix the context: must be the root folder
+        - cp build/Dockerfile . && docker build -t vpn.dnp.dappnode.eth:int-test-base .
       script:
         - docker build -t int-test -f tests/Dockerfile .
         - docker run int-test
