@@ -43,7 +43,7 @@ connection.onopen = function(session, details) {
       details.authid
   );
 
-  register(session, 'ping.vpn.dnp.dappnode.eth', () => versionData);
+  register(session, 'ping.vpn.dnp.dappnode.eth', () => ({result: versionData}));
   for (const callId of Object.keys(calls)) {
     register(session, callId + '.vpn.dnp.dappnode.eth', calls[callId]);
   }
