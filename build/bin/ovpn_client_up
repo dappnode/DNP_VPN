@@ -15,7 +15,7 @@ fi
 # Reset login text
 if [ ${common_name} = ${DEFAULT_ADMIN_USER} ]; then
     echo "The admin credentials expired. Use the command below to generate a new download link:" > $LOGIN_MSG_PATH
-    echo "dappnode_get admin" >> $LOGIN_MSG_PATH
+    echo "dappnode_get ${DEFAULT_ADMIN_USER}" >> $LOGIN_MSG_PATH
 fi
 
 exit 0
