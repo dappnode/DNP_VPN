@@ -38,20 +38,31 @@ connection.onopen = function(session, details) {
     registerHandler(session, callId+'.vpn.dnp.dappnode.eth', calls[callId]);
   }
 
-  /**
-   * Emits the directory
+  /*
+   * Utilities to encode arguments to publish with the Crossbar format (args, kwargs)
+   * - Publisher:
+   *     publish("event.name", arg1, arg2)
+   * - Subscriber:
+   *     session.subscribe("event.name", args => {
+   *       listener(...args)
+   *     })
    */
-  const eventDevices = 'devices.vpn.dnp.dappnode.eth';
-  eventBus.on(eventBusTag.emitDevices, () => {
-    try {
-      calls.listDevices().then((res) => {
-        // res.result = devices = {Array}
-        session.publish(eventDevices, res.result);
-      });
-    } catch (e) {
-      logs.error('Error publishing directory: '+e.stack);
-    }
-  });
+  function publish(event, ...args) {
+    // session.publish(topic, args, kwargs, options)
+    session.publish(event, args);
+  }
+
+  /**
+   * Emits the devices list to the UI
+   * @param {array} devices = [{
+   *   id: "MyPhone",
+   *   isAdmin: false
+   * }, ... ]
+   */
+  eventBus.onSafe(eventBusTag.emitDevices, async () => {
+    const devices = (await calls.listDevices()).result;
+    publish('devices.vpn.dnp.dappnode.eth', devices);
+  }, {isAsync: true});
 };
 
 connection.onclose = function(reason, details) {
