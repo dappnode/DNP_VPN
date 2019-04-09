@@ -1,18 +1,17 @@
-const autobahn = require('autobahn');
-const logs = require('./logs.js')(module);
-const db = require('./db');
-const calls = require('./calls');
-const {eventBus, eventBusTag} = require('./eventBus');
+const autobahn = require("autobahn");
+const logs = require("./logs.js")(module);
+const db = require("./db");
+const calls = require("./calls");
+const { eventBus, eventBusTag } = require("./eventBus");
 // Modules
-const dyndnsClient = require('./dyndnsClient');
+const dyndnsClient = require("./dyndnsClient");
 // Scripts
-const openPorts = require('./openPorts');
+const openPorts = require("./openPorts");
 // Utils
-const getExternalUpnpIp = require('./utils/getExternalUpnpIp');
-const getPublicIpFromUrls = require('./utils/getPublicIpFromUrls');
-const registerHandler = require('./utils/registerHandler');
-const setIntervalAndRun = require('./utils/setIntervalAndRun');
-
+const getExternalUpnpIp = require("./utils/getExternalUpnpIp");
+const getPublicIpFromUrls = require("./utils/getPublicIpFromUrls");
+const registerHandler = require("./utils/registerHandler");
+const setIntervalAndRun = require("./utils/setIntervalAndRun");
 
 /**
  * 1. Setup crossbar connection
@@ -22,20 +21,20 @@ const setIntervalAndRun = require('./utils/setIntervalAndRun');
  * It automatically registers all handlers exported in the calls/index.js file
  * Each handler is wrapped with a custom function to format its success and error messages
  */
-const URL = 'ws://my.wamp.dnp.dappnode.eth:8080/ws';
-const REALM = 'dappnode_admin';
+const url = "ws://my.wamp.dnp.dappnode.eth:8080/ws";
+const realm = "dappnode_admin";
 
-const connection = new autobahn.Connection({url: URL, realm: REALM});
+const connection = new autobahn.Connection({ url, realm });
 
 connection.onopen = function(session, details) {
-  logs.info('CONNECTED to DAppnode\'s WAMP '+
-      '\n   url '+URL+
-      '\n   realm: '+REALM+
-      '\n   session ID: '+details.authid);
+  logs.info(`Connected to DAppNode's WAMP
+  url:     ${url}
+  realm:   ${realm}
+  session: ${(details || {}).authid}`);
 
-  registerHandler(session, 'ping.vpn.dnp.dappnode.eth', (x) => x);
+  registerHandler(session, "ping.vpn.dnp.dappnode.eth", x => x);
   for (const callId of Object.keys(calls)) {
-    registerHandler(session, callId+'.vpn.dnp.dappnode.eth', calls[callId]);
+    registerHandler(session, callId + ".vpn.dnp.dappnode.eth", calls[callId]);
   }
 
   /*
@@ -43,9 +42,7 @@ connection.onopen = function(session, details) {
    * - Publisher:
    *     publish("event.name", arg1, arg2)
    * - Subscriber:
-   *     session.subscribe("event.name", args => {
-   *       listener(...args)
-   *     })
+   *     subscribe("event.name", function(arg1, arg2) {})
    */
   function publish(event, ...args) {
     // session.publish(topic, args, kwargs, options)
@@ -59,22 +56,24 @@ connection.onopen = function(session, details) {
    *   isAdmin: false
    * }, ... ]
    */
-  eventBus.onSafe(eventBusTag.emitDevices, async () => {
-    const devices = (await calls.listDevices()).result;
-    publish('devices.vpn.dnp.dappnode.eth', devices);
-  }, {isAsync: true});
+  eventBus.onSafe(
+    eventBusTag.emitDevices,
+    async () => {
+      const devices = (await calls.listDevices()).result;
+      publish("devices.vpn.dnp.dappnode.eth", devices);
+    },
+    { isAsync: true }
+  );
 };
 
-connection.onclose = function(reason, details) {
-  logs.error('Connection closed, reason: '+reason+' details '+JSON.stringify(details));
+connection.onclose = (reason, details) => {
+  logs.warn(
+    `WAMP connection closed: ${reason} ${(details || {}).message || ""}`
+  );
 };
-
-logs.info('Attempting to connect to.... \n'
-    +'   url: '+connection._options.url+'\n'
-    +'   realm: '+connection._options.realm);
 
 connection.open();
-
+logs.info(`Attempting WAMP connection to ${url}, realm: ${realm}`);
 
 /**
  * 2. Register to dyndns every interval
@@ -86,25 +85,24 @@ connection.open();
  */
 const publicIpCheckInterval = 30 * 60 * 1000;
 
-let _ip = '';
+let _ip = "";
 setIntervalAndRun(async () => {
   try {
     // If the static IP is defined, skip registering to dyndns
-    if (await db.get('staticIp')) return;
+    if (await db.get("staticIp")) return;
     // Otherwise, obtain the public IP from UPnP or a provider and register
     let ip;
-    if (await db.get('upnpAvailable')) ip = await getExternalUpnpIp();
+    if (await db.get("upnpAvailable")) ip = await getExternalUpnpIp();
     if (!ip) ip = await getPublicIpFromUrls();
     if (!ip || ip !== _ip) {
       await dyndnsClient.updateIp();
       _ip = ip;
     }
-    if (ip) await db.set('ip', ip);
+    if (ip) await db.set("ip", ip);
   } catch (e) {
     logs.error(`Error on dyndns interval: ${e.stack || e.message}`);
   }
 }, publicIpCheckInterval);
-
 
 /**
  * 3. Open ports if UPnP is available
@@ -115,16 +113,15 @@ setIntervalAndRun(async () => {
  * open all ports declared in its object.
  */
 
-db.get('upnpAvailable').then((upnpAvailable) => {
+db.get("upnpAvailable").then(upnpAvailable => {
   if (upnpAvailable) {
     openPorts()
-    .then(() => logs.info('Open ports script - Successfully completed'))
-    .catch((e) => logs.error(`Open ports script - Error: ${e.stack}`));
+      .then(() => logs.info("Open ports script - Successfully completed"))
+      .catch(e => logs.error(`Open ports script - Error: ${e.stack}`));
   } else {
-    logs.info('Open ports script - skipping, UPnP is not available');
+    logs.info("Open ports script - skipping, UPnP is not available");
   }
 });
-
 
 /**
  * 4. Log debug info
@@ -137,6 +134,6 @@ db.get('upnpAvailable').then((upnpAvailable) => {
  *   also serves as flag to signal the end of the initialization
  */
 
-db.get().then((_db) => {
+db.get().then(_db => {
   logs.info(JSON.stringify(_db, null, 2));
 });

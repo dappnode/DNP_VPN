@@ -1,5 +1,5 @@
-const buildClient = require('../utils/buildClient');
-const removeClient = require('../utils/removeClient');
+const buildClient = require("../utils/buildClient");
+const removeClient = require("../utils/removeClient");
 
 /**
  * Regenerates the credentials of the specified device.
@@ -8,9 +8,9 @@ const removeClient = require('../utils/removeClient');
  * @return {Object} A formated success message.
  * result: empty
  */
-async function resetDevice({id}) {
-  if (id === '') {
-    throw Error('The device name cannot be empty');
+async function resetDevice({ id }) {
+  if (id === "") {
+    throw Error("The device name cannot be empty");
   }
 
   await removeClient(id);
@@ -19,7 +19,7 @@ async function resetDevice({id}) {
   return {
     message: `Reseted device: ${id}`,
     logMessage: true,
-    userAction: true,
+    userAction: true
   };
 }
 

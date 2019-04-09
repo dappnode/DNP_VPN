@@ -1,8 +1,7 @@
-const updateIp = require('./updateIp');
-const generateKeys = require('./generateKeys');
+const updateIp = require("./updateIp");
+const generateKeys = require("./generateKeys");
 
 module.exports = {
-    updateIp,
-    generateKeys,
+  updateIp,
+  generateKeys
 };
-
