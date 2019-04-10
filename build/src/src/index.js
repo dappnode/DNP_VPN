@@ -1,7 +1,6 @@
 const autobahn = require("autobahn");
 const logs = require("./logs.js")(module);
 const db = require("./db");
-const calls = require("./calls");
 const { eventBus, eventBusTag } = require("./eventBus");
 // Modules
 const dyndnsClient = require("./dyndnsClient");
@@ -12,6 +11,12 @@ const getExternalUpnpIp = require("./utils/getExternalUpnpIp");
 const getPublicIpFromUrls = require("./utils/getPublicIpFromUrls");
 const registerHandler = require("./utils/registerHandler");
 const setIntervalAndRun = require("./utils/setIntervalAndRun");
+
+// import calls
+const calls = require("./calls");
+
+// Print version data
+require("./utils/getVersionData");
 
 /**
  * 1. Setup crossbar connection

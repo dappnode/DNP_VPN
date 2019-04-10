@@ -7,6 +7,9 @@ build/src/vpndb/
 build/src/vpndb.json
 uploader
 
+# Version data file
+.version.json
+
 # Logs
 logs
 *.log

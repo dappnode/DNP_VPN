@@ -1,0 +1,11 @@
+# Prevent Dockerfile modifications to trigger layer recomputation
+build/Dockerfile
+
+# Acelerate ADD build/src . command
+build/src/node_modules/
+build/src/vpndb.json
+build/src/test_files/
+build/src/test_files/*
+
+# Version data file
+.version.json

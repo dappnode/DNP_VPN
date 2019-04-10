@@ -4,17 +4,22 @@ FROM node:8.14.0-alpine as build
 WORKDIR /usr/src/app
 
 RUN apk add --update --no-cache \
-    build-base python docker git libpcap-dev linux-headers bash
+    build-base python docker git libpcap-dev linux-headers bash jq
 
-COPY src/package.json ./
-COPY src/yarn.lock ./
+COPY build/src/package.json ./
+COPY build/src/yarn.lock ./
 # Note: npm package `eth-crypto` added size is 62MB
 RUN yarn install --production
 # Reduces the app dir size from 94.5MB to 71.8MB
 RUN npm config set unsafe-perm true
 RUN yarn global add modclean && modclean -r
 # Run the copy in two steps to cache the npm install
-COPY src .
+COPY build/src .
+
+# Get this DNP version and git hash. Results in /usr/src/app/.version.json
+ADD .git .git
+ADD dappnode_package.json .
+RUN ./getVersionData.sh
 
 # BASE #
 # Smallest base image
@@ -120,11 +125,11 @@ RUN ln -s /usr/src/app/src/getAdminCredentials.js /usr/local/bin/getAdminCredent
     ln -s /usr/src/app/src/migrateOldUsers.js /usr/local/bin/migrateOldUsers && \
     ln -s /usr/src/app/src/vpncli.js /usr/local/bin/vpncli
 
-ADD ./bin /usr/local/bin
+ADD build/bin /usr/local/bin
 
+# Use CMD so it can be replaced when using the VPN image for upnpc calls
 # Will setup the app, initialize variables and then call supervisord
 # Supervisor runs:
 # - node src/index.js
 # - ovpn_run
-RUN chmod 755 /usr/src/app/entrypoint.sh
 CMD ["./entrypoint.sh"]
