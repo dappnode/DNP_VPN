@@ -1,31 +1,22 @@
 const autobahn = require("autobahn");
 const logs = require("./logs.js")(module);
 const db = require("./db");
-const calls = require("./calls");
 const { eventBus, eventBusTag } = require("./eventBus");
 // Modules
 const dyndnsClient = require("./dyndnsClient");
 // Scripts
 const openPorts = require("./openPorts");
 // Utils
-const getExternalUpnpIp = require('./utils/getExternalUpnpIp');
-const getPublicIpFromUrls = require('./utils/getPublicIpFromUrls');
-const registerHandler = require('./utils/registerHandler');
-const setIntervalAndRun = require('./utils/setIntervalAndRun');
+const getExternalUpnpIp = require("./utils/getExternalUpnpIp");
+const getPublicIpFromUrls = require("./utils/getPublicIpFromUrls");
+const registerHandler = require("./utils/registerHandler");
+const setIntervalAndRun = require("./utils/setIntervalAndRun");
 
-/**
- * 0. Print version data for debugging (current version, branch and commit)
- * { "version": "0.1.21",
- *   "branch": "master",
- *   "commit": "ab991e1482b44065ee4d6f38741bd89aeaeb3cec" }
- */
-let versionData = {};
-try {
-  versionData = require('../.version.json');
-  logs.info(`Version info: \n${JSON.stringify(versionData, null, 2)}`);
-} catch (e) {
-  logs.error(`Error printing current version ${e.stack}`);
-}
+// import calls
+const calls = require("./calls");
+
+// Print version data
+require("./utils/getVersionData");
 
 /**
  * 1. Setup crossbar connection
@@ -46,9 +37,10 @@ connection.onopen = function(session, details) {
   realm:   ${realm}
   session: ${(details || {}).authid}`);
 
-  registerHandler(session, 'ping.vpn.dnp.dappnode.eth', () => ({result: versionData}));
+  registerHandler(session, "ping.vpn.dnp.dappnode.eth", x => x);
   for (const callId of Object.keys(calls)) {
-    registerHandler(session, callId + '.vpn.dnp.dappnode.eth', calls[callId]);
+    registerHandler(session, callId + ".vpn.dnp.dappnode.eth", calls[callId]);
+  }
 
   /*
    * Utilities to encode arguments to publish with the Crossbar format (args, kwargs)

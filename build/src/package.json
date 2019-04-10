@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "DEV=true DAPPNODE_OTP_URL=https://dappnode.github.io/DAppNode_OTP/ node src/client.js",
+    "dev": "DEV=true DAPPNODE_OTP_URL=https://dappnode.github.io/DAppNode_OTP/ node src/index",
     "test": "DEV=true mocha './{,!(node_modules)/**}/*.test.js'",
     "test:int": "DEV=true mocha './{,!(node_modules)/**}/*.test.int.js'",
     "test:file": "DEV=true mocha",
