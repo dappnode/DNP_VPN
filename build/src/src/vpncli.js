@@ -27,7 +27,7 @@ cmd
   .parse(process.argv);
 
 if (process.argv.length === 2) {
-  console.log("Usage: " + chalk.yellow("vpntool [option]"));
+  console.log(`Usage: ${chalk.yellow("vpntool [option]")}`);
   console.log(
     `       ${chalk.yellow("vpntool --help")}\t to view available options\n`
   );

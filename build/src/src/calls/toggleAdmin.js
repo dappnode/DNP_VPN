@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path = require("path");
 const getCCD = require("../utils/getCCD");
 const getUserList = require("../utils/getUserList");
 const getLowestIP = require("../utils/getLowestIP");
@@ -18,7 +19,7 @@ const masterAdmin = "dappnode_admin";
 async function toggleAdmin({ id }) {
   let devices = await getUserList();
   if (!devices.includes(id)) {
-    throw Error("Device not found: " + id);
+    throw Error(`Device not found: ${id}`);
   }
 
   const ccdArray = await getCCD();
@@ -28,13 +29,13 @@ async function toggleAdmin({ id }) {
     throw Error("You cannot remove the master admin user");
   } else if (isAdmin) {
     try {
-      await fs.unlinkSync(ccdPath + "/" + id);
+      await fs.unlinkSync(path.join(ccdPath, id));
     } catch (err) {
-      throw Error("Failed to remove ccd from: " + id);
+      throw Error(`Failed to remove ccd from: ${id}`);
     }
   } else {
     const ccdContent = `ifconfig-push ${getLowestIP(ccdArray)} ${ccdMask}\r\n`;
-    fs.writeFileSync(ccdPath + "/" + id, ccdContent);
+    fs.writeFileSync(path.join(ccdPath, id), ccdContent);
   }
 
   // Emit packages update
@@ -42,8 +43,8 @@ async function toggleAdmin({ id }) {
 
   return {
     message: isAdmin
-      ? "Removed admin credentials from " + id
-      : "Given admin credentials to " + id,
+      ? `Removed admin credentials from ${id}`
+      : `Given admin credentials to ${id}`,
     logMessage: true,
     userAction: true
   };

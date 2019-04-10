@@ -76,7 +76,7 @@ async function generateKeys() {
     .toLowerCase()
     .substr(2)
     .substring(0, 16);
-  const domain = subdomain + "." + getDyndnsHost();
+  const domain = [subdomain, getDyndnsHost()].join(".");
   await db.set("domain", domain);
 }
 

@@ -30,7 +30,7 @@ async function listDevices() {
   });
 
   return {
-    message: "Listing " + deviceList.length + " devices",
+    message: `Listing ${deviceList.length} devices`,
     logMessage: true,
     result: deviceList
   };

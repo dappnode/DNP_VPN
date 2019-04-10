@@ -41,8 +41,7 @@ function httpGetRequest(url, options = {}) {
           res.resume();
           return reject(
             Error(
-              "Invalid content-type.\n" +
-                `Expected ${format} but received ${contentType}`
+              `Invalid content-type: expected ${format} but received ${contentType}`
             )
           );
         }

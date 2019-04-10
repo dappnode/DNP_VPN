@@ -55,7 +55,7 @@ function parseCloseOutput(terminalOutput) {
 
   // Check if it contains "failed"
   if (lastLine.includes("failed")) {
-    const errorMessage = "failed " + (lastLine.split("failed")[1] || "").trim();
+    const errorMessage = `failed ${(lastLine.split("failed")[1] || "").trim()}`;
     throw Error(`Error closing port: ${errorMessage}`);
   }
 

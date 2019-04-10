@@ -21,7 +21,7 @@ const scFormat = winston.format.printf(info => {
   });
   let append = JSON.stringify(filteredInfo, null, 4);
   if (append != "{}") {
-    message = message + " " + append;
+    message = `${message} - ${append}`;
   }
   // return `${info.timestamp} ${level} [${info.label}] : ${message}`;
   return `${level} [${info.label}] : ${message}`;

@@ -59,7 +59,7 @@ describe("Integration test", () => {
       } catch (e) {
         error = e.message;
       }
-      expect(error).to.equal("Device name exists: " + ids[0]);
+      expect(error).to.equal(`Device name exists: ${ids[0]}`);
     });
   });
 
