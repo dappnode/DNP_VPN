@@ -1,9 +1,8 @@
-const EthCrypto = require('eth-crypto');
-const db = require('../db');
-const logs = require('../logs.js')(module);
+const EthCrypto = require("eth-crypto");
+const db = require("../db");
+const logs = require("../logs.js")(module);
 
-const corruptedPrivateKeyMessage =
-`
+const corruptedPrivateKeyMessage = `
 
 
 =====================================================================
@@ -39,41 +38,46 @@ const corruptedPrivateKeyMessage =
 // dyndnsHost has to be stripped of http(s):// tag
 // process.env.DYNDNS_DOMAIN should include said tag
 function getDyndnsHost() {
-    const {DYNDNS_DOMAIN} = process.env;
-    return DYNDNS_DOMAIN && DYNDNS_DOMAIN.includes('://')
-        ? DYNDNS_DOMAIN.split('://')[1]
-        : DYNDNS_DOMAIN;
+  const { DYNDNS_DOMAIN } = process.env;
+  return DYNDNS_DOMAIN && DYNDNS_DOMAIN.includes("://")
+    ? DYNDNS_DOMAIN.split("://")[1]
+    : DYNDNS_DOMAIN;
 }
 
 function isPrivateKeyValid(privateKey) {
-    try {
-        EthCrypto.publicKeyByPrivateKey(privateKey);
-        return true;
-    } catch (e) {
-        /* eslint-disable max-len */
-        logs.warn('Private key verification failed. EthCrypto.publicKeyByPrivateKey returned error: '+e.stack);
-        return false;
-    }
+  try {
+    EthCrypto.publicKeyByPrivateKey(privateKey);
+    return true;
+  } catch (e) {
+    logs.warn(
+      `Private key verification failed. EthCrypto.publicKeyByPrivateKey returned error: ${
+        e.stack
+      }`
+    );
+    return false;
+  }
 }
 
-
 async function generateKeys() {
-    const currentPrivateKey = await db.get('privateKey');
-    if (currentPrivateKey) {
-        if (isPrivateKeyValid(currentPrivateKey)) {
-            logs.info(`Skipping keys generation, found identity in db`);
-            return;
-        } else {
-            logs.warn(corruptedPrivateKeyMessage);
-        }
+  const currentPrivateKey = await db.get("privateKey");
+  if (currentPrivateKey) {
+    if (isPrivateKeyValid(currentPrivateKey)) {
+      logs.info(`Skipping keys generation, found identity in db`);
+      return;
+    } else {
+      logs.warn(corruptedPrivateKeyMessage);
     }
-    const {address, privateKey, publicKey} = EthCrypto.createIdentity();
-    await db.set('address', address);
-    await db.set('privateKey', privateKey);
-    await db.set('publicKey', publicKey);
-    const subdomain = address.toLowerCase().substr(2).substring(0, 16);
-    const domain = subdomain+'.'+getDyndnsHost();
-    await db.set('domain', domain);
+  }
+  const { address, privateKey, publicKey } = EthCrypto.createIdentity();
+  await db.set("address", address);
+  await db.set("privateKey", privateKey);
+  await db.set("publicKey", publicKey);
+  const subdomain = address
+    .toLowerCase()
+    .substr(2)
+    .substring(0, 16);
+  const domain = [subdomain, getDyndnsHost()].join(".");
+  await db.set("domain", domain);
 }
 
 module.exports = generateKeys;

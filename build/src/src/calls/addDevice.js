@@ -1,6 +1,6 @@
-const {eventBus, eventBusTag} = require('../eventBus');
-const buildClient = require('../utils/buildClient');
-const getUserList = require('../utils/getUserList');
+const { eventBus, eventBusTag } = require("../eventBus");
+const buildClient = require("../utils/buildClient");
+const getUserList = require("../utils/getUserList");
 const userLimit = 500;
 
 /**
@@ -11,12 +11,17 @@ const userLimit = 500;
  * @return {Object} A formated success message.
  * result: empty
  */
-async function addDevice({id}) {
-  if (id === '') {
-    throw Error('The new device name cannot be empty');
+async function addDevice({ id }) {
+  if (id === "") {
+    throw Error("The new device name cannot be empty");
   }
-  if ((id || '').toLowerCase() === 'guests' || (id || '').toLowerCase() === 'guest') {
-    throw Error(`Please use the enable guests function to create a "Guest(s)" user`);
+  if (
+    (id || "").toLowerCase() === "guests" ||
+    (id || "").toLowerCase() === "guest"
+  ) {
+    throw Error(
+      `Please use the enable guests function to create a "Guest(s)" user`
+    );
   }
 
   let userArray = await getUserList();
@@ -25,7 +30,7 @@ async function addDevice({id}) {
     throw Error(`You have reached the maximum user limit (${userLimit})`);
   }
 
-  if ( ! userArray.includes((id)) ) {
+  if (!userArray.includes(id)) {
     await buildClient(id);
   } else {
     throw Error(`Device name exists: ${id}`);
@@ -37,7 +42,7 @@ async function addDevice({id}) {
   return {
     message: `Added device: ${id}`,
     logMessage: true,
-    userAction: true,
+    userAction: true
   };
 }
 

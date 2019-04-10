@@ -4,14 +4,12 @@
  *     <key>.vpn.dnp.dappnode.eth
  */
 module.exports = {
-    addDevice: require('./addDevice'),
-    getDeviceCredentials: require('./getDeviceCredentials'),
-    removeDevice: require('./removeDevice'),
-    toggleAdmin: require('./toggleAdmin'),
-    resetDevice: require('./resetDevice'),
-    listDevices: require('./listDevices'),
-    getParams: require('./getParams'),
-    setStaticIp: require('./setStaticIp'),
-    statusExternalIp: require('./statusExternalIp'),
-    statusUPnP: require('./statusUPnP'),
+  addDevice: require("./addDevice"),
+  getDeviceCredentials: require("./getDeviceCredentials"),
+  removeDevice: require("./removeDevice"),
+  toggleAdmin: require("./toggleAdmin"),
+  resetDevice: require("./resetDevice"),
+  listDevices: require("./listDevices"),
+  getParams: require("./getParams"),
+  setStaticIp: require("./setStaticIp")
 };

@@ -6,12 +6,13 @@ WORKDIR /usr/src/app
 RUN apk add --update --no-cache \
     build-base python docker git libpcap-dev linux-headers bash
 
-COPY src/package*.json ./
+COPY src/package.json ./
+COPY src/yarn.lock ./
 # Note: npm package `eth-crypto` added size is 62MB
-RUN npm install --production
+RUN yarn install --production
 # Reduces the app dir size from 94.5MB to 71.8MB
 RUN npm config set unsafe-perm true
-RUN npm install -g modclean && modclean -r
+RUN yarn global add modclean && modclean -r
 # Run the copy in two steps to cache the npm install
 COPY src .
 
@@ -23,12 +24,9 @@ WORKDIR /usr/src/app
 
 RUN apk add --update \
     openvpn \
-    # iptables is a dependency of openvpn (can be ommitted?)
     iptables \ 
-    # bash = 3.83MB
     bash \
     easy-rsa \ 
-    # consider replacing supervisord with monit (43MB -> 2.16MB)
     supervisor \
     miniupnpc \
     openssl \

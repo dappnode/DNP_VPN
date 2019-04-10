@@ -10,7 +10,8 @@
     "test:int": "DEV=true mocha './{,!(node_modules)/**}/*.test.int.js'",
     "test:file": "DEV=true mocha",
     "coverage": "./node_modules/.bin/nyc report --reporter=text-lcov | ./node_modules/.bin/coveralls",
-    "lint": "./node_modules/.bin/eslint ./src/** --fix"
+    "lint": "./node_modules/.bin/eslint . --ext .js --fix",
+    "pre-commit": "npm run lint && npm run test"
   },
   "keywords": [],
   "author": "dappLion & vdo",
@@ -37,12 +38,19 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "coveralls": "^3.0.2",
-    "eslint": "^5.1.0",
-    "eslint-config-google": "^0.9.1",
+    "eslint": "^5.16.0",
+    "husky": "^1.3.1",
     "mocha": "^5.2.0",
     "nyc": "^12.0.2",
+    "prettier": "^1.16.4",
     "proxyquire": "^2.1.0",
     "sinon": "^5.1.0",
     "sinon-chai": "^3.1.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run pre-commit",
+      "pre-push": "npm run pre-commit"
+    }
   }
 }

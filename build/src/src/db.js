@@ -1,7 +1,7 @@
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
+const low = require("lowdb");
+const FileSync = require("lowdb/adapters/FileSync");
 
-const dbPath = process.env.DB_PATH || './vpndb.json';
+const dbPath = process.env.DB_PATH || "./vpndb.json";
 
 // Initialize db
 const adapter = new FileSync(dbPath);
@@ -21,19 +21,19 @@ const db = low(adapter);
  * > Return the content of that key
  */
 
-const get = async (key) => {
-    if (key) {
-        return db.get(key).value();
-    } else {
-        return Object.assign({}, db.getState());
-    }
+const get = async key => {
+  if (key) {
+    return db.get(key).value();
+  } else {
+    return Object.assign({}, db.getState());
+  }
 };
 
 const set = async (key, value) => {
-    return db.set(key, value).write();
+  return db.set(key, value).write();
 };
 
 module.exports = {
-    set,
-    get,
+  set,
+  get
 };

@@ -1,22 +1,22 @@
-const expect = require('chai').expect;
-const shell = require('../../src/utils/shell');
+const expect = require("chai").expect;
+const shell = require("../../src/utils/shell");
 
-const testFolder = './mockFiles';
+const testFolder = "./mockFiles";
 process.env.DEV = true;
-const credentialsFile = require('../../src/utils/credentialsFile');
+const credentialsFile = require("../../src/utils/credentialsFile");
 
-describe('Util: credentialsFile', function() {
+describe("Util: credentialsFile", function() {
   const credentialsArray = [
     {
-      name: 'SUPERadmin',
-      password: 'MockPass2',
-      ip: '172.33.10.1',
+      name: "SUPERadmin",
+      password: "MockPass2",
+      ip: "172.33.10.1"
     },
     {
-      name: 'MockName',
-      password: 'MockPass',
-      ip: '172.33.100.123',
-    },
+      name: "MockName",
+      password: "MockPass",
+      ip: "172.33.100.123"
+    }
   ];
 
   before(async () => {
@@ -27,11 +27,11 @@ describe('Util: credentialsFile', function() {
     }
   });
 
-  it('should write the file', async () => {
+  it("should write the file", async () => {
     credentialsFile.write(credentialsArray);
   });
 
-  it('should read the file', async () => {
+  it("should read the file", async () => {
     const credentialsArrayRes = credentialsFile.fetch();
     expect(credentialsArrayRes).to.deep.equal(credentialsArray);
   });
