@@ -2,6 +2,13 @@ const db = require("../db");
 const dyndnsClient = require("../dyndnsClient");
 const { eventBus, eventBusTag } = require("../eventBus");
 
+/**
+ * Sets the static IP
+ *
+ * @param {(string|null)} staticIp New static IP
+ * - To enable: "85.84.83.82"
+ * - To disable: null
+ */
 async function setStaticIp({ staticIp }) {
   const oldStaticIp = await db.get("staticIp");
   await db.set("staticIp", staticIp);

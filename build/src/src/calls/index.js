@@ -11,7 +11,5 @@ module.exports = {
   resetDevice: require("./resetDevice"),
   listDevices: require("./listDevices"),
   getParams: require("./getParams"),
-  setStaticIp: require("./setStaticIp"),
-  statusExternalIp: require("./statusExternalIp"),
-  statusUPnP: require("./statusUPnP")
+  setStaticIp: require("./setStaticIp")
 };
