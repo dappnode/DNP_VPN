@@ -1,18 +1,16 @@
-const db = require('./db');
-const logs = require('./logs.js')(module);
-const crypto = require('crypto');
+const db = require("./db");
+const logs = require("./logs.js")(module);
+const crypto = require("crypto");
 // Modules
-const dyndnsClient = require('./dyndnsClient');
+const dyndnsClient = require("./dyndnsClient");
 // Utils
-const getServerName = require('./utils/getServerName');
-const getInternalIp = require('./utils/getInternalIp');
-const getStaticIp = require('./utils/getStaticIp');
-const getExternalUpnpIp = require('./utils/getExternalUpnpIp');
-const getPublicIpFromUrls = require('./utils/getPublicIpFromUrls');
-const ping = require('./utils/ping');
-const pause = require('./utils/pause');
-
-/* eslint-disable max-len */
+const getServerName = require("./utils/getServerName");
+const getInternalIp = require("./utils/getInternalIp");
+const getStaticIp = require("./utils/getStaticIp");
+const getExternalUpnpIp = require("./utils/getExternalUpnpIp");
+const getPublicIpFromUrls = require("./utils/getPublicIpFromUrls");
+const ping = require("./utils/ping");
+const pause = require("./utils/pause");
 
 initializeApp();
 
@@ -30,7 +28,7 @@ async function initializeApp() {
   while (!internalIp) {
     internalIp = await getInternalIp();
     if (!internalIp) {
-      logs.warn('Internal IP is not available yet, retrying in 60 seconds');
+      logs.warn("Internal IP is not available yet, retrying in 60 seconds");
       await pause(60 * 1000);
     }
   }
@@ -38,7 +36,8 @@ async function initializeApp() {
   //   If the host is exposed to the internet and the staticIp is set, avoid calling UPnP.
   //   Otherwise, get the externalIp from UPnP
   //   *
-  const externalIp = staticIp && staticIp === internalIp ? staticIp : await getExternalUpnpIp();
+  const externalIp =
+    staticIp && staticIp === internalIp ? staticIp : await getExternalUpnpIp();
   // > Public IP
   //   `getPublicIpFromUrls` is a call to a centralized service.
   //   If the staticIp or the externalIp (from UPnP) is set, avoid calling getPublicIpFromUrls
@@ -53,19 +52,23 @@ async function initializeApp() {
   //   If the DAppNode is not able to resolve it's own public IP, the user should use the internal IP
   //   to connect from the same network as the DAppNode
   //   *The ping command is really slow, only execute it if necessary
-  const noNatLoopback = Boolean(internalIp !== publicIp ? !(await ping(publicIp)) : false);
+  const noNatLoopback = Boolean(
+    internalIp !== publicIp ? !(await ping(publicIp)) : false
+  );
   // > Alert user to open ports
   //   This boolean will trigger a warning in the ADMIN UI to alert the user to open ports
   //   Will be true if the DAppNode is behind a router but the external IP from UPnP command failed
-  const alertUserToOpenPorts = Boolean(internalIp !== publicIp && !upnpAvailable);
+  const alertUserToOpenPorts = Boolean(
+    internalIp !== publicIp && !upnpAvailable
+  );
 
-  await db.set('ip', publicIp);
-  await db.set('psk', process.env.PSK);
-  await db.set('name', await getServerName());
-  await db.set('upnpAvailable', upnpAvailable);
-  await db.set('noNatLoopback', noNatLoopback);
-  await db.set('alertToOpenPorts', alertUserToOpenPorts);
-  await db.set('internalIp', internalIp);
+  await db.set("ip", publicIp);
+  await db.set("psk", process.env.PSK);
+  await db.set("name", await getServerName());
+  await db.set("upnpAvailable", upnpAvailable);
+  await db.set("noNatLoopback", noNatLoopback);
+  await db.set("alertToOpenPorts", alertUserToOpenPorts);
+  await db.set("internalIp", internalIp);
 
   // Create VPN's address + publicKey + privateKey if it doesn't exist yet (with static ip or not)
   // - Verify if the privateKey is corrupted or lost. Then create a new identity and alert the user
@@ -73,11 +76,11 @@ async function initializeApp() {
   await dyndnsClient.generateKeys();
 
   // Generate salt
-  if (await db.get('salt')) {
-    logs.info('Salt is already generated, skipping its generation');
+  if (await db.get("salt")) {
+    logs.info("Salt is already generated, skipping its generation");
   } else {
-    const salt = crypto.randomBytes(8).toString('hex');
-    await db.set('salt', salt);
+    const salt = crypto.randomBytes(8).toString("hex");
+    await db.set("salt", salt);
     logs.info(`Successfully generated salt of 8 bytes: ${salt}`);
   }
 }

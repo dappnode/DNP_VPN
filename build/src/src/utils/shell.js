@@ -1,5 +1,5 @@
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
+const util = require("util");
+const exec = util.promisify(require("child_process").exec);
 
 /**
  * If this method is invoked as its util.promisify()ed version,
@@ -12,19 +12,18 @@ const exec = util.promisify(require('child_process').exec);
 // If timeout is greater than 0, the parent will send the signal
 // identified by the killSignal property (the default is 'SIGTERM')
 // if the child runs longer than timeout milliseconds.
-const timeout = 3*60*1000; // ms
+const timeout = 3 * 60 * 1000; // ms
 
-function shell(cmd, {trim} = {}) {
-    return exec(cmd, {timeout})
-    .then((res) => trim && res.stdout ? res.stdout.trim() : res.stdout)
-    .catch((err) => {
-        if (err.signal === 'SIGTERM') {
-            throw Error(`cmd "${err.cmd}" timed out (${timeout} ms)`);
-        }
-        throw err;
+function shell(cmd, { trim } = {}) {
+  return exec(cmd, { timeout })
+    .then(res => (trim && res.stdout ? res.stdout.trim() : res.stdout))
+    .catch(err => {
+      if (err.signal === "SIGTERM") {
+        throw Error(`cmd "${err.cmd}" timed out (${timeout} ms)`);
+      }
+      throw err;
     });
 }
-
 
 /**
  * About the error object
@@ -62,6 +61,5 @@ cat: aa.txt: No such file or directory
  *
  * Using child_process it's best to just rethrow the recieved error.
  */
-
 
 module.exports = shell;

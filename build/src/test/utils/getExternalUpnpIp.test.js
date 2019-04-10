@@ -1,8 +1,9 @@
-const expect = require('chai').expect;
-const proxyquire = require('proxyquire');
+const expect = require("chai").expect;
+const proxyquire = require("proxyquire");
 
-const vpnImage = 'vpn.dnp.dappnode.eth:0.1.21';
-const expectedCmd = 'docker run --rm --net=host vpn.dnp.dappnode.eth:0.1.21 upnpc -l';
+const vpnImage = "vpn.dnp.dappnode.eth:0.1.21";
+const expectedCmd =
+  "docker run --rm --net=host vpn.dnp.dappnode.eth:0.1.21 upnpc -l";
 const cmdOutput = `upnpc : miniupnpc library test client, version 2.0.
 (c) 2005-2017 Thomas Bernard.
 Go to http://miniupnp.free.fr/ or https://miniupnp.tuxfamily.org/
@@ -28,20 +29,20 @@ i protocol exPort->inAddr:inPort description remoteHost leaseTime
 GetGenericPortMappingEntry() returned 713 (SpecifiedArrayIndexInvalid)
 `;
 
-describe('Util: getExternalUpnpIp', () => {
-    const getExternalUpnpIp = proxyquire('../../src/utils/getExternalUpnpIp', {
-        './shell': async (cmd) => {
-            if (cmd.trim() === expectedCmd.trim()) {
-                return cmdOutput;
-            } else {
-                throw Error(`Unknown cmd: ${cmd}`);
-            }
-        },
-        './getVpnImage': async () => vpnImage,
-    });
+describe("Util: getExternalUpnpIp", () => {
+  const getExternalUpnpIp = proxyquire("../../src/utils/getExternalUpnpIp", {
+    "./shell": async cmd => {
+      if (cmd.trim() === expectedCmd.trim()) {
+        return cmdOutput;
+      } else {
+        throw Error(`Unknown cmd: ${cmd}`);
+      }
+    },
+    "./getVpnImage": async () => vpnImage
+  });
 
-    it('should get normal otp', async () => {
-        const internalIp = await getExternalUpnpIp();
-        expect(internalIp).to.equal('85.84.83.82');
-    });
+  it("should get normal otp", async () => {
+    const internalIp = await getExternalUpnpIp();
+    expect(internalIp).to.equal("85.84.83.82");
+  });
 });

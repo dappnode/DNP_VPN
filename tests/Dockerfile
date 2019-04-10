@@ -4,7 +4,7 @@ COPY tests tests
 
 ENV NODE_ENV dev
 
-RUN npm update && \
-    npm install -g mocha
+RUN yarn upgrade && \
+    yarn global add mocha chai
 
 CMD ["mocha", "test/client.test.int.js", "--reporter", "spec"]
