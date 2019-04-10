@@ -95,10 +95,7 @@ async function otp({ user, pass }, { min } = {}) {
     .map(encodeURIComponent)
     .join("&");
 
-  let otpUrl =
-    min && (dappnodeOtpUrl || "").includes("://")
-      ? dappnodeOtpUrl.split("://")[1]
-      : dappnodeOtpUrl;
+  let otpUrl = dappnodeOtpUrl;
 
   return `${otpUrl}#${otpEncoded}`;
 }

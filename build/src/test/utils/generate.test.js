@@ -34,7 +34,7 @@ describe("Util: generate", function() {
       { min: true }
     );
     expect(adminOtpMin).to.equal(
-      "test-otp-link.io#84.53.12.1&secret-psk&&secret-pass&"
+      "http://test-otp-link.io#84.53.12.1&secret-psk&&secret-pass&"
     );
   });
 });
