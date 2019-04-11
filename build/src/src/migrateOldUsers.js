@@ -13,19 +13,25 @@ async function migrateOldUsers() {
   try {
     const users = await getUserList();
 
-    credentialsFile
+    const devices = credentialsFile
       .fetch(CHAP_SECRETS_PATH)
       .filter(({ name }) => name !== DEFAULT_ADMIN_USER)
+      .filter(({ name }) => name !== 'Guests')
       .filter(({ name }) => !users.includes(name))
-      .forEach(async ({ name, ip }) => {
-        await addDevice({ id: name });
-        if (ip.includes("172.33.10.")) {
-          await toggleAdmin({ id: name });
-          logs.info(`Migrated ADMIN user: ${name}`);
-        } else {
-          logs.info(`Migrated non-admin user: ${name}`);
+
+      for (const {name, ip} of devices) {
+        try {
+          await addDevice({ id: name });
+          if (ip.includes("172.33.10.")) {
+            await toggleAdmin({ id: name });
+            logs.info(`Migrated ADMIN user: ${name}`);
+          } else {
+            logs.info(`Migrated non-admin user: ${name}`);
+          }
+        } catch (e) {
+          logs.error(`Error on migrate user ${name}: ${e.stack}`);
         }
-      });
+      }
     await fs.renameSync(CHAP_SECRETS_PATH, CHAP_SECRETS_PATH + ".old");
     logs.info(
       `Moved chap secrets from ${CHAP_SECRETS_PATH} to ${CHAP_SECRETS_PATH}.old`
