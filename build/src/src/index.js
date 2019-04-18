@@ -7,11 +7,8 @@ const dyndnsClient = require("./dyndnsClient");
 // Scripts
 const openPorts = require("./openPorts");
 // Utils
-const getExternalUpnpIp = require("./utils/getExternalUpnpIp");
-const getPublicIpFromUrls = require("./utils/getPublicIpFromUrls");
 const registerHandler = require("./utils/registerHandler");
 const setIntervalAndRun = require("./utils/setIntervalAndRun");
-
 // import calls
 const calls = require("./calls");
 
@@ -87,23 +84,27 @@ logs.info(`Attempting WAMP connection to ${url}, realm: ${realm}`);
  * Watch for IP changes, if so update the IP. On error, asume the IP changed.
  * If the user has not defined a static IP use dynamic DNS
  * > staticIp is set in `initializeApp.js`
+ *
+ * DynDNS interval check
+ * If the static is not defined, register and update the DynDNS registry
+ *
+ * Before doing so, it will check if it is actually necessary:
+ * 1. Get its own IP and check if has changed from its internal DB record
+ *    - If UPNP is available fetch the IP from there
+ *    - Otherwise, fetch the IP from a centralized source
+ * 2. Query the DynDNS and check if the record matches the server's IP
+ *
+ * [NOTE] On the first run the DNS lookup will fail and that will trigger the update
+ *
+ * If all queries were successful and all looks great skip update.
+ * On any doubt, update the IP
  */
-const publicIpCheckInterval = 30 * 60 * 1000;
+const publicIpCheckInterval = 30 * 60 * 1000; // 30 minutes
 
-let _ip = "";
 setIntervalAndRun(async () => {
   try {
-    // If the static IP is defined, skip registering to dyndns
-    if (await db.get("staticIp")) return;
-    // Otherwise, obtain the public IP from UPnP or a provider and register
-    let ip;
-    if (await db.get("upnpAvailable")) ip = await getExternalUpnpIp();
-    if (!ip) ip = await getPublicIpFromUrls();
-    if (!ip || ip !== _ip) {
-      await dyndnsClient.updateIp();
-      _ip = ip;
-    }
-    if (ip) await db.set("ip", ip);
+    if (!(await db.get("staticIp")))
+      await dyndnsClient.checkIpAndUpdateIfNecessary();
   } catch (e) {
     logs.error(`Error on dyndns interval: ${e.stack || e.message}`);
   }
