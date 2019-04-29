@@ -7,7 +7,7 @@
   "image": {
     "path": "",
     "hash": "",
-    "size": 0,
+    "size": "",
     "volumes": [
       "/etc/hostname:/etc/vpnname:ro",
       "/lib/modules:/lib/modules:ro",
@@ -31,8 +31,7 @@
     "Alex Floyd <alex@giveth.io> (https://github.com/mex20)"
   ],
   "keywords": ["DAppNodeCore", "VPN", "OpenVPN"],
-  "homepage": {
-    "userui": "https://dappnode.github.io/DAppNode_OTP",
+  "links": {
     "homepage": "https://github.com/dappnode/DNP_VPN#readme"
   },
   "repository": {
