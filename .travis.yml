@@ -52,7 +52,6 @@ jobs:
       script:
         - docker build -t int-test -f tests/Dockerfile .
         - docker run int-test
-
     # Test that it builds correctly
     ###############################
     - stage: build-test
@@ -61,7 +60,6 @@ jobs:
         - docker
       script:
         - docker-compose build
-
     # Deploy stage
     # - code below is common between DAppNode packages
     ##################################################

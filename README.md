@@ -47,25 +47,25 @@ $ docker build --rm -f build/Dockerfile -t dnp_vpn:dev build
 ### Start
 
 ```
-$ docker-compose -f docker-compose-vpn.yml up -d
+$ docker-compose up -d
 ```
 
 ### Stop
 
 ```
-$ docker-compose -f docker-compose-vpn.yml down
+$ docker-compose down
 ```
 
 ### Status
 
 ```
-$ docker-compose -f docker-compose-vpn.yml ps
+$ docker-compose ps
 ```
 
 ### Logs
 
 ```
-$ docker-compose -f docker-compose-vpn.yml logs -f
+$ docker-compose logs -f
 ```
 
 ## Generating a tar.xz image
@@ -73,7 +73,7 @@ $ docker-compose -f docker-compose-vpn.yml logs -f
 [xz](https://tukaani.org/xz/) is required
 
 ```
-$ docker save dnp_vpn:dev | xz -e9vT0 > dnp_vpn.tar.xz
+$ docker save vpn.dnp.dappnode.eth:dev | xz -e9vT0 > vpn.dnp.dappnode.eth_x.y.z.tar.xz
 ```
 
 You can download the latest tar.xz version from here [releases](https://github.com/dappnode/DNP_VPN/releases).
@@ -81,7 +81,7 @@ You can download the latest tar.xz version from here [releases](https://github.c
 ### Loading a Docker image
 
 ```
-$docker load -i dnp_vpn.tar.xz
+$docker load -i vpn.dnp.dappnode.eth_x.y.z.tar.xz
 ```
 
 ## Contributing
