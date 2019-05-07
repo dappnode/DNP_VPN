@@ -1,55 +1,53 @@
-const credentialsFile = require('../utils/credentialsFile');
-const {eventBus, eventBusTag} = require('../eventBus');
+const fs = require("fs");
+const path = require("path");
+const getCCD = require("../utils/getCCD");
+const getUserList = require("../utils/getUserList");
+const getLowestIP = require("../utils/getLowestIP");
+const { eventBus, eventBusTag } = require("../eventBus");
 
-const masterAdminIp = '172.33.10.1';
-const userStaticIpPrefix = '172.33.100.';
-const adminStaticIpPrefix = '172.33.10.';
+const ccdPath = process.env.DEV ? "./mockFiles/ccd" : "/etc/openvpn/ccd";
+const ccdMask = "255.255.252.0";
+const masterAdmin = "dappnode_admin";
 
-async function toggleAdmin({id}) {
-  // Fetch devices data from the chap_secrets file
-  let credentialsArray = await credentialsFile.fetch();
-
-  // Do not allow the user to remove all
-
-  // Find the requested name in the device object array
-  // if found: splice the device's object,
-  // else: throw error
-  let isAdmin;
-  const device = credentialsArray.find((d) => d.name === id);
-  if (!device) {
-    throw Error('Device name not found: '+id);
+/**
+ * Gives/removes admin rights to the provided device id.
+ *
+ * @param {Object} kwargs: {id}
+ * @return {Object} A formated success message.
+ * result: empty
+ */
+async function toggleAdmin({ id }) {
+  let devices = await getUserList();
+  if (!devices.includes(id)) {
+    throw Error(`Device not found: ${id}`);
   }
 
-  // Prevent the user from deleting admins
-  let ip = device.ip;
-  if (ip && ip.trim() === masterAdminIp) {
-    throw Error('You cannot remove the master admin user');
-  } else if (ip.includes(adminStaticIpPrefix)) {
-    isAdmin = true;
-    ip = ip.replace(adminStaticIpPrefix, userStaticIpPrefix);
-  } else if (ip.includes(userStaticIpPrefix)) {
-    ip = ip.replace(userStaticIpPrefix, adminStaticIpPrefix);
-  }
+  const ccdArray = await getCCD();
+  let isAdmin = ccdArray.find(c => c.cn === id);
 
-  // Write back the device object array
-  // The modification happens in place, to respect the order of users in the file
-  for (const d of credentialsArray) {
-    if (d.name === id) {
-      d.ip = ip;
-      break;
+  if (id === masterAdmin) {
+    throw Error("You cannot remove the master admin user");
+  } else if (isAdmin) {
+    try {
+      await fs.unlinkSync(path.join(ccdPath, id));
+    } catch (err) {
+      throw Error(`Failed to remove ccd from: ${id}`);
     }
+  } else {
+    const ccdContent = `ifconfig-push ${getLowestIP(ccdArray)} ${ccdMask}\r\n`;
+    fs.writeFileSync(path.join(ccdPath, id), ccdContent);
   }
-  await credentialsFile.write(credentialsArray);
 
   // Emit packages update
   eventBus.emit(eventBusTag.emitDevices);
 
   return {
-    message: isAdmin ? 'Removed admin credentials from '+id : 'Given admin credentials to '+id,
+    message: isAdmin
+      ? `Removed admin credentials from ${id}`
+      : `Given admin credentials to ${id}`,
     logMessage: true,
-    userAction: true,
+    userAction: true
   };
 }
-
 
 module.exports = toggleAdmin;

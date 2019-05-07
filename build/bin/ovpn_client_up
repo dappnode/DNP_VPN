@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Script to delete the credentials file of a client once connected
+
+# Import global variables first
+source /etc/env.sh
+
+SALT=$(jq -r ".salt" ${DB_PATH})
+FILE=$(echo -n ${SALT}${common_name} | sha256sum | cut -c -16)
+
+if [ -e ${OPENVPN_CRED_DIR}/${FILE} ]; then
+    rm ${OPENVPN_CRED_DIR}/${FILE}
+fi
+
+# Reset login text
+if [ ${common_name} = ${DEFAULT_ADMIN_USER} ]; then
+    echo "The admin credentials expired. Use the command below to generate a new download link:" > $LOGIN_MSG_PATH
+    echo "dappnode_get ${DEFAULT_ADMIN_USER}" >> $LOGIN_MSG_PATH
+fi
+
+exit 0

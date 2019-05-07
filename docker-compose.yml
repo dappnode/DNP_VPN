@@ -1,29 +1,36 @@
-version: '3.4'
+version: "3.4"
+
 networks:
     network:
         driver: bridge
         ipam:
             config:
-                -
-                    subnet: 172.33.0.0/16
+              - subnet: 172.33.0.0/16
+
 volumes:
     vpndnpdappnodeeth_data: {}
+    vpndnpdappnodeeth_config: {}
+    vpndnpdappnodeeth_shared: {}
+
 services:
     vpn.dnp.dappnode.eth:
-        build: ./build
-        image: 'vpn.dnp.dappnode.eth:0.1.22'
+        build:
+            context: .
+            dockerfile: ./build/Dockerfile
+        image: "vpn.dnp.dappnode.eth:0.2.0"
         container_name: DAppNodeCore-vpn.dnp.dappnode.eth
         privileged: true
         restart: always
         volumes:
-            - '/var/run/docker.sock:/var/run/docker.sock'
-            - '/etc/hostname:/etc/vpnname:ro'
-            - '/usr/src/dappnode/config:/usr/src/app/config:ro'
-            - '/lib/modules:/lib/modules:ro'
-            - 'vpndnpdappnodeeth_data:/usr/src/app/secrets'
+            - "/var/run/docker.sock:/var/run/docker.sock"
+            - "/etc/hostname:/etc/vpnname:ro"
+            - "/usr/src/dappnode/config:/usr/src/app/config:ro"
+            - "/lib/modules:/lib/modules:ro"
+            - "vpndnpdappnodeeth_data:/usr/src/app/secrets"
+            - "vpndnpdappnodeeth_config:/etc/openvpn"
+            - "vpndnpdappnodeeth_shared:/var/spool/openvpn"
         ports:
-            - '4500:4500/udp'
-            - '500:500/udp'
+            - "1194:1194/udp"
         dns: 172.33.1.2
         networks:
             network:

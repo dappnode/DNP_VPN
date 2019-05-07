@@ -1,10 +1,9 @@
-const updateIp = require('./updateIp');
-const generateKeys = require('./generateKeys');
-const getPublicIp = require('./getPublicIp');
+const updateIp = require("./updateIp");
+const generateKeys = require("./generateKeys");
+const checkIpAndUpdateIfNecessary = require("./checkIpAndUpdateIfNecessary");
 
 module.exports = {
-    updateIp,
-    generateKeys,
-    getPublicIp,
+  updateIp,
+  generateKeys,
+  checkIpAndUpdateIfNecessary
 };
-

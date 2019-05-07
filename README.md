@@ -1,14 +1,10 @@
 # DAppNode Package VPN (Core)
 
 [![Website dappnode.io](https://img.shields.io/badge/Website-dappnode.io-brightgreen.svg)](https://dappnode.io/)
-[![Documentation Wiki](https://img.shields.io/badge/Documentation-Wiki-brightgreen.svg)](https://github.com/dappnode/DAppNode/wiki)
-[![GIVETH Campaign](https://img.shields.io/badge/GIVETH-Campaign-1e083c.svg)](https://alpha.giveth.io/campaigns/OcKJryNwjeidMXi9)
-[![RIOT DAppNode](https://img.shields.io/badge/RIOT-DAppNode-blue.svg)](https://riot.im/app/#/room/#DAppNode:matrix.org)
-[![Twitter Follow](https://img.shields.io/twitter/follow/espadrine.svg?style=social&label=Follow)](https://twitter.com/DAppNODE?lang=es)
-
-<p align="left">
-  <img src="VPN-min.png" width="200"/>
-</p>
+[![Documentation Wiki](https://img.shields.io/badge/Documentation-Wiki-brightgreen.svg)](https://docs.dappnode.io)
+[![GIVETH Campaign](https://img.shields.io/badge/GIVETH-Campaign-1e083c.svg)](https://donate.dappnode.io)
+[![RIOT DAppNode](https://img.shields.io/badge/RIOT-DAppNode-blue.svg)](https://riot.dappnode.io)
+[![Twitter Follow](https://img.shields.io/twitter/follow/espadrine.svg?style=social&label=Follow)](https://twitter.dappnode.io)
 
 Dappnode package responsible for providing the VPN connection
 
@@ -41,9 +37,9 @@ $ git clone https://github.com/dappnode/DNP_VPN.git
 ```
 
 ```
-$ docker-compose build
+$ docker-compose -f docker-compose-vpn.yml build
 or
-$ docker build --rm -f build/Dockerfile -t vpn.dnp.dappnode.eth:dev build
+$ docker build --rm -f build/Dockerfile -t dnp_vpn:dev build
 ```
 
 ## Running

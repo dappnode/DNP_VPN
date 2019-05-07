@@ -5,7 +5,7 @@ describe("Util: generate", function() {
   const dappnodeOtpUrl = "http://test-otp-link.io";
   process.env.DAPPNODE_OTP_URL = dappnodeOtpUrl;
   const generate = proxyquire("../../src/utils/generate", {
-    "./getServer": async () => "84.53.12.1",
+    "./getPublicEndpoint": async () => "84.53.12.1",
     "../db": {
       get: async key => {
         if (key == "name") return "myDAppNode";

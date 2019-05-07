@@ -1,26 +1,24 @@
-const fs = require('file-system');
+const fs = require("fs");
 
+const credentialsPath = process.env.DEV
+  ? "./mockFiles/chap_secrets"
+  : process.env.CREDENTIALS_PATH;
 
-const credentialsPath =
-  process.env.DEV ? './mockFiles/chap_secrets' : process.env.CREDENTIALS_PATH;
-
-
-async function write(credentialsArray) {
+function write(credentialsArray) {
   // Receives an array of credential objects, xl2tpd format
-  const credentialsFileContent = chapSecretsFileFormat(credentialsArray);
-
+  const credentialsFileContent = credentialsArray
+    .map(
+      credentials =>
+        `"${credentials.name}" l2tpd "${credentials.password}" ${
+          credentials.ip
+        }`
+    )
+    .join("\n");
   fs.writeFileSync(credentialsPath, credentialsFileContent);
 }
 
-
-function chapSecretsFileFormat(credentialsArray) {
-  return credentialsArray
-    .map((credentials) =>
-      `"${credentials.name}" l2tpd "${credentials.password}" ${credentials.ip}`)
-    .join('\n');
-}
-
 /**
+ * @param {String} path
  * @return {Array} Array of objects:
  * [
  *   {
@@ -31,32 +29,27 @@ function chapSecretsFileFormat(credentialsArray) {
  *   ...
  * ]
  */
-async function fetch() {
-  const fileContent = await fs.readFileSync(credentialsPath, 'utf-8');
-
-  // Split by line breaks
-  let deviceCredentialsArray = fileContent.trim().split(/\r?\n/);
-
-  // Convert each line to an object + strip quotation marks
-  return deviceCredentialsArray
-  .filter(((line) => {
-    // Ignore empty lines if any
-    if (line === '') return false;
-    if (line.startsWith('# ')) return false;
-    return true;
-  }))
-  .map((credentialsString) => {
-    let credentialsArray = credentialsString.trim().split(' ');
-    return {
-      name: credentialsArray[0].replace(/['"]+/g, ''),
-      password: credentialsArray[2].replace(/['"]+/g, ''),
-      ip: credentialsArray[3],
-    };
-  });
+function fetch(path) {
+  return (
+    fs
+      .readFileSync(path || credentialsPath, "utf-8")
+      .trim()
+      // Split by line breaks
+      .split(/\r?\n/)
+      // Ignore empty lines if any. Also, ignore faulty lines that start by "# " (observed many cases)
+      .filter(line => line.trim() && !line.startsWith("# "))
+      // Convert each line to an object + strip quotation marks
+      .map(credentialsString => {
+        let [name, , password, ip] = credentialsString
+          .trim()
+          .split(" ")
+          .map(s => s.replace(/['"]+/g, ""));
+        return { name, password, ip };
+      })
+  );
 }
-
 
 module.exports = {
   fetch,
-  write,
+  write
 };
