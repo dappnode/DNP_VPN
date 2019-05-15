@@ -118,8 +118,8 @@ COPY --from=build /usr/bin/docker /usr/bin/docker
 
 VOLUME ["/etc/openvpn"]
 
-# Internally uses port 1194/udp, remap using `docker run -p 443:1194/tcp`
-EXPOSE 1194/udp
+EXPOSE 1194-1294/udp
+EXPOSE 1194-1294/tcp
 
 RUN ln -s /usr/src/app/src/getAdminCredentials.js /usr/local/bin/getAdminCredentials && \
     ln -s /usr/src/app/src/migrateOldUsers.js /usr/local/bin/migrateOldUsers && \

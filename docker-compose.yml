@@ -30,7 +30,9 @@ services:
             - "vpndnpdappnodeeth_config:/etc/openvpn"
             - "vpndnpdappnodeeth_shared:/var/spool/openvpn"
         ports:
-            - "1194:1194/udp"
+            - "1194-1294:1194-1294/udp"
+        env_file:
+            - vpn.dnp.dappnode.eth.env
         dns: 172.33.1.2
         networks:
             network:

@@ -15,7 +15,7 @@ async function generateLoginMsg(url) {
   ${url}\n`;
 
   if (await db.get("alertToOpenPorts")) {
-    msg += `\n ALERT: You may not be able to connect. Turn your router's UPnP on or open the VPN port (1194/udp) manually`;
+    msg += `\n ALERT: You may not be able to connect. Turn your router's UPnP on or open the VPN port  (${process.env.OVPN_PORT}/${process.env.OVPN_PROTO}) manually`;
   }
   if (await db.get("noNatLoopback")) {
     msg += `\n ALERT: NAT-Loopback is disabled. If you are connecting from the same network as your DAppNode use the internal IP: ${await db.get(

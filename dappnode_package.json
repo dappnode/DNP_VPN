@@ -17,7 +17,14 @@
       "vpndnpdappnodeeth_config:/etc/openvpn",
       "vpndnpdappnodeeth_shared:/var/spool/openvpn"
     ],
-    "ports": ["1194:1194/udp"],
+    "environtment": [
+      "OVPN_PORT=1194",
+      "OVPN_PROTO=UDP"
+    ],
+    "ports": [
+      "1194-1294:1194-1294/udp",
+      "1194-1294:1194-1294/tcp"
+    ],
     "privileged": "true",
     "restart": "always",
     "subnet": "172.33.0.0/16",
@@ -30,7 +37,11 @@
     "vdo <vdo@giveth.io> (https://github.com/vdo)",
     "Alex Floyd <alex@giveth.io> (https://github.com/mex20)"
   ],
-  "keywords": ["DAppNodeCore", "VPN", "OpenVPN"],
+  "keywords": [
+    "DAppNodeCore",
+    "VPN",
+    "OpenVPN"
+  ],
   "links": {
     "homepage": "https://github.com/dappnode/DNP_VPN#readme"
   },

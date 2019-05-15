@@ -1,10 +1,13 @@
 const upnpc = require("./upnpc");
 const logs = require("./logs.js")(module);
 
+const openvpnProto = process.env.OVPN_PROTO ? process.env.OVPN_PROTO.toUpperCase() : "UDP"
+const openvpnPort = process.env.OVPN_PORT ? process.env.OVPN_PORT : "1194"
+
 // Ports to open:
 const ports = [
-  // - OpenVPN: 1194 UDP
-  { protocol: "UDP", portNumber: 1194 },
+  // - OpenVPN: 1194 UDP (by default, but can vary)
+  { protocol: openvpnProto, portNumber: openvpnPort },
   // - SSH: 22 TCP (Ignore)
   // {protocol: 'TCP', portNumber: 22},
   // - Alt HTTP: 8080 TCP
@@ -58,7 +61,7 @@ async function openPorts() {
       // Errors while closing a port before openning do not matter.
       logs.warn(
         `(May not matter): Error closing port ${portId(portToOpen)}: ${
-          e.message
+        e.message
         }`
       );
     }
