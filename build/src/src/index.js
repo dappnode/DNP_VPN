@@ -4,8 +4,6 @@ const db = require("./db");
 const { eventBus, eventBusTag } = require("./eventBus");
 // Modules
 const dyndnsClient = require("./dyndnsClient");
-// Scripts
-const openPorts = require("./openPorts");
 // Utils
 const registerHandler = require("./utils/registerHandler");
 const setIntervalAndRun = require("./utils/setIntervalAndRun");
@@ -111,26 +109,7 @@ setIntervalAndRun(async () => {
 }, publicIpCheckInterval);
 
 /**
- * 3. Open ports if UPnP is available
- * ==================================
- *
- * `upnpAvailable` is set in `initializeApp.js`.
- * If UPnP is available the openPorts functions calls UPnP sequentially to
- * open all ports declared in its object.
- */
-
-db.get("upnpAvailable").then(upnpAvailable => {
-  if (upnpAvailable) {
-    openPorts()
-      .then(() => logs.info("Open ports script - Successfully completed"))
-      .catch(e => logs.error(`Open ports script - Error: ${e.stack}`));
-  } else {
-    logs.info("Open ports script - skipping, UPnP is not available");
-  }
-});
-
-/**
- * 4. Log debug info
+ * 3. Log debug info
  * =================
  *
  * - Print db for debugging
