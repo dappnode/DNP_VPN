@@ -141,11 +141,15 @@ fi
 if [ -z "${EASYRSA_PKI:-}" ]; then
     export EASYRSA_PKI="$OPENVPN/pki"
 fi
+if [ -z "${OVPN_CN:-}" ]; then
+  export OVPN_CN="dappnode.eth"
+fi
+
 
 OVPN_AUTH=''
 OVPN_CIPHER=''
 OVPN_CLIENT_TO_CLIENT=''
-OVPN_CN=''
+#OVPN_CN=''
 OVPN_COMP_LZO=0
 OVPN_DEFROUTE=1
 OVPN_DEVICE="tun"
@@ -274,7 +278,7 @@ done
 # Server name is in the form "udp://vpn.example.com:1194"
 if [[ "${OVPN_SERVER_URL:-}" =~ ^((udp|tcp|udp6|tcp6)://)?([0-9a-zA-Z\.\-]+)(:([0-9]+))?$ ]]; then
     OVPN_PROTO=${BASH_REMATCH[2]};
-    OVPN_CN=${BASH_REMATCH[3]};
+    # OVPN_CN=${BASH_REMATCH[3]}; //Using fixed CN
     OVPN_PORT=${BASH_REMATCH[5]};
 else
     set +x

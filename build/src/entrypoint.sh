@@ -10,6 +10,13 @@ export PUBLIC_ENDPOINT="$(node src/getPublicEndpointCommand)"
 echo "Fetched public endpoint: $PUBLIC_ENDPOINT"
 VPNHOSTNAME=${PUBLIC_ENDPOINT}
 
+# check and generate random CN
+if [ ! -f "${OPENVPN}/cn" ]; then
+  head /dev/urandom | tr -dc a-z0-9 | head -c 10 > "${OPENVPN}/cn"
+fi
+OVPN_CN=$(cat ${OPENVPN}/cn)
+export OVPN_CN
+
 # Initialize config and PKI 
 # -c: Client to Client
 # -d: disable default route (disables NAT without '-N')
@@ -19,7 +26,7 @@ if [ ! -e "${OPENVPN_CONF}" ]; then
     ovpn_genconfig -c -d -u udp://${VPNHOSTNAME} -s 172.33.8.0/22 \
     -p "route 172.33.0.0 255.255.0.0" \
     -n "172.33.1.2"
-    EASYRSA_REQ_CN=${VPNHOSTNAME} ovpn_initpki nopass
+    EASYRSA_REQ_CN=${OVPN_CN} ovpn_initpki nopass
 fi
 
 # Create admin user
