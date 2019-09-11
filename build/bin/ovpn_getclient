@@ -37,12 +37,13 @@ nobind
 dev $OVPN_DEVICE
 remote-cert-tls server
 
-    remote $OVPN_SERVER $OVPN_PORT $OVPN_PROTO"
+remote $OVPN_HOSTNAME $OVPN_PORT $OVPN_PROTO"
+
     if [ "$OVPN_PROTO" == "udp6" ]; then
-        echo "remote $OVPN_SERVER $OVPN_PORT udp"
+        echo "remote $OVPN_HOSTNAME $OVPN_PORT udp"
     fi
     if [ "$OVPN_PROTO" == "tcp6" ]; then
-        echo "remote $OVPN_SERVER $OVPN_PORT tcp"
+        echo "remote $OVPN_HOSTNAME $OVPN_PORT tcp"
     fi
     for i in "${OVPN_EXTRA_CLIENT_CONFIG[@]}"; do
         echo "$i"
