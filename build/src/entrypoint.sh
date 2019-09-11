@@ -6,18 +6,19 @@ node src/initializeApp.js
 echo "Initialized App"
 
 # Check in db if node has a static IP, use dynamic DNS domain instead.
+# TODO: Change this function to use global vars ( _DAPPNODE_GLOBAL_HOSTNAME )
 export PUBLIC_ENDPOINT="$(node src/getPublicEndpointCommand)"
 echo "Fetched public endpoint: $PUBLIC_ENDPOINT"
 VPNHOSTNAME=${PUBLIC_ENDPOINT}
 
 # check and generate random CN
 if [ ! -f "${OPENVPN}/cn" ]; then
-  head /dev/urandom | tr -dc a-z0-9 | head -c 10 > "${OPENVPN}/cn"
+    head /dev/urandom | tr -dc a-z0-9 | head -c 10 > "${OPENVPN}/cn"
 fi
 OVPN_CN=$(cat ${OPENVPN}/cn)
 export OVPN_CN
 
-# Initialize config and PKI 
+# Initialize config and PKI
 # -c: Client to Client
 # -d: disable default route (disables NAT without '-N')
 # -p "route 172.33.0.0 255.255.0.0": Route to push to the client
