@@ -14,6 +14,7 @@ async function generateLoginMsg(url) {
   msg += `\n To connect to your DAppNode scan the QR above or copy/paste link below into your browser:
   ${url}\n`;
 
+  //TODO: Change to use ENV vars
   if (await db.get("alertToOpenPorts")) {
     msg += `\n ALERT: You may not be able to connect. Turn your router's UPnP on or open the VPN port (1194/udp) manually`;
   }

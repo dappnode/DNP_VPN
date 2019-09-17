@@ -1,9 +1,8 @@
 const expect = require("chai").expect;
 const fs = require("file-system");
-const util = require("util");
-const logs = require("../../src/logs.js")(module);
-const unlink = util.promisify(fs.unlink);
-const { exec } = require("child_process");
+const {
+  exec
+} = require("child_process");
 let db = require("../../src/db");
 const EthCrypto = require("eth-crypto");
 
@@ -20,12 +19,12 @@ console.big = log => {
   console.log("\n\n\n\n\n\n\n");
 };
 
-describe("generateKeys", function() {
+describe("generateKeys", function () {
   // Initialize calls
 
   let _db;
 
-  describe("read non-existent file and create it", function() {
+  describe("read non-existent file and create it", function () {
     before(async () => {
       // Restart db
       try {
@@ -47,7 +46,10 @@ describe("generateKeys", function() {
 
     it("should contain a correct domain", async () => {
       // Check that the domain is correct
-      const { domain, address } = _db;
+      const {
+        domain,
+        address
+      } = _db;
       const [subdomain, ...host] = domain.split(".");
       expect(address.toLowerCase()).to.include(subdomain);
       expect(host.join(".")).to.equal(process.env.DYNDNS_DOMAIN);
@@ -65,10 +67,6 @@ describe("generateKeys", function() {
       } catch (e) {
         //
       }
-      // Clean files
-      await unlink(process.env.KEYPAIR_PATH).catch(err => {
-        logs.error("\n\n\n", err, "\n\n\n");
-      });
     });
   });
 
