@@ -2,9 +2,7 @@
 
 # Initialize APP
 echo "Initializing App..."
-
-
-[ -z "$_DAPPNODE_GLOBAL_HOSTNAME" ] || echo -n "Global variables not loaded yet. Waiting"
+[ -n "$_DAPPNODE_GLOBAL_HOSTNAME" ] || echo -n "Global variables not loaded yet. Waiting"
 while [ -z "$_DAPPNODE_GLOBAL_HOSTNAME" ]; do
     echo -n "."
     sleep 2
@@ -16,9 +14,8 @@ VPNHOSTNAME=${_DAPPNODE_GLOBAL_HOSTNAME}
 if [ ! -f "${OPENVPN}/salt" ]; then
   head /dev/urandom | tr -dc a-f0-9 | head -c 16 > "${OPENVPN}/salt"
 fi
-OVPN_CN="$(cat ${OPENVPN}/salt)"
-
-node src/initializeApp.js
+OVPN_CN="${_DAPPNODE_GLOBAL_HOSTNAME}"
+export OVPN_CN
 echo "Initialized App"
 
 # Initialize config and PKI
@@ -30,8 +27,6 @@ ovpn_genconfig -c -d -u udp://"${VPNHOSTNAME}" -s 172.33.8.0/22 \
     -p "route 172.33.0.0 255.255.0.0" -n "172.33.1.2"
 
 # check if PKI is initalized already, if not use hostname as CN
-OVPN_CN=$(cat "${SERVER_NAME_PATH}")
-export OVPN_CN
 if [ ! -d "${OPENVPN}/pki/reqs" ] || [ ! "$(ls -A ${OPENVPN}/pki/reqs)" ]; then
     echo "Initializing PKI"
     EASYRSA_REQ_CN=${OVPN_CN} ovpn_initpki nopass

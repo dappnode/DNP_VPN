@@ -4,7 +4,6 @@ const {
 } = require("tweetnacl");
 const crypto = require("crypto");
 const fs = require("fs");
-const db = require("../db");
 const getClient = require("../utils/getClient");
 
 const credentialsDir = process.env.DEV ?
