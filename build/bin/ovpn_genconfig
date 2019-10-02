@@ -297,12 +297,12 @@ set +u
 set -u
 [ "${#OVPN_ROUTES[@]}" == "0" ] && [ "$OVPN_DEFROUTE" == "1" ] && OVPN_ROUTES+=("192.168.254.0/24")
 
-# Preserve config
-if [ -f "$OVPN_ENV" ]; then
-    bak_env=$OVPN_ENV.$(date +%s).bak
-    echo "Backing up $OVPN_ENV -> $bak_env"
-    mv "$OVPN_ENV" "$bak_env"
-fi
+# Dont' backup, regenerated at every boot
+# if [ -f "$OVPN_ENV" ]; then
+#     bak_env=$OVPN_ENV.$(date +%s).bak
+#     echo "Backing up $OVPN_ENV -> $bak_env"
+#     mv "$OVPN_ENV" "$bak_env"
+# fi
 
 # Save the current OVPN_ vars to the ovpn_env.sh file
 (set | grep '^OVPN_') | while read -r var; do
@@ -310,11 +310,11 @@ fi
 done
 
 conf=${OPENVPN:-}/openvpn.conf
-if [ -f "$conf" ]; then
-    bak=$conf.$(date +%s).bak
-    echo "Backing up $conf -> $bak"
-    mv "$conf" "$bak"
-fi
+# if [ -f "$conf" ]; then
+#     bak=$conf.$(date +%s).bak
+#     echo "Backing up $conf -> $bak"
+#     mv "$conf" "$bak"
+# fi
 
 # Echo extra client configurations
 if [ ${#OVPN_EXTRA_CLIENT_CONFIG[@]} -gt 0 ]; then

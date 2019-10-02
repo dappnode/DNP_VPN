@@ -2,17 +2,16 @@
 
 # Initialize APP
 echo "Initializing App..."
-[ -n "$_DAPPNODE_GLOBAL_HOSTNAME" ] || echo -n "Global variables not loaded yet. Waiting"
+
+# Endless loop if vars not initalized. To be restarted by DAPPMANAGER
 while [ -z "$_DAPPNODE_GLOBAL_HOSTNAME" ]; do
-    echo -n "."
+    echo "Global variables not loaded yet. Waiting..."
     sleep 2
 done
 [ -n "$_DAPPNODE_GLOBAL_HOSTNAME" ] || echo "Public hostname loaded: ${_DAPPNODE_GLOBAL_HOSTNAME}"
-VPNHOSTNAME=${_DAPPNODE_GLOBAL_HOSTNAME}
-
 # check and generate random seed
-if [ ! -f "${OPENVPN}/salt" ]; then
-  head /dev/urandom | tr -dc a-f0-9 | head -c 16 > "${OPENVPN}/salt"
+if [ ! -f "${SALT_PATH}" ]; then
+  head /dev/urandom | tr -dc a-f0-9 | head -c 16 > "${SALT_PATH}"
 fi
 OVPN_CN="${_DAPPNODE_GLOBAL_HOSTNAME}"
 export OVPN_CN
@@ -23,7 +22,7 @@ echo "Initialized App"
 # -d: disable default route (disables NAT without '-N')
 # -p "route 172.33.0.0 255.255.0.0": Route to push to the client
 # -n "172.33.1.2": DNS server (BIND)
-ovpn_genconfig -c -d -u udp://"${VPNHOSTNAME}" -s 172.33.8.0/22 \
+ovpn_genconfig -c -d -u udp://"${_DAPPNODE_GLOBAL_HOSTNAME}" -s 172.33.8.0/22 \
     -p "route 172.33.0.0 255.255.0.0" -n "172.33.1.2"
 
 # check if PKI is initalized already, if not use hostname as CN

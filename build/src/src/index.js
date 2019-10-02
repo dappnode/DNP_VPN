@@ -78,12 +78,12 @@ connection.onclose = (reason, details) => {
 connection.open();
 logs.info(`Attempting WAMP connection to ${url}, realm: ${realm}`);
 
-
-const globalVars = ['_DAPPNODE_GLOBAL_HOSTNAME', '_DAPPMANAGER_GLOBAL_UPNP', '_DAPPMANAGER_GLOBAL_NAT_LOOPBACK']
+const globalVars = ['_DAPPNODE_GLOBAL_HOSTNAME', '_DAPPNODE_GLOBAL_UPNP_AVAILABLE', '_DAPPNODE_GLOBAL_NO_NAT_LOOPBACK', '_DAPPNODE_GLOBAL_INTERNAL_IP']
 
 function checkVars(vars) {
   vars.forEach(v => {
     if (!process.env[v]) logs.warn(`Required global variable not defined: ${v}`);
+    else logs.info(`${v}: ${process.env[v]}`);
   });
 }
 
