@@ -3,10 +3,9 @@
 # Initialize APP
 echo "Initializing App..."
 
-# Endless loop if vars not initalized. To be restarted by DAPPMANAGER
+[ -z "$_DAPPNODE_GLOBAL_HOSTNAME" ] || echo "Global variables not loaded yet. Waiting to be restarted by DAPPMANAGER..."
 while [ -z "$_DAPPNODE_GLOBAL_HOSTNAME" ]; do
-    echo "Global variables not loaded yet. Waiting..."
-    sleep 2
+    sleep 5
 done
 [ -n "$_DAPPNODE_GLOBAL_HOSTNAME" ] || echo "Public hostname loaded: ${_DAPPNODE_GLOBAL_HOSTNAME}"
 # check and generate random seed
