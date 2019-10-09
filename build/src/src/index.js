@@ -1,7 +1,7 @@
 const autobahn = require("autobahn");
 const logs = require("./logs.js")(module);
 const {
-  eventBus,
+const params = require("./params");
   eventBusTag
 } = require("./eventBus");
 // Utils
@@ -78,13 +78,12 @@ connection.onclose = (reason, details) => {
 connection.open();
 logs.info(`Attempting WAMP connection to ${url}, realm: ${realm}`);
 
-const globalVars = ['_DAPPNODE_GLOBAL_HOSTNAME', '_DAPPNODE_GLOBAL_UPNP_AVAILABLE', '_DAPPNODE_GLOBAL_NO_NAT_LOOPBACK', '_DAPPNODE_GLOBAL_INTERNAL_IP']
-
-function checkVars(vars) {
-  vars.forEach(v => {
-    if (!process.env[v]) logs.warn(`Required global variable not defined: ${v}`);
-    else logs.info(`${v}: ${process.env[v]}`);
-  });
-}
-
-checkVars(globalVars);
+// Check env vars existance and log them
+for (const v of [
+  params.GLOBAL_ENVS.HOSTNAME,
+  params.GLOBAL_ENVS.UPNP_AVAILABLE,
+  params.GLOBAL_ENVS.NO_NAT_LOOPBACK,
+  params.GLOBAL_ENVS.INTERNAL_IP
+])
+  if (!process.env[v]) logs.warn(`Required global env not set: ${v}`);
+  else logs.info(`${v}: ${process.env[v]}`);

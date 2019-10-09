@@ -58,7 +58,7 @@ async function getDeviceCredentials({
 
 
   const salt = await fs.readFileSync(saltPath, "utf-8");
-  const hostname = process.env._DAPPNODE_GLOBAL_HOSTNAME
+  const hostname = process.env[params.GLOBAL_ENVS.HOSTNAME];
 
   if (!salt) throw Error("Salt not present.");
 
