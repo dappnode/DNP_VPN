@@ -17,14 +17,14 @@ describe("Call function: addDevice", function() {
     "../utils/buildClient": buildClient
   });
   it("should return success message when the user does not exist", async () => {
-    let id = "new_user";
-    let res = await addDevice({ id });
+    const id = "new_user";
+    const res = await addDevice({ id });
     expect(res).to.have.property("message");
     expect(res.message).to.deep.equal(`Added device: ${id}`);
   });
 
   it("should return error message when the user does exist", async () => {
-    let id = "tom";
+    const id = "tom";
     let error = "--- addDevice did not throw ---";
     try {
       await addDevice({ id });

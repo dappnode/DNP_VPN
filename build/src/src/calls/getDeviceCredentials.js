@@ -1,8 +1,8 @@
 const { secretbox, randomBytes } = require("tweetnacl");
 const crypto = require("crypto");
 const fs = require("fs");
-const db = require("../db");
 const getClient = require("../utils/getClient");
+const params = require("../params");
 
 const credentialsDir = process.env.DEV
   ? "./mockFiles/creds"
@@ -10,6 +10,7 @@ const credentialsDir = process.env.DEV
 const credentialsPort = process.env.DEV
   ? "8090"
   : process.env.OPENVPN_CRED_PORT;
+const saltPath = process.env.DEV ? "./mockFiles/salt" : process.env.SALT_PATH;
 
 const newNonce = () => randomBytes(secretbox.nonceLength);
 const generateKey = () =>
@@ -47,25 +48,29 @@ async function getDeviceCredentials({ id }) {
 
   const data = await getClient(id);
   const encrypted = encrypt(data, key);
-  const _db = await db.get();
-  // Check if static ip
-  const hostname = _db.staticIp || _db.domain;
 
-  if (!_db.salt) throw Error("Salt not present.");
+  const salt = fs.readFileSync(saltPath, "utf-8");
+  const hostname = process.env[params.GLOBAL_ENVS.HOSTNAME];
+
+  if (!salt) throw Error("Salt not present.");
 
   const filename = crypto
     .createHash("sha256")
-    .update(_db.salt + id)
+    .update(salt + id)
     .digest("hex")
     .substring(0, 16);
-  await fs.writeFileSync(`${credentialsDir}/${filename}`, encrypted);
+  fs.writeFileSync(`${credentialsDir}/${filename}`, encrypted);
   const url = `http://${hostname}:${credentialsPort}/?id=${filename}#${encodeURIComponent(
     key
   )}`;
   return {
     message: `Generated credentials for ${id} at ${credentialsDir}/${filename}`,
     logMessage: true,
-    result: { filename, key, url }
+    result: {
+      filename,
+      key,
+      url
+    }
   };
 }
 
