@@ -23,14 +23,14 @@ describe("Call function: listDevices", function() {
   const getUserList = sinon.stub();
   getUserList.resolves(userList);
   const getCCD = sinon.stub();
-  getCCD.resolves(ccdList);
+  getCCD.returns(ccdList);
   const listDevices = proxyquire("../../src/calls/listDevices", {
     "../utils/getUserList": getUserList,
     "../utils/getCCD": getCCD
   });
 
   it("should return success message and the users array", async () => {
-    let res = await listDevices();
+    const res = await listDevices();
     expect(res).to.have.property("message");
     expect(res).to.have.property("result");
     expect(res.result).to.be.an("array");

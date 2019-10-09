@@ -1,9 +1,7 @@
 const autobahn = require("autobahn");
 const logs = require("./logs.js")(module);
-const {
+const { eventBus, eventBusTag } = require("./eventBus");
 const params = require("./params");
-  eventBusTag
-} = require("./eventBus");
 // Utils
 const registerHandler = require("./utils/registerHandler");
 // import calls
@@ -28,7 +26,7 @@ const connection = new autobahn.Connection({
   realm
 });
 
-connection.onopen = function (session, details) {
+connection.onopen = function(session, details) {
   logs.info(`Connected to DAppNode's WAMP
   url:     ${url}
   realm:   ${realm}
@@ -63,9 +61,8 @@ connection.onopen = function (session, details) {
     async () => {
       const devices = (await calls.listDevices()).result;
       publish("devices.vpn.dnp.dappnode.eth", devices);
-    }, {
-      isAsync: true
-    }
+    },
+    { isAsync: true }
   );
 };
 

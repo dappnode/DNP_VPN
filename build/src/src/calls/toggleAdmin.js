@@ -17,19 +17,19 @@ const masterAdmin = "dappnode_admin";
  * result: empty
  */
 async function toggleAdmin({ id }) {
-  let devices = await getUserList();
+  const devices = await getUserList();
   if (!devices.includes(id)) {
     throw Error(`Device not found: ${id}`);
   }
 
-  const ccdArray = await getCCD();
-  let isAdmin = ccdArray.find(c => c.cn === id);
+  const ccdArray = getCCD();
+  const isAdmin = ccdArray.find(c => c.cn === id);
 
   if (id === masterAdmin) {
     throw Error("You cannot remove the master admin user");
   } else if (isAdmin) {
     try {
-      await fs.unlinkSync(path.join(ccdPath, id));
+      fs.unlinkSync(path.join(ccdPath, id));
     } catch (err) {
       throw Error(`Failed to remove ccd from: ${id}`);
     }
