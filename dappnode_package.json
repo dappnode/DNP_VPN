@@ -1,6 +1,6 @@
 {
   "name": "vpn.dnp.dappnode.eth",
-  "version": "0.2.1",
+  "version": "0.2.3",
   "description": "Dappnode package responsible for providing the VPN (OpenVPN) connection",
   "avatar": "/ipfs/QmWwMb3XhuCH6JnCF6m6EQzA4mW9pHHtg7rqAfhDr2ofi8",
   "type": "dncore",
@@ -17,8 +17,10 @@
       "vpndnpdappnodeeth_config:/etc/openvpn",
       "vpndnpdappnodeeth_shared:/var/spool/openvpn"
     ],
-    "ports": ["1194:1194/udp"],
-    "privileged": "true",
+    "ports": [
+      "1194:1194/udp"
+    ],
+    "privileged": true,
     "restart": "always",
     "subnet": "172.33.0.0/16",
     "ipv4_address": "172.33.1.4"
@@ -30,7 +32,11 @@
     "vdo <vdo@giveth.io> (https://github.com/vdo)",
     "Alex Floyd <alex@giveth.io> (https://github.com/mex20)"
   ],
-  "keywords": ["DAppNodeCore", "VPN", "OpenVPN"],
+  "keywords": [
+    "DAppNodeCore",
+    "VPN",
+    "OpenVPN"
+  ],
   "links": {
     "homepage": "https://github.com/dappnode/DNP_VPN#readme"
   },

@@ -16,7 +16,7 @@ describe("Call function: removeDevice", function() {
   const getUserList = sinon.stub();
   getUserList.resolves(userList);
   const getCCD = sinon.stub();
-  getCCD.resolves(ccdList);
+  getCCD.returns(ccdList);
   const removeClient = sinon.stub();
   removeClient.resolves("");
 
@@ -27,14 +27,14 @@ describe("Call function: removeDevice", function() {
   });
 
   it("should return success message when user is not admin", async () => {
-    let id = "mobile";
-    let res = await removeDevice({ id });
+    const id = "mobile";
+    const res = await removeDevice({ id });
     expect(res).to.have.property("message");
     expect(res.message).to.deep.equal(`Removed device: ${id}`);
   });
 
   it("should return error message when the user does not exist", async () => {
-    let id = "Santa";
+    const id = "Santa";
     let error = "--- removeDevice did not throw ---";
     try {
       await removeDevice({ id });
@@ -45,7 +45,7 @@ describe("Call function: removeDevice", function() {
   });
 
   it("should return error message when the user is admin", async () => {
-    let id = "dappnode_admin";
+    const id = "dappnode_admin";
     let error = "--- removeDevice did not throw ---";
     try {
       await removeDevice({ id });

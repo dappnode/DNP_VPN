@@ -8,11 +8,12 @@ async function removeClient(id) {
     // Revoke first to save in CRL
     await shell(`${revokeCommand} ${id}`);
     // Remove all client associated files
-    await Promise.all([
-      fs.unlinkSync(`${process.env.OPENVPN}/pki/private/${id}.key`),
-      fs.unlinkSync(`${process.env.OPENVPN}/pki/reqs/${id}.req`),
-      fs.unlinkSync(`${process.env.OPENVPN}/pki/issued/${id}.crt`)
-    ]);
+    for (const file of [
+      `${process.env.OPENVPN}/pki/private/${id}.key`,
+      `${process.env.OPENVPN}/pki/reqs/${id}.req`,
+      `${process.env.OPENVPN}/pki/issued/${id}.crt`
+    ])
+      fs.unlinkSync(file);
   } catch (err) {
     throw Error(`Error removing device ${id}: ${err}`);
   }

@@ -141,11 +141,16 @@ fi
 if [ -z "${EASYRSA_PKI:-}" ]; then
     export EASYRSA_PKI="$OPENVPN/pki"
 fi
+if [ -z "${OVPN_CN:-}" ]; then
+  export OVPN_CN="dappnode.eth"
+fi
+
 
 OVPN_AUTH=''
 OVPN_CIPHER=''
 OVPN_CLIENT_TO_CLIENT=''
-OVPN_CN=''
+#OVPN_CN='' // Don't clear it, grab from entrypoint
+OVPN_HOSTNAME='localhost'
 OVPN_COMP_LZO=0
 OVPN_DEFROUTE=1
 OVPN_DEVICE="tun"
@@ -274,7 +279,7 @@ done
 # Server name is in the form "udp://vpn.example.com:1194"
 if [[ "${OVPN_SERVER_URL:-}" =~ ^((udp|tcp|udp6|tcp6)://)?([0-9a-zA-Z\.\-]+)(:([0-9]+))?$ ]]; then
     OVPN_PROTO=${BASH_REMATCH[2]};
-    OVPN_CN=${BASH_REMATCH[3]};
+    OVPN_HOSTNAME=${BASH_REMATCH[3]};
     OVPN_PORT=${BASH_REMATCH[5]};
 else
     set +x
@@ -288,15 +293,16 @@ set +u
 [ -z "$OVPN_DNS_SERVERS" ] && OVPN_DNS_SERVERS=("8.8.8.8" "8.8.4.4")
 [ -z "$OVPN_PROTO" ] && OVPN_PROTO=udp
 [ -z "$OVPN_PORT" ] && OVPN_PORT=1194
+[ -z "$OVPN_HOSTNAME" ] && OVPN_HOSTNAME=localhost
 set -u
 [ "${#OVPN_ROUTES[@]}" == "0" ] && [ "$OVPN_DEFROUTE" == "1" ] && OVPN_ROUTES+=("192.168.254.0/24")
 
-# Preserve config
-if [ -f "$OVPN_ENV" ]; then
-    bak_env=$OVPN_ENV.$(date +%s).bak
-    echo "Backing up $OVPN_ENV -> $bak_env"
-    mv "$OVPN_ENV" "$bak_env"
-fi
+# Dont' backup, regenerated at every boot
+# if [ -f "$OVPN_ENV" ]; then
+#     bak_env=$OVPN_ENV.$(date +%s).bak
+#     echo "Backing up $OVPN_ENV -> $bak_env"
+#     mv "$OVPN_ENV" "$bak_env"
+# fi
 
 # Save the current OVPN_ vars to the ovpn_env.sh file
 (set | grep '^OVPN_') | while read -r var; do
@@ -304,11 +310,11 @@ fi
 done
 
 conf=${OPENVPN:-}/openvpn.conf
-if [ -f "$conf" ]; then
-    bak=$conf.$(date +%s).bak
-    echo "Backing up $conf -> $bak"
-    mv "$conf" "$bak"
-fi
+# if [ -f "$conf" ]; then
+#     bak=$conf.$(date +%s).bak
+#     echo "Backing up $conf -> $bak"
+#     mv "$conf" "$bak"
+# fi
 
 # Echo extra client configurations
 if [ ${#OVPN_EXTRA_CLIENT_CONFIG[@]} -gt 0 ]; then

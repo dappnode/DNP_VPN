@@ -43,7 +43,7 @@ RUN ln -s /usr/share/easy-rsa/easyrsa /usr/local/bin && \
 # (Docker) Necessary dependencies
 RUN apk add --no-cache libltdl
 RUN ALPINE_GLIBC_BASE_URL="https://github.com/sgerrand/alpine-pkg-glibc/releases/download" && \
-    ALPINE_GLIBC_PACKAGE_VERSION="2.28-r0" && \
+    ALPINE_GLIBC_PACKAGE_VERSION="2.30-r0" && \
     ALPINE_GLIBC_BASE_PACKAGE_FILENAME="glibc-$ALPINE_GLIBC_PACKAGE_VERSION.apk" && \
     ALPINE_GLIBC_BIN_PACKAGE_FILENAME="glibc-bin-$ALPINE_GLIBC_PACKAGE_VERSION.apk" && \
     ALPINE_GLIBC_I18N_PACKAGE_FILENAME="glibc-i18n-$ALPINE_GLIBC_PACKAGE_VERSION.apk" && \
@@ -96,15 +96,10 @@ ENV EASYRSA=/usr/share/easy-rsa \
     OPENVPN_CCD_DIR=$OPENVPN/ccd \
     OPENVPN_CRED_PORT=8090 \
 # VPN management parameters - Node paths
-    DB_PATH=/usr/src/app/secrets/vpndb.json \
     LOGIN_MSG_PATH=/usr/src/app/secrets/loginMsgFile.txt \
     INSTALLATION_STATIC_IP=/usr/src/app/config/static_ip \
-    KEYPAIR_PATH=/usr/src/app/secrets/keypair \
-    PUBLIC_IP_PATH=/usr/src/app/secrets/server-ip \
+    SALT_PATH=/usr/src/app/secrets/salt \
     SERVER_NAME_PATH=/etc/vpnname \
-    INTERNAL_IP_PATH=/usr/src/app/secrets/internal-ip \
-    EXTERNAL_IP_PATH=/usr/src/app/secrets/external-ip \
-    PUBLIC_IP_RESOLVED_PATH=/usr/src/app/secrets/public-ip_resolved \
 # VPN management parameters - URLs
     DYNDNS_HOST=https://ns.dappnode.io \
     DYNDNS_DOMAIN=dyndns.dappnode.io \
@@ -122,7 +117,6 @@ VOLUME ["/etc/openvpn"]
 EXPOSE 1194/udp
 
 RUN ln -s /usr/src/app/src/getAdminCredentials.js /usr/local/bin/getAdminCredentials && \
-    ln -s /usr/src/app/src/migrateOldUsers.js /usr/local/bin/migrateOldUsers && \
     ln -s /usr/src/app/src/vpncli.js /usr/local/bin/vpncli
 
 ADD build/bin /usr/local/bin

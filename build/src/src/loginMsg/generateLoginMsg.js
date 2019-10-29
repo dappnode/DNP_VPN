@@ -1,5 +1,5 @@
 const qrcode = require("qrcode-terminal");
-const db = require("../db");
+const params = require("../params");
 
 async function generateLoginMsg(url) {
   let msg = "\n\n";
@@ -14,13 +14,19 @@ async function generateLoginMsg(url) {
   msg += `\n To connect to your DAppNode scan the QR above or copy/paste link below into your browser:
   ${url}\n`;
 
-  if (await db.get("alertToOpenPorts")) {
+  if (
+    process.env[params.GLOBAL_ENVS.UPNP_AVAILABLE] &&
+    (process.env[params.GLOBAL_ENVS.UPNP_AVAILABLE] || "").trim() == "false"
+  ) {
     msg += `\n ALERT: You may not be able to connect. Turn your router's UPnP on or open the VPN port (1194/udp) manually`;
   }
-  if (await db.get("noNatLoopback")) {
-    msg += `\n ALERT: NAT-Loopback is disabled. If you are connecting from the same network as your DAppNode use the internal IP: ${await db.get(
-      "internalIp"
-    )}`;
+  if (
+    process.env[params.GLOBAL_ENVS.NO_NAT_LOOPBACK] &&
+    (process.env[params.GLOBAL_ENVS.NO_NAT_LOOPBACK] || "").trim() == "false"
+  ) {
+    msg += `\n ALERT: NAT-Loopback is disabled. If you are connecting from the same network as your DAppNode use the internal IP: ${
+      process.env[params.GLOBAL_ENVS.INTERNAL_IP]
+    }`;
   }
 
   return msg;

@@ -18,16 +18,13 @@ const getCCD = require("../utils/getCCD");
  */
 async function listDevices() {
   const userList = await getUserList();
-  const ccd = await getCCD();
-  let deviceList = [];
+  const ccd = getCCD();
 
-  userList.forEach(user => {
-    deviceList.push({
-      id: user,
-      admin: ccd.some(obj => obj.cn === user),
-      ip: ""
-    });
-  });
+  const deviceList = userList.map(user => ({
+    id: user,
+    admin: ccd.some(obj => obj.cn === user),
+    ip: ""
+  }));
 
   return {
     message: `Listing ${deviceList.length} devices`,
