@@ -39,6 +39,9 @@ remote-cert-tls server
 
 remote $OVPN_HOSTNAME $OVPN_PORT $OVPN_PROTO"
 
+    if [ -n "$OVPN_INTERNAL_IP" ]; then
+        echo "remote $OVPN_INTERNAL_IP $OVPN_PORT $OVPN_PROTO"
+    fi
     if [ "$OVPN_PROTO" == "udp6" ]; then
         echo "remote $OVPN_HOSTNAME $OVPN_PORT udp"
     fi

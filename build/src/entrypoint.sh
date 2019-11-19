@@ -14,6 +14,8 @@ if [ ! -f "${SALT_PATH}" ]; then
 fi
 OVPN_CN="${_DAPPNODE_GLOBAL_HOSTNAME}"
 export OVPN_CN
+OVPN_INTERNAL_IP="${_DAPPNODE_GLOBAL_INTERNAL_IP}"
+export OVPN_INTERNAL_IP
 echo "Initialized App"
 
 # Initialize config and PKI
