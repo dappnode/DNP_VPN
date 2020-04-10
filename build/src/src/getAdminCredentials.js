@@ -14,6 +14,10 @@ console.log(`
   Loading VPN parameters... It may take a while, press CTRL + C to skip this process
 `);
 
+process.on("SIGINT", function () {
+  process.exit(128);
+});
+
 // Wait for the loginMsg to exist
 check();
 function check() {
