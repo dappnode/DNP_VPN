@@ -14,7 +14,7 @@ console.log(`
   Loading VPN parameters... It may take a while, press CTRL + C to skip this process
 `);
 
-process.on("SIGINT", function () {
+process.on("SIGINT", function() {
   process.exit(128);
 });
 
@@ -30,7 +30,8 @@ function check() {
         console.error(`loginMsgFile missing after ${maxAttempts} attempts`);
       else setTimeout(check, pauseTime);
     } else {
-      console.log(loginMsg);
+      if (loginMsg.trim()) console.log(loginMsg);
+      else setTimeout(check, pauseTime);
     }
   });
 }
