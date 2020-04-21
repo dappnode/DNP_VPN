@@ -1,30 +1,8 @@
 {
   "name": "vpn.dnp.dappnode.eth",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Dappnode package responsible for providing the VPN (OpenVPN) connection",
-  "avatar": "/ipfs/QmdTZF5oA5uVJ3CCJmfoMrjKvpkSLvoTZ2jZqVu9jxCEig",
   "type": "dncore",
-  "image": {
-    "path": "",
-    "hash": "",
-    "size": "",
-    "volumes": [
-      "/etc/hostname:/etc/vpnname:ro",
-      "/lib/modules:/lib/modules:ro",
-      "/var/run/docker.sock:/var/run/docker.sock",
-      "/usr/src/dappnode/config:/usr/src/app/config:ro",
-      "vpndnpdappnodeeth_data:/usr/src/app/secrets",
-      "vpndnpdappnodeeth_config:/etc/openvpn",
-      "vpndnpdappnodeeth_shared:/var/spool/openvpn"
-    ],
-    "ports": [
-      "1194:1194/udp"
-    ],
-    "privileged": true,
-    "restart": "always",
-    "subnet": "172.33.0.0/16",
-    "ipv4_address": "172.33.1.4"
-  },
   "author": "DAppNode Association <admin@dappnode.io> (https://github.com/dappnode)",
   "contributors": [
     "Eduardo Antuña <eduadiez@gmail.com> (https://github.com/eduadiez)",
