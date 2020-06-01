@@ -18,9 +18,7 @@ describe("Call function: addDevice", function() {
   });
   it("should return success message when the user does not exist", async () => {
     const id = "new_user";
-    const res = await addDevice({ id });
-    expect(res).to.have.property("message");
-    expect(res.message).to.deep.equal(`Added device: ${id}`);
+    await addDevice({ id });
   });
 
   it("should return error message when the user does exist", async () => {

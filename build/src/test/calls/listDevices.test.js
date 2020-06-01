@@ -30,10 +30,8 @@ describe("Call function: listDevices", function() {
   });
 
   it("should return success message and the users array", async () => {
-    const res = await listDevices();
-    expect(res).to.have.property("message");
-    expect(res).to.have.property("result");
-    expect(res.result).to.be.an("array");
-    expect(res.result).to.deep.equal(userResult);
+    const result = await listDevices();
+    expect(result).to.be.an("array");
+    expect(result).to.deep.equal(userResult);
   });
 });

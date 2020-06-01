@@ -10,11 +10,6 @@ const versionData = require("../utils/getVersionData");
  *   "commit": "ab991e1482b44065ee4d6f38741bd89aeaeb3cec"
  * }
  */
-const getVersionData = async () => {
-  return {
-    message: "Got version data",
-    result: versionData
-  };
-};
+const getVersionData = async () => versionData;
 
 module.exports = getVersionData;

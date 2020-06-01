@@ -15,12 +15,6 @@ async function resetDevice({ id }) {
 
   await removeClient(id);
   await buildClient(id);
-
-  return {
-    message: `Reseted device: ${id}`,
-    logMessage: true,
-    userAction: true
-  };
 }
 
 module.exports = resetDevice;

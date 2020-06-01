@@ -28,9 +28,7 @@ describe("Call function: removeDevice", function() {
 
   it("should return success message when user is not admin", async () => {
     const id = "mobile";
-    const res = await removeDevice({ id });
-    expect(res).to.have.property("message");
-    expect(res.message).to.deep.equal(`Removed device: ${id}`);
+    await removeDevice({ id });
   });
 
   it("should return error message when the user does not exist", async () => {
