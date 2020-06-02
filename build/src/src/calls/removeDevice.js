@@ -24,12 +24,6 @@ async function removeDevice({ id }) {
   }
 
   eventBus.emit(eventBusTag.emitDevices);
-
-  return {
-    message: `Removed device: ${id}`,
-    logMessage: true,
-    userAction: true
-  };
 }
 
 module.exports = removeDevice;

@@ -40,14 +40,6 @@ async function toggleAdmin({ id }) {
 
   // Emit packages update
   eventBus.emit(eventBusTag.emitDevices);
-
-  return {
-    message: isAdmin
-      ? `Removed admin credentials from ${id}`
-      : `Given admin credentials to ${id}`,
-    logMessage: true,
-    userAction: true
-  };
 }
 
 module.exports = toggleAdmin;

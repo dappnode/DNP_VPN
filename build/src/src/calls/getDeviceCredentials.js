@@ -63,14 +63,11 @@ async function getDeviceCredentials({ id }) {
   const url = `http://${hostname}:${credentialsPort}/?id=${filename}#${encodeURIComponent(
     key
   )}`;
+
   return {
-    message: `Generated credentials for ${id} at ${credentialsDir}/${filename}`,
-    logMessage: true,
-    result: {
-      filename,
-      key,
-      url
-    }
+    filename,
+    key,
+    url
   };
 }
 

@@ -20,17 +20,11 @@ async function listDevices() {
   const userList = await getUserList();
   const ccd = getCCD();
 
-  const deviceList = userList.map(user => ({
+  return userList.map(user => ({
     id: user,
     admin: ccd.some(obj => obj.cn === user),
     ip: ""
   }));
-
-  return {
-    message: `Listing ${deviceList.length} devices`,
-    logMessage: true,
-    result: deviceList
-  };
 }
 
 module.exports = listDevices;

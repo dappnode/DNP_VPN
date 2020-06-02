@@ -38,12 +38,6 @@ async function addDevice({ id }) {
 
   // Emit devices update
   eventBus.emit(eventBusTag.emitDevices);
-
-  return {
-    message: `Added device: ${id}`,
-    logMessage: true,
-    userAction: true
-  };
 }
 
 module.exports = addDevice;
