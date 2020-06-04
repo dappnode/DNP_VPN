@@ -124,9 +124,9 @@ ENV EASYRSA=/usr/share/easy-rsa \
     DEFAULT_ADMIN_USER=dappnode_admin \
     OPENVPN_CONF=$OPENVPN/openvpn.conf \
     OPENVPN_ADMIN_PROFILE=$OPENVPN/pki/issued/$DEFAULT_ADMIN_USER.crt \
-    OPENVPN_CRED_DIR=/var/spool/openvpn \
+    OPENVPN_CRED_DIR=/usr/www/openvpn/cred \
     OPENVPN_CCD_DIR=$OPENVPN/ccd \
-    OPENVPN_CRED_PORT=8090 \
+    OPENVPN_CRED_PORT=8092 \
     # VPN management parameters - Node paths
     LOGIN_MSG_PATH=/usr/src/app/secrets/loginMsgFile.txt \
     INSTALLATION_STATIC_IP=/usr/src/app/config/static_ip \

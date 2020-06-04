@@ -8,7 +8,6 @@ networks:
 volumes:
   vpndnpdappnodeeth_data: {}
   vpndnpdappnodeeth_config: {}
-  vpndnpdappnodeeth_shared: {}
 services:
   vpn.dnp.dappnode.eth:
     build:
@@ -25,7 +24,6 @@ services:
       - '/lib/modules:/lib/modules:ro'
       - 'vpndnpdappnodeeth_data:/usr/src/app/secrets'
       - 'vpndnpdappnodeeth_config:/etc/openvpn'
-      - 'vpndnpdappnodeeth_shared:/var/spool/openvpn'
     ports:
       - '1194:1194/udp'
     dns: 172.33.1.2
