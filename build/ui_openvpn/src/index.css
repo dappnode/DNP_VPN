@@ -1,0 +1,186 @@
+/* Global */
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.nav-tabs > li {
+  float: none;
+  display: inline-block;
+  zoom: 1;
+}
+
+.nav-tabs {
+  text-align: center;
+}
+
+.nav {
+  display: block;
+}
+
+.main-logo {
+  height: 60px;
+  margin: 15px 0px;
+}
+
+.main-text {
+  font-weight: 400;
+  color: gray;
+}
+
+.instructions-row {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.instructions-link {
+  color: #444;
+  border: 1px solid #d9dce0;
+  border-radius: 5px;
+}
+.instructions-link:hover {
+  color: #444;
+  background-color: #f3f5f6;
+  -webkit-transition: background-color 100ms linear;
+  -ms-transition: background-color 100ms linear;
+  transition: background-color 100ms linear;
+}
+/* .row > .instructions-link {
+  margin-right: 10px;
+}
+.row > .instructions-link:last-child {
+  margin-right: 0px;
+} */
+
+.jumbotron-area {
+  padding: 35px 0px;
+  background-color: #e9ecef8c;
+  margin: 35px 0px 0px 0px;
+}
+
+.jumbotron-title {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #444;
+  font-size: 17.85px;
+  margin-bottom: 4.25px;
+}
+
+.jumotron-subtitle {
+  font-size: 15.3px;
+  font-weight: 400;
+  color: #444;
+  margin-bottom: 0px;
+}
+
+ol li {
+  list-style-type: decimal-leading-zero;
+}
+
+.dappnode-color,
+a.dappnode-color:hover {
+  color: #2fbcb2;
+}
+.dappnode-background-color {
+  border: #2fbcb2;
+  background-color: #2fbcb2;
+}
+.dappnode-background-color:hover {
+  border: #218a82;
+  background-color: #218a82;
+}
+.dappnode-background-color:active {
+  border: #218a82;
+  background-color: #218a82;
+}
+
+.header-brand {
+  color: #e2e2e4;
+}
+.header-vertical-bar {
+  margin: 5px;
+  color: #404040;
+}
+.header-sub-brand {
+  text-transform: uppercase;
+  font-size: 78%;
+}
+
+.navbar-logo {
+  position: relative;
+  height: 25px;
+  width: 25px;
+  top: -2px;
+  margin-right: 12px;
+}
+
+.nav-icon {
+  opacity: 0.8;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+.nav-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.jumbotron {
+  background-color: #e9ecef8c;
+}
+
+input,
+button {
+  padding: 7px;
+  vertical-align: top;
+}
+.input-group {
+  margin: 2px;
+}
+input {
+  font-family: Consolas, monaco, monospace;
+}
+.in-text-copy {
+  font-family: Consolas, monaco, monospace;
+  border: 1px solid #b2b2b2;
+  border-radius: 3px;
+  background-color: #f2f2f2;
+  padding: 2px;
+}
+/* General button sizes */
+
+.modal-image {
+  width: 100%;
+}
+
+/* YOUTUBE VIDEO EMBED */
+
+.videoWrapper {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 */
+  padding-top: 25px;
+  height: 0;
+}
+.videoWrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* CODE box for Linux */
+
+.code {
+  font-family: Consolas, monaco, monospace;
+  white-space: pre-wrap;
+  background-color: #f2f2f2;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 3px;
+}
+
+.navigate-to-dappnode {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
