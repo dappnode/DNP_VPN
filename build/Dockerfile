@@ -1,6 +1,6 @@
 # Build dependencies
 ##########################
-FROM node:8.14.0-alpine as build
+FROM node:12.18.0-alpine as build
 
 WORKDIR /usr/src/app
 
@@ -18,7 +18,7 @@ COPY build/src .
 
 # Compute git data
 #####################################
-FROM node:8.14.0-alpine as git-data
+FROM node:12.18.0-alpine as git-data
 
 WORKDIR /usr/src/app
 
@@ -33,7 +33,7 @@ RUN sh getVersionData.sh
 
 # Build UI
 ##########################
-FROM node:8.14.0 as build-ui
+FROM node:12.18.0 as build-ui
 
 WORKDIR /usr/src/app
 
@@ -50,7 +50,7 @@ RUN node injectToHtml
 
 # Final stage
 ##########################
-FROM node:8.14.0-alpine
+FROM node:12.18.0-alpine
 
 WORKDIR /usr/src/app
 
