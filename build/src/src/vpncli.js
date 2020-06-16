@@ -33,54 +33,38 @@ if (process.argv.length === 2) {
   );
   process.exit(1);
 }
-if (cmd.add) {
-  addDevice({ id: cmd.add }).then(res => {
-    if (res.message) {
-      console.log(chalk.green(res.message));
-    }
-  }, printError);
-} else if (cmd.get) {
-  getDeviceCredentials({ id: cmd.get }).then(res => {
-    if (res.result) {
-      if (cmd.get != adminUser) {
-        console.log(
-          chalk.green(`Credentials generated for ${cmd.get}: ${res.result.url}`)
-        );
-      } else {
-        loginMsg.write(res.result.url).then(console.log);
-      }
-    } else {
-      console.log(chalk.red(`Failed: ${res.message}`));
-    }
-  }, printError);
-} else if (cmd.ls) {
-  listDevices().then(res => {
-    if (res.result) {
-      console.log(chalk.green(prettyjson.render(res.result)));
-    }
-  }, printError);
-} else if (cmd.rm) {
-  removeDevice({ id: cmd.rm }).then(res => {
-    if (res.message) {
-      console.log(chalk.green(res.message));
-    }
-  }, printError);
-} else if (cmd.toggle) {
-  toggleAdmin({ id: cmd.toggle }).then(res => {
-    if (res.message) {
-      console.log(chalk.green(res.message));
-    }
-  }, printError);
-} else if (cmd.reset) {
-  resetDevice({ id: cmd.reset }).then(res => {
-    if (res.message) {
-      console.log(chalk.green(res.message));
-    }
-  }, printError);
-} else {
-  console.log(chalk.yellow("Command unknown!"));
-}
 
-function printError(err) {
-  console.log(chalk.red(err));
+runVpnCli(cmd).catch(err => console.error(chalk.red(err)));
+
+/**
+ * Parses a commander instance
+ * Returns null or throws an error
+ */
+async function runVpnCli(cmd) {
+  const id = cmd.add || cmd.get || cmd.rm || cmd.toggle || cmd.reset;
+  if (cmd.add) {
+    await addDevice({ id });
+    console.log(chalk.green(`Added device ${id}`));
+  } else if (cmd.get) {
+    const { url } = await getDeviceCredentials({ id });
+    if (cmd.get != adminUser) {
+      console.log(chalk.green(`Credentials generated for ${id}: ${url}`));
+    } else {
+      loginMsg.write(url).then(console.log);
+    }
+  } else if (cmd.ls) {
+    const devices = await listDevices();
+    console.log(prettyjson.render(devices));
+  } else if (cmd.rm) {
+    await removeDevice({ id });
+    console.log(chalk.green(`Removed device ${id}`));
+  } else if (cmd.toggle) {
+    await toggleAdmin({ id });
+    console.log(chalk.green(`Toggled admin status of ${id}`));
+  } else if (cmd.reset) {
+    await resetDevice({ id });
+    console.log(chalk.green(`Reset device ${id}`));
+  } else {
+    console.log(chalk.yellow("Command unknown!"));
+  }
 }

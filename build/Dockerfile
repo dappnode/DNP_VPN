@@ -1,15 +1,14 @@
 # Build dependencies
 ##########################
-FROM node:8.14.0-alpine as build
+FROM node:12.18.0-alpine as build
 
 WORKDIR /usr/src/app
 
 RUN apk add --update --no-cache \
-    build-base python docker libpcap-dev linux-headers bash
+    build-base python libpcap-dev linux-headers bash
 
 COPY build/src/package.json ./
 COPY build/src/yarn.lock ./
-# Note: npm package `eth-crypto` added size is 62MB
 RUN yarn install --production
 # Reduces the app dir size from 94.5MB to 71.8MB
 RUN npm config set unsafe-perm true
@@ -17,11 +16,9 @@ RUN yarn global add modclean && modclean -r
 # Run the copy in two steps to cache the npm install
 COPY build/src .
 
-
-
 # Compute git data
 #####################################
-FROM node:10.15.3-alpine as git-data
+FROM node:12.18.0-alpine as git-data
 
 WORKDIR /usr/src/app
 
@@ -36,7 +33,7 @@ RUN sh getVersionData.sh
 
 # Build UI
 ##########################
-FROM node:10.15.3 as build-ui
+FROM node:12.18.0 as build-ui
 
 WORKDIR /usr/src/app
 
@@ -51,11 +48,9 @@ COPY build/ui_openvpn .
 RUN yarn run build
 RUN node injectToHtml
 
-
-
 # Final stage
 ##########################
-FROM node:8.14.0-alpine
+FROM node:12.18.0-alpine
 
 WORKDIR /usr/src/app
 
@@ -66,45 +61,12 @@ RUN apk add --update \
     easy-rsa \ 
     supervisor \
     miniupnpc \
+    nginx \
     openssl \
     jq \
     sed
 RUN ln -s /usr/share/easy-rsa/easyrsa /usr/local/bin && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/* /var/cache/distfiles/*
-
-# (Docker) Necessary dependencies
-RUN apk add --no-cache libltdl
-RUN ALPINE_GLIBC_BASE_URL="https://github.com/sgerrand/alpine-pkg-glibc/releases/download" && \
-    ALPINE_GLIBC_PACKAGE_VERSION="2.30-r0" && \
-    ALPINE_GLIBC_BASE_PACKAGE_FILENAME="glibc-$ALPINE_GLIBC_PACKAGE_VERSION.apk" && \
-    ALPINE_GLIBC_BIN_PACKAGE_FILENAME="glibc-bin-$ALPINE_GLIBC_PACKAGE_VERSION.apk" && \
-    ALPINE_GLIBC_I18N_PACKAGE_FILENAME="glibc-i18n-$ALPINE_GLIBC_PACKAGE_VERSION.apk" && \
-    apk add --no-cache --virtual=.build-dependencies wget ca-certificates && \
-    wget -nv \
-    "https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub" \
-    -O "/etc/apk/keys/sgerrand.rsa.pub" && \
-    wget -nv \
-    "$ALPINE_GLIBC_BASE_URL/$ALPINE_GLIBC_PACKAGE_VERSION/$ALPINE_GLIBC_BASE_PACKAGE_FILENAME" \
-    "$ALPINE_GLIBC_BASE_URL/$ALPINE_GLIBC_PACKAGE_VERSION/$ALPINE_GLIBC_BIN_PACKAGE_FILENAME" \
-    "$ALPINE_GLIBC_BASE_URL/$ALPINE_GLIBC_PACKAGE_VERSION/$ALPINE_GLIBC_I18N_PACKAGE_FILENAME" && \
-    apk add --no-cache \
-    "$ALPINE_GLIBC_BASE_PACKAGE_FILENAME" \
-    "$ALPINE_GLIBC_BIN_PACKAGE_FILENAME" \
-    "$ALPINE_GLIBC_I18N_PACKAGE_FILENAME" && \
-    \
-    rm "/etc/apk/keys/sgerrand.rsa.pub" && \
-    /usr/glibc-compat/bin/localedef --force --inputfile POSIX --charmap UTF-8 "$LANG" || true && \
-    echo "export LANG=$LANG" > /etc/profile.d/locale.sh && \
-    \
-    apk del glibc-i18n && \
-    \
-    rm "/root/.wget-hsts" && \
-    apk del .build-dependencies && \
-    rm \
-    "$ALPINE_GLIBC_BASE_PACKAGE_FILENAME" \
-    "$ALPINE_GLIBC_BIN_PACKAGE_FILENAME" \
-    "$ALPINE_GLIBC_I18N_PACKAGE_FILENAME"
-# (end docker)
 
 RUN mkdir -p /usr/src/app/secrets
 
@@ -141,19 +103,18 @@ ENV EASYRSA=/usr/share/easy-rsa \
 RUN mkdir -p ${OPENVPN_CRED_DIR} ${OPENVPN_CCD_DIR}
 
 COPY --from=build /usr/src/app /usr/src/app
-COPY --from=build /usr/bin/docker /usr/bin/docker
 COPY --from=build-ui /usr/src/app/build /usr/www/openvpn
 COPY --from=git-data /usr/src/app/.version.json .
 COPY build/nginx.conf /etc/nginx/nginx.conf
 
 VOLUME ["/etc/openvpn"]
 
-# Internally uses port 1194/udp, remap using `docker run -p 443:1194/tcp`
 EXPOSE 1194/udp
 
 RUN ln -s /usr/src/app/src/getAdminCredentials.js /usr/local/bin/getAdminCredentials && \
     ln -s /usr/src/app/src/vpncli.js /usr/local/bin/vpncli
 
+COPY build/supervisord.conf .
 ADD build/bin /usr/local/bin
 
 # Use CMD so it can be replaced when using the VPN image for upnpc calls
@@ -161,4 +122,6 @@ ADD build/bin /usr/local/bin
 # Supervisor runs:
 # - node src/index.js
 # - ovpn_run
+# - nginx
+
 CMD ["./entrypoint.sh"]
