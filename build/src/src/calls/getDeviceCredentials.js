@@ -8,7 +8,7 @@ const credentialsDir = process.env.DEV
   ? "./mockFiles/creds"
   : process.env.OPENVPN_CRED_DIR;
 const credentialsPort = process.env.DEV
-  ? "8090"
+  ? "8092"
   : process.env.OPENVPN_CRED_PORT;
 const saltPath = process.env.DEV ? "./mockFiles/salt" : process.env.SALT_PATH;
 
