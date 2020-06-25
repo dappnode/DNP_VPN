@@ -1,5 +1,4 @@
 const shell = require("../utils/shell");
-const fs = require("fs");
 
 const revokeCommand = "/usr/local/bin/ovpn_revokeclient";
 
@@ -15,7 +14,7 @@ async function removeClient(id) {
     // ])
     //   fs.unlinkSync(file);
   } catch (err) {
-    throw Error(`Error removing device ${id}: ${err}`);
+    throw Error(`Error removing device ${id}: ${err.message}`);
   }
 }
 
