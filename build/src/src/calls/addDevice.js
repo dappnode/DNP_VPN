@@ -1,4 +1,3 @@
-const { eventBus, eventBusTag } = require("../eventBus");
 const buildClient = require("../utils/buildClient");
 const getUserList = require("../utils/getUserList");
 const userLimit = 500;
@@ -35,9 +34,6 @@ async function addDevice({ id }) {
   } else {
     throw Error(`Device name exists: ${id}`);
   }
-
-  // Emit devices update
-  eventBus.emit(eventBusTag.emitDevices);
 }
 
 module.exports = addDevice;

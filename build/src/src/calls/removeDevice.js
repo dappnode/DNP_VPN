@@ -1,7 +1,6 @@
 const getUserList = require("../utils/getUserList");
 const getCCD = require("../utils/getCCD");
 const removeClient = require("../utils/removeClient");
-const { eventBus, eventBusTag } = require("../eventBus");
 
 /**
  * Removes the device with the provided id, if exists.
@@ -22,8 +21,6 @@ async function removeDevice({ id }) {
   } else {
     await removeClient(id);
   }
-
-  eventBus.emit(eventBusTag.emitDevices);
 }
 
 module.exports = removeDevice;

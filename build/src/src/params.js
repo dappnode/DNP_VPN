@@ -1,4 +1,5 @@
 module.exports = {
+  API_PORT: 3000,
   GLOBAL_ENVS: {
     ACTIVE: "_DAPPNODE_GLOBAL_ENVS_ACTIVE",
     DOMAIN: "_DAPPNODE_GLOBAL_DOMAIN", // "" || "6b3d49d4965584c2.dyndns.dappnode.io"
