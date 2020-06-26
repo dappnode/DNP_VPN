@@ -3,7 +3,6 @@ const path = require("path");
 const getCCD = require("../utils/getCCD");
 const getUserList = require("../utils/getUserList");
 const getLowestIP = require("../utils/getLowestIP");
-const { eventBus, eventBusTag } = require("../eventBus");
 
 const ccdPath = process.env.DEV ? "./mockFiles/ccd" : "/etc/openvpn/ccd";
 const ccdMask = "255.255.252.0";
@@ -37,9 +36,6 @@ async function toggleAdmin({ id }) {
     const ccdContent = `ifconfig-push ${getLowestIP(ccdArray)} ${ccdMask}\r\n`;
     fs.writeFileSync(path.join(ccdPath, id), ccdContent);
   }
-
-  // Emit packages update
-  eventBus.emit(eventBusTag.emitDevices);
 }
 
 module.exports = toggleAdmin;

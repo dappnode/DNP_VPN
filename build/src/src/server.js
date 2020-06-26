@@ -12,7 +12,7 @@ const authorizedIpPrefixes = [
   // WIFI DNP ip, which may be applied to users in some situations
   "172.33.1.10",
   // DAPPMANAGER IP
-  "172.33.1.7",
+  "172.33.1.7"
 ];
 
 /**
@@ -28,7 +28,7 @@ module.exports = function startHttpApi(port) {
   const loggerMiddleware = {
     onCall: (method, params) => logs.debug(`RPC call ${method}`, params),
     onSuccess: (method, result) => logs.debug(`RPC success ${method}`, result),
-    onError: (method, e) => logs.error(`RPC error ${method}`, e),
+    onError: (method, e) => logs.error(`RPC error ${method}`, e)
   };
   const rpcHandler = getRpcHandler(methods, loggerMiddleware);
 
@@ -44,7 +44,7 @@ module.exports = function startHttpApi(port) {
     wrapHandler(async (req, res) => res.send(await rpcHandler(req.body)))
   );
 
-  app.listen(port, () => logs.info(`HTTP API ${port}!`));
+  app.listen(port, () => logs.info(`HTTP API started at ${port}`));
 };
 
 /**
@@ -65,7 +65,7 @@ function wrapHandler(handler) {
  * Auth middleware, filtering by IP
  */
 function isAuthorized(req, res, next) {
-  const isIpAllowed = authorizedIpPrefixes.some((ip) => req.ip.includes(ip));
+  const isIpAllowed = authorizedIpPrefixes.some(ip => req.ip.includes(ip));
 
   if (isIpAllowed) {
     next();
