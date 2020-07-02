@@ -1,4 +1,4 @@
-const isTest = Boolean(process.env.DEV);
+const isTest = Boolean(process.env.TEST);
 
 // OpenVPN parameters
 export const userLimit = 500;

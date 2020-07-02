@@ -1,11 +1,8 @@
-const proxyquire = require("proxyquire");
-const chai = require("chai");
-const expect = require("chai").expect;
-const sinon = require("sinon");
+import { expect } from "chai";
+import sinon from "sinon";
+import proxyquire from "proxyquire";
 
-chai.should();
-
-describe("Call function: listDevices", function() {
+describe("Call function: listDevices", () => {
   // This function calls getUserList and getCCD to build
   // a list of objects with id and admin boolean
   const userList = ["dappnode_admin", "mobile", "guest", "tom"];
@@ -24,9 +21,9 @@ describe("Call function: listDevices", function() {
   getUserList.resolves(userList);
   const getCCD = sinon.stub();
   getCCD.returns(ccdList);
-  const listDevices = proxyquire("../../src/calls/listDevices", {
-    "../utils/getUserList": getUserList,
-    "../utils/getCCD": getCCD
+  const { listDevices } = proxyquire("../../src/calls/listDevices", {
+    "../utils/getUserList": { getUserList },
+    "../utils/getCCD": { getCCD }
   });
 
   it("should return success message and the users array", async () => {

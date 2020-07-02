@@ -1,11 +1,8 @@
-const proxyquire = require("proxyquire");
-const chai = require("chai");
-const expect = require("chai").expect;
-const sinon = require("sinon");
+import { expect } from "chai";
+import sinon from "sinon";
+import proxyquire from "proxyquire";
 
-chai.should();
-
-describe("Call function: removeDevice", function() {
+describe("Call function: removeDevice", () => {
   // This function calls getUserList and getCCD to build
   // a list of objects with id and admin boolean
   const userList = ["dappnode_admin", "mobile", "guest", "tom"];
@@ -20,10 +17,10 @@ describe("Call function: removeDevice", function() {
   const removeClient = sinon.stub();
   removeClient.resolves("");
 
-  const removeDevice = proxyquire("../../src/calls/removeDevice", {
-    "../utils/getUserList": getUserList,
-    "../utils/getCCD": getCCD,
-    "../utils/removeClient": removeClient
+  const { removeDevice } = proxyquire("../../src/calls/removeDevice", {
+    "../utils/getUserList": { getUserList },
+    "../utils/getCCD": { getCCD },
+    "../utils/removeClient": { removeClient }
   });
 
   it("should return success message when user is not admin", async () => {

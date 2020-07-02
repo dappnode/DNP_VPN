@@ -1,16 +1,18 @@
-const chai = require("chai");
-const expect = require("chai").expect;
-const calls = require("../src/calls");
-const shell = require("../src/utils/shell");
-const fs = require("fs");
-
-chai.should();
+import "mocha";
+import { expect } from "chai";
+import fs from "fs";
+import { shell } from "../src/utils/shell";
+import {
+  addDevice,
+  removeDevice,
+  toggleAdmin,
+  listDevices
+} from "../src/calls";
 
 describe("Integration test", () => {
-  const ids = ["Jordi", "Hal", "Wardog"];
-
-  // Initialize calls
-  const { addDevice, removeDevice, toggleAdmin, listDevices } = calls;
+  const id0 = "Jordi";
+  const id1 = "Hal";
+  const id2 = "Wardog";
 
   // Create config files
   before(async () => {
@@ -34,18 +36,16 @@ describe("Integration test", () => {
 
   describe("Call function: createAddDevice", () => {
     it("should called addDevice without crashing and return message", async () => {
-      const res = await addDevice({ id: ids[0] });
-      expect(res).to.have.property("message", `Added device: ${ids[0]}`);
+      const res = await addDevice({ id: id0 });
+      expect(res).to.have.property("message", `Added device: ${id0}`);
     });
 
-    let user;
-    it("user should actually exist", async () => {
-      const res = await listDevices();
-      user = res.result.find(d => d.id == ids[0]);
-      expect(user).to.be.ok;
-    });
+    it("should have created a user without admin rights: without ccd file.", async () => {
+      const devices = await listDevices();
 
-    it("should have created a user without admin rights: without ccd file.", () => {
+      const user = devices.find(d => d.id == id0);
+      if (!user) throw Error(`user ${id0} does not exist`);
+
       const CcdFile = fs.existsSync(`/etc/openvpn/ccd/${user.id}`);
       expect(CcdFile).to.not.be.ok;
     });
@@ -55,31 +55,29 @@ describe("Integration test", () => {
     it("should throw an error", async () => {
       let error = "did not throw";
       try {
-        await addDevice({ id: ids[0] });
+        await addDevice({ id: id0 });
       } catch (e) {
         error = e.message;
       }
-      expect(error).to.equal(`Device name exists: ${ids[0]}`);
+      expect(error).to.equal(`Device name exists: ${id0}`);
     });
   });
 
   describe("Call function: toggleAdmin", () => {
     it("should call toggleAdmin without crashing and return message", async () => {
-      const res = await toggleAdmin({ id: ids[0] });
+      const res = await toggleAdmin({ id: id0 });
       expect(res).to.have.property(
         "message",
-        `Given admin credentials to ${ids[0]}`
+        `Given admin credentials to ${id0}`
       );
     });
 
-    let user;
-    it("should still exist", async () => {
-      const res = await listDevices();
-      user = res.result.find(d => d.id == ids[0]);
-      expect(user).to.be.ok;
-    });
+    it("should have changed the user to admin", async () => {
+      const devices = await listDevices();
 
-    it("should have changed the user to admin", () => {
+      const user = devices.find(d => d.id == id0);
+      if (!user) throw Error(`user ${id0} does not exist`);
+
       const CcdFile = fs.existsSync(`/etc/openvpn/ccd/${user.id}`);
       expect(CcdFile).to.be.ok;
     });
@@ -89,7 +87,7 @@ describe("Integration test", () => {
     it("should throw an error", async () => {
       let error = "did not throw";
       try {
-        await removeDevice({ id: ids[0] });
+        await removeDevice({ id: id0 });
       } catch (e) {
         error = e.message;
       }
@@ -99,88 +97,84 @@ describe("Integration test", () => {
 
   describe("Undo admin", () => {
     it("should call toggleAdmin without crashing and return success", async () => {
-      const res = await toggleAdmin({ id: ids[0] });
+      const res = await toggleAdmin({ id: id0 });
       expect(res).to.have.property(
         "message",
-        `Removed admin credentials from ${ids[0]}`
+        `Removed admin credentials from ${id0}`
       );
     });
 
-    let user;
-    it("should have changed the user without ccd", async () => {
-      // Fetching devices
-      let res = await listDevices();
-      // Searching device
-      user = res.result.find(d => d.id == ids[0]);
-      expect(user).to.be.ok;
-    });
+    it("should have changed the user to NON admin ", async () => {
+      const devices = await listDevices();
 
-    it("should have changed the user to NON admin ", () => {
-      let CcdFile = fs.existsSync(`/etc/openvpn/ccd/${user.id}`);
+      const user = devices.find(d => d.id == id0);
+      if (!user) throw Error(`user ${id0} does not exist`);
+
+      const CcdFile = fs.existsSync(`/etc/openvpn/ccd/${user.id}`);
       expect(CcdFile).to.not.be.ok;
     });
   });
 
   describe("Add a couple of admins", () => {
     it("should called addDevice for first user", async () => {
-      const res = await addDevice({ id: ids[1] });
-      expect(res).to.have.property("message", `Added device: ${ids[1]}`);
+      const res = await addDevice({ id: id1 });
+      expect(res).to.have.property("message", `Added device: ${id1}`);
     });
 
     it("should called addDevice for second user", async () => {
-      const res = await addDevice({ id: ids[2] });
-      expect(res).to.have.property("message", `Added device: ${ids[2]}`);
+      const res = await addDevice({ id: id2 });
+      expect(res).to.have.property("message", `Added device: ${id2}`);
     });
 
     it("should call toggleAdmin to the first user", async () => {
-      const res = await toggleAdmin({ id: ids[1] });
+      const res = await toggleAdmin({ id: id1 });
       expect(res).to.have.property(
         "message",
-        `Given admin credentials to ${ids[1]}`
+        `Given admin credentials to ${id1}`
       );
     });
 
     it("should call toggleAdmin to the second user", async () => {
-      const res = await toggleAdmin({ id: ids[2] });
+      const res = await toggleAdmin({ id: id2 });
       expect(res).to.have.property(
         "message",
-        `Given admin credentials to ${ids[2]}`
+        `Given admin credentials to ${id2}`
       );
     });
 
     it("should have changed the first user to admin", () => {
-      const CcdFile = fs.existsSync(`/etc/openvpn/ccd/${ids[1]}`);
+      const CcdFile = fs.existsSync(`/etc/openvpn/ccd/${id1}`);
       expect(CcdFile).to.be.ok;
     });
 
     it("should have changed the second user to admin", () => {
-      const CcdFile = fs.existsSync(`/etc/openvpn/ccd/${ids[2]}`);
+      const CcdFile = fs.existsSync(`/etc/openvpn/ccd/${id2}`);
       expect(CcdFile).to.be.ok;
     });
 
     it("should call toggleAdmin to the first user", async () => {
-      const res = await toggleAdmin({ id: ids[1] });
+      const res = await toggleAdmin({ id: id1 });
       expect(res).to.have.property(
         "message",
-        `Removed admin credentials from ${ids[1]}`
+        `Removed admin credentials from ${id1}`
       );
     });
 
     it("should have changed the first user to non admin", () => {
-      let CcdFile = fs.existsSync(`/etc/openvpn/ccd/${ids[1]}`);
+      const CcdFile = fs.existsSync(`/etc/openvpn/ccd/${id1}`);
       expect(CcdFile).to.not.be.ok;
     });
   });
 
   describe("Call function: removeDevice", () => {
     it("should call removeDevice without crashing", async () => {
-      const res = await removeDevice({ id: ids[0] });
-      expect(res).to.have.property("message", `Removed device: ${ids[0]}`);
+      const res = await removeDevice({ id: id0 });
+      expect(res).to.have.property("message", `Removed device: ${id0}`);
     });
 
     it("should actually be deleted", async () => {
-      const res = await listDevices();
-      const user = res.result.find(d => d.id == ids[0]);
+      const devices = await listDevices();
+      const user = devices.find(d => d.id == id0);
       expect(user).to.not.be.ok;
     });
   });
