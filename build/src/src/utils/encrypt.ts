@@ -1,16 +1,12 @@
 import { secretbox, randomBytes } from "tweetnacl";
 
-function newNonce() {
-  return randomBytes(secretbox.nonceLength);
-}
-
-export function generateKey() {
+export function generateKey(): string {
   return Buffer.from(randomBytes(secretbox.keyLength)).toString("base64");
 }
 
-export function encrypt(data: string, key: string) {
+export function encrypt(data: string, key: string): string {
   const keyUint8Array = Buffer.from(key, "base64");
-  const nonce = newNonce();
+  const nonce = randomBytes(secretbox.nonceLength);
   const messageUint8 = Buffer.from(data, "utf8");
   const box = secretbox(messageUint8, nonce, keyUint8Array);
 

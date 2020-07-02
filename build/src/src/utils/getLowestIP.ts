@@ -1,7 +1,11 @@
 import ip from "ip";
 import { ipRange } from "../params";
 
-export function getLowestIP(ips: { ip: string }[]) {
+/**
+ * Given a collection of IPs, returns the lowest
+ * @param ips
+ */
+export function getLowestIP(ips: { ip: string }[]): string {
   let lowest = ip.toLong(ipRange[0]);
   ips
     .sort((a, b) => ip.toLong(a.ip) - ip.toLong(b.ip))

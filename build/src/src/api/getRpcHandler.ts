@@ -1,10 +1,5 @@
 import { Routes } from "./routes";
-import { LoggerMiddleware } from "../types";
-
-interface RpcResponse {
-  result?: any;
-  error?: { code: number; message: string; data?: any };
-}
+import { LoggerMiddleware, RpcRequest, RpcResponse } from "../types";
 
 /**
  * Given a set of method handlers, parse a RPC request and handle it
@@ -14,15 +9,17 @@ interface RpcResponse {
 export const getRpcHandler = (
   methods: Routes,
   loggerMiddleware?: LoggerMiddleware
-) => {
+): ((body: RpcRequest) => Promise<RpcResponse>) => {
   const { onCall, onSuccess, onError } = loggerMiddleware || {};
 
-  return async (body: any): Promise<RpcResponse> => {
+  return async (body: RpcRequest): Promise<RpcResponse> => {
     try {
       const { method, params } = parseRpcRequest(body);
 
       // Get handler
-      const handler = methods[method] as (...params: any[]) => Promise<any>;
+      const handler = methods[method] as (
+        ...params: RpcRequest["params"]
+      ) => Promise<RpcResponse["result"]>;
       if (!handler) throw new JsonRpcReqError(`Method not found ${method}`);
       if (onCall) onCall(method, params);
 
@@ -47,7 +44,9 @@ export const getRpcHandler = (
  * Parse RPC request, to be used in the server
  * @param body
  */
-function parseRpcRequest(body: any): { method: keyof Routes; params: any[] } {
+function parseRpcRequest(
+  body: RpcRequest
+): { method: keyof Routes; params: RpcRequest["params"] } {
   if (typeof body !== "object")
     throw Error(`body request must be an object, ${typeof body}`);
   const { method, params } = body;
@@ -55,10 +54,13 @@ function parseRpcRequest(body: any): { method: keyof Routes; params: any[] } {
   if (!params) throw new JsonRpcReqError("request body missing params");
   if (!Array.isArray(params))
     throw new JsonRpcReqError("request body params must be an array");
-  return { method, params };
+  return {
+    method: method as keyof Routes,
+    params
+  };
 }
 
-function tryToParseRpcRequest(body: any): { method?: string; params?: any[] } {
+function tryToParseRpcRequest(body: RpcRequest): Partial<RpcRequest> {
   try {
     return parseRpcRequest(body);
   } catch {

@@ -7,24 +7,13 @@ import { LoggerMiddleware } from "../types";
 import { wrapHandler } from "./utils";
 import { isAdmin } from "./auth";
 
-const authorizedIpPrefixes = [
-  // Admin users connecting from the VPN
-  "172.33.10.",
-  // Admin users connecting from the WIFI
-  "172.33.12.",
-  // WIFI DNP ip, which may be applied to users in some situations
-  "172.33.1.10",
-  // DAPPMANAGER IP
-  "172.33.1.7"
-];
-
 /**
  * HTTP API
  *
  * [NOTE] This API is not secure
  * - It can't use HTTPS for the limitations with internal IPs certificates
  */
-export function startHttpApi(port: number) {
+export function startHttpApi(port: number): void {
   const app = express();
 
   // RPC

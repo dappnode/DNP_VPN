@@ -7,7 +7,7 @@ import { userLimit } from "../params";
  * Generates certificates and keys needed for OpenVPN.
  * @param id "new-device"
  */
-export async function addDevice({ id }: { id: string }) {
+export async function addDevice({ id }: { id: string }): Promise<void> {
   if (id === "") {
     throw Error("The new device name cannot be empty");
   }

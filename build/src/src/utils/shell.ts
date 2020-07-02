@@ -31,7 +31,7 @@ export async function shell(
     options || {};
 
   return new Promise((resolve, reject): void => {
-    const proc = exec(cmd, { timeout, maxBuffer }, (err, stdout, stderr) => {
+    exec(cmd, { timeout, maxBuffer }, (err, stdout, stderr) => {
       if (err) {
         // Rethrow a typed error, and ignore the internal NodeJS stack trace
         if (err.signal === "SIGTERM")

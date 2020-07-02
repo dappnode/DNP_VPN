@@ -21,12 +21,8 @@ export function isAdminIp(ip: string): boolean {
   return allowAllIps || authorizedIpPrefixes.some(_ip => ip.includes(_ip));
 }
 
-export function isAdmin(
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
-) {
+export const isAdmin: express.RequestHandler = (req, res, next) => {
   const ip = req.ip;
   if (isAdminIp(ip)) next();
   else res.status(403).send(`Requires admin permission. Forbidden ip: ${ip}`);
-}
+};

@@ -29,7 +29,7 @@ export const logs = {
    * logs.debug("some process", ["arg", "arg"], id);
    * ```
    */
-  debug: formatLogger(tags.debug, logDebug ? console.debug : () => {}),
+  debug: formatLogger(tags.debug, logDebug ? console.debug : (): void => {}),
   /**
    * Allows to log any type of data. Strings will be shown first.
    * ```js
@@ -59,8 +59,11 @@ export const logs = {
 
 export class ErrorNoStack extends Error {}
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function formatLogger(tag: string, logger: (...args: any[]) => void) {
   return function log(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ...items: (string | Error | { [key: string]: any })[]
   ): void {
     try {

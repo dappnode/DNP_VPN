@@ -6,7 +6,7 @@ import { removeClient } from "../utils/removeClient";
  * Removes the device with the provided id, if exists.
  * @param id "new-device"
  */
-export async function removeDevice({ id }: { id: string }) {
+export async function removeDevice({ id }: { id: string }): Promise<void> {
   const deviceArray = await getUserList();
   const ccdArray = getCCD();
 

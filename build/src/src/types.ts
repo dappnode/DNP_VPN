@@ -1,9 +1,17 @@
-export type RpcResult<R> =
-  | { success: true; result: R }
-  | { success: false; message: string };
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Args = any[];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Result = any | void;
+
+export interface RpcResponse {
+  result?: Result;
+  error?: { code: number; message: string; data?: string };
+}
+
+export interface RpcRequest {
+  method: string;
+  params: Args;
+}
 
 export interface LoggerMiddleware {
   onCall?: (route: string, args?: Args) => void;

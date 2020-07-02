@@ -9,7 +9,7 @@ import { masterAdmin, ccdPath, ccdMask } from "../params";
  * Gives/removes admin rights to the provided device id.
  * @param id "new-device"
  */
-export async function toggleAdmin({ id }: { id: string }) {
+export async function toggleAdmin({ id }: { id: string }): Promise<void> {
   const devices = await getUserList();
   if (!devices.includes(id)) {
     throw Error(`Device not found: ${id}`);

@@ -23,8 +23,8 @@ export async function getDeviceCredentials({
 }): Promise<VpnDeviceCredentials> {
   const key = generateKey();
 
-  const data = await getClient(id);
-  const encrypted = encrypt(data, key);
+  const credentialsFileData = await getClient(id);
+  const encrypted = encrypt(credentialsFileData, key);
 
   const salt = fs.readFileSync(saltPath, "utf-8");
   const hostname = process.env[GLOBAL_ENVS.HOSTNAME];

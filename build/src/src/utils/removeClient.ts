@@ -2,7 +2,10 @@ import { shell } from "../utils/shell";
 
 const revokeCommand = "/usr/local/bin/ovpn_revokeclient";
 
-export async function removeClient(id: string) {
+/**
+ * @param id "new-device"
+ */
+export async function removeClient(id: string): Promise<void> {
   try {
     // Revoke first to save in CRL
     await shell(`${revokeCommand} ${id}`);
