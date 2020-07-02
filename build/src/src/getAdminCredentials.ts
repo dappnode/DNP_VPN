@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const fs = require("fs");
+import fs from "fs";
 
 /* eslint-disable no-console */
 
@@ -19,8 +19,7 @@ process.on("SIGINT", function() {
 });
 
 // Wait for the loginMsg to exist
-check();
-function check() {
+function waitForLoginMsg(): void {
   let count = 0;
   fs.readFile(loginMsgPath, "utf8", (err, loginMsg) => {
     if (err) {
@@ -28,10 +27,12 @@ function check() {
         console.error(`Error reading loginMsgFile ${err.message}`);
       if (count++ > maxAttempts)
         console.error(`loginMsgFile missing after ${maxAttempts} attempts`);
-      else setTimeout(check, pauseTime);
+      else setTimeout(waitForLoginMsg, pauseTime);
     } else {
       if (loginMsg.trim()) console.log(loginMsg);
-      else setTimeout(check, pauseTime);
+      else setTimeout(waitForLoginMsg, pauseTime);
     }
   });
 }
+
+waitForLoginMsg();

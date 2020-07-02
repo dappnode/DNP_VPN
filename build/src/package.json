@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "TEST=true DAPPNODE_OTP_URL=https://dappnode.github.io/DAppNode_OTP/ node src/index",
+    "build": "tsc",
     "test": "npm run test:file \"./{,!(node_modules)/**}/*.test.ts\"",
     "test:int": "npm run test:int:file \"./{,!(node_modules)/**}/*.test.int.ts\"",
     "test:file": "TEST=true mocha -r ts-node/register --exit ",
@@ -19,15 +20,14 @@
   "license": "ISC",
   "dependencies": {
     "chalk": "^2.4.2",
-    "commander": "^3.0.2",
+    "commander": "^5.0.0",
     "express": "^4.17.1",
     "ip": "^1.1.5",
-    "is-ip": "^3.1.0",
-    "node-fetch": "^2.6.0",
     "prettyjson": "^1.2.1",
     "qrcode-terminal": "^0.12.0",
-    "tweetnacl": "^1.0.1",
-    "winston": "^3.2.1"
+    "source-map-support": "^0.5.19",
+    "stack-trace": "^0.0.10",
+    "tweetnacl": "^1.0.1"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.0",
@@ -36,6 +36,7 @@
     "@types/ip": "^1.1.0",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.0.14",
+    "@types/prettyjson": "^0.0.29",
     "@types/proxyquire": "^1.3.28",
     "@types/sinon": "^9.0.4",
     "@types/stack-trace": "^0.0.29",

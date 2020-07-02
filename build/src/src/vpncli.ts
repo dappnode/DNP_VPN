@@ -2,16 +2,18 @@
 
 /* eslint-disable no-console */
 
-const cmd = require("commander");
-const chalk = require("chalk");
-const addDevice = require("./calls/addDevice");
-const getDeviceCredentials = require("./calls/getDeviceCredentials");
-const listDevices = require("./calls/listDevices");
-const removeDevice = require("./calls/removeDevice");
-const resetDevice = require("./calls/resetDevice");
-const toggleAdmin = require("./calls/toggleAdmin");
-const loginMsg = require("./loginMsg");
-const prettyjson = require("prettyjson");
+import cmd from "commander";
+import chalk from "chalk";
+import {
+  addDevice,
+  getDeviceCredentials,
+  listDevices,
+  removeDevice,
+  resetDevice,
+  toggleAdmin
+} from "./calls";
+import { generateAndWriteLoginMsg } from "./loginMsg";
+import prettyjson from "prettyjson";
 
 const adminUser = process.env.DEFAULT_ADMIN_USER
   ? process.env.DEFAULT_ADMIN_USER
@@ -34,13 +36,13 @@ if (process.argv.length === 2) {
   process.exit(1);
 }
 
-runVpnCli(cmd).catch(err => console.error(chalk.red(err)));
+runVpnCli().catch(err => console.error(chalk.red(err)));
 
 /**
  * Parses a commander instance
  * Returns null or throws an error
  */
-async function runVpnCli(cmd) {
+async function runVpnCli(): Promise<void> {
   const id = cmd.add || cmd.get || cmd.rm || cmd.toggle || cmd.reset;
   if (cmd.add) {
     await addDevice({ id });
@@ -50,7 +52,8 @@ async function runVpnCli(cmd) {
     if (cmd.get != adminUser) {
       console.log(chalk.green(`Credentials generated for ${id}: ${url}`));
     } else {
-      loginMsg.write(url).then(console.log);
+      const loginMsg = await generateAndWriteLoginMsg(url);
+      console.log(loginMsg);
     }
   } else if (cmd.ls) {
     const devices = await listDevices();

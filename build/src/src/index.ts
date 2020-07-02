@@ -1,4 +1,4 @@
-import { startHttpApi } from "./server";
+import { startHttpApi } from "./api";
 import { logs } from "./logs";
 import { API_PORT, GLOBAL_ENVS } from "./params";
 

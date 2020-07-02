@@ -16,6 +16,16 @@ RUN yarn global add modclean && modclean -r
 # Run the copy in two steps to cache the npm install
 COPY build/src .
 
+
+
+# Build Typescript app
+##########################
+FROM build as build-src
+RUN yarn install
+RUN yarn build
+# results in /usr/src/app/dist
+
+
 # Compute git data
 #####################################
 FROM node:12.18.0-alpine as git-data
@@ -102,7 +112,9 @@ ENV EASYRSA=/usr/share/easy-rsa \
 
 RUN mkdir -p ${OPENVPN_CRED_DIR} ${OPENVPN_CCD_DIR}
 
+# No need for webpack, node_modules is 3.3 MB
 COPY --from=build /usr/src/app /usr/src/app
+COPY --from=build-src /usr/src/app/dist /usr/src/app/src
 COPY --from=build-ui /usr/src/app/build /usr/www/openvpn
 COPY --from=git-data /usr/src/app/.version.json .
 COPY build/nginx.conf /etc/nginx/nginx.conf

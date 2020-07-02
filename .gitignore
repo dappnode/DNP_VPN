@@ -7,6 +7,9 @@ build/src/vpndb/
 build/src/vpndb.json
 uploader
 
+# Build artifacts
+build/src/dist
+
 # Version data file
 .version.json
 
