@@ -1,11 +1,9 @@
-const shell = require("../utils/shell");
+import { shell } from "../utils/shell";
 
-async function buildClient(id) {
+export async function buildClient(id: string) {
   try {
     return await shell(`easyrsa build-client-full ${id} nopass`);
   } catch (err) {
     throw Error(`Error building client: ${err.message}`);
   }
 }
-
-module.exports = buildClient;

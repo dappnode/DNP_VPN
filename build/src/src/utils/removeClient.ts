@@ -1,8 +1,8 @@
-const shell = require("../utils/shell");
+import { shell } from "../utils/shell";
 
 const revokeCommand = "/usr/local/bin/ovpn_revokeclient";
 
-async function removeClient(id) {
+export async function removeClient(id: string) {
   try {
     // Revoke first to save in CRL
     await shell(`${revokeCommand} ${id}`);
@@ -17,5 +17,3 @@ async function removeClient(id) {
     throw Error(`Error removing device ${id}: ${err.message}`);
   }
 }
-
-module.exports = removeClient;

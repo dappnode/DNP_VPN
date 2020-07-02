@@ -1,4 +1,5 @@
-const logs = require("../logs")(module);
+import { logs } from "../logs";
+import { VersionData } from "../types";
 
 /**
  * For debugging, print current version, branch and commit
@@ -6,7 +7,7 @@ const logs = require("../logs")(module);
  *   "branch": "master",
  *   "commit": "ab991e1482b44065ee4d6f38741bd89aeaeb3cec" }
  */
-let versionData = {};
+let versionData: VersionData = {} as VersionData;
 try {
   versionData = require("../../.version.json");
   logs.info(`Version info: \n${JSON.stringify(versionData, null, 2)}`);
@@ -14,4 +15,4 @@ try {
   logs.error(`Error printing current version ${e.stack}`);
 }
 
-module.exports = versionData;
+export default versionData;

@@ -1,16 +1,13 @@
-const buildClient = require("../utils/buildClient");
-const getUserList = require("../utils/getUserList");
-const userLimit = 500;
+import { buildClient } from "../utils/buildClient";
+import { getUserList } from "../utils/getUserList";
+import { userLimit } from "../params";
 
 /**
  * Creates a new device with the provided id.
  * Generates certificates and keys needed for OpenVPN.
- *
- * @param {Object} kwargs: {id}
- * @return {Object} A formated success message.
- * result: empty
+ * @param id "new-device"
  */
-async function addDevice({ id }) {
+export async function addDevice({ id }: { id: string }) {
   if (id === "") {
     throw Error("The new device name cannot be empty");
   }
@@ -26,7 +23,7 @@ async function addDevice({ id }) {
   const userArray = await getUserList();
 
   if (userArray.length >= userLimit) {
-    throw Error(`You have reached the maximum user limit (${userLimit})`);
+    throw Error(`You have reached the max user limit: ${userLimit}`);
   }
 
   if (!userArray.includes(id)) {
@@ -35,5 +32,3 @@ async function addDevice({ id }) {
     throw Error(`Device name exists: ${id}`);
   }
 }
-
-module.exports = addDevice;

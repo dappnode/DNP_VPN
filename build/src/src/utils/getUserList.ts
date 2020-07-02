@@ -1,4 +1,4 @@
-const shell = require("./shell");
+import { shell } from "../utils/shell";
 
 // bash-4.4# ovpn_listclients
 // name,begin,end,status
@@ -8,9 +8,13 @@ const shell = require("./shell");
 
 const ovpnListCommand = "/usr/local/bin/ovpn_listclients";
 
-async function getUserList() {
+/**
+ * Returns the list of current user ids
+ * @returns ["dappnode_admin", "luser", "revoked"]
+ */
+export async function getUserList(): Promise<string[]> {
   const output = await shell(ovpnListCommand);
-  const users = [];
+  const users: string[] = [];
   // Select users from first field.
   output
     .toString()
@@ -21,5 +25,3 @@ async function getUserList() {
     });
   return users;
 }
-
-module.exports = getUserList;

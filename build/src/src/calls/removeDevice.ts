@@ -1,15 +1,12 @@
-const getUserList = require("../utils/getUserList");
-const getCCD = require("../utils/getCCD");
-const removeClient = require("../utils/removeClient");
+import { getUserList } from "../utils/getUserList";
+import { getCCD } from "../utils/getCCD";
+import { removeClient } from "../utils/removeClient";
 
 /**
  * Removes the device with the provided id, if exists.
- *
- * @param {Object} kwargs: {id}
- * @return {Object} A formated success message.
- * result: empty
+ * @param id "new-device"
  */
-async function removeDevice({ id }) {
+export async function removeDevice({ id }: { id: string }) {
   const deviceArray = await getUserList();
   const ccdArray = getCCD();
 
@@ -22,5 +19,3 @@ async function removeDevice({ id }) {
     await removeClient(id);
   }
 }
-
-module.exports = removeDevice;

@@ -1,10 +1,9 @@
-const ip = require("ip");
+import ip from "ip";
+import { ipRange } from "../params";
 
-const ipRange = ["172.33.10.2", "172.33.11.250"];
-
-function getLowestIP(ccdList) {
+export function getLowestIP(ips: { ip: string }[]) {
   let lowest = ip.toLong(ipRange[0]);
-  ccdList
+  ips
     .sort((a, b) => ip.toLong(a.ip) - ip.toLong(b.ip))
     .every(item => {
       if (ip.toLong(item.ip) > lowest) {
@@ -19,5 +18,3 @@ function getLowestIP(ccdList) {
   }
   return ip.fromLong(lowest);
 }
-
-module.exports = getLowestIP;

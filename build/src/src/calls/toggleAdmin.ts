@@ -1,21 +1,15 @@
-const fs = require("fs");
-const path = require("path");
-const getCCD = require("../utils/getCCD");
-const getUserList = require("../utils/getUserList");
-const getLowestIP = require("../utils/getLowestIP");
-
-const ccdPath = process.env.DEV ? "./mockFiles/ccd" : "/etc/openvpn/ccd";
-const ccdMask = "255.255.252.0";
-const masterAdmin = "dappnode_admin";
+import fs from "fs";
+import path from "path";
+import { getCCD } from "../utils/getCCD";
+import { getUserList } from "../utils/getUserList";
+import { getLowestIP } from "../utils/getLowestIP";
+import { masterAdmin, ccdPath, ccdMask } from "../params";
 
 /**
  * Gives/removes admin rights to the provided device id.
- *
- * @param {Object} kwargs: {id}
- * @return {Object} A formated success message.
- * result: empty
+ * @param id "new-device"
  */
-async function toggleAdmin({ id }) {
+export async function toggleAdmin({ id }: { id: string }) {
   const devices = await getUserList();
   if (!devices.includes(id)) {
     throw Error(`Device not found: ${id}`);
@@ -37,5 +31,3 @@ async function toggleAdmin({ id }) {
     fs.writeFileSync(path.join(ccdPath, id), ccdContent);
   }
 }
-
-module.exports = toggleAdmin;

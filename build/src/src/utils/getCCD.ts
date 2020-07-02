@@ -1,12 +1,12 @@
-const fs = require("fs");
-const path = require("path");
-const ip = require("ip");
-const logs = require("../logs.js")(module);
+import fs from "fs";
+import path from "path";
+import ip from "ip";
+import { logs } from "../logs";
+import { ccdPath } from "../params";
+import { OpenVpnCCDItem } from "../types";
 
-const ccdPath = process.env.DEV ? "./mockFiles/ccd" : "/etc/openvpn/ccd";
-
-function getCCD() {
-  const ccdlist = [];
+export function getCCD(): OpenVpnCCDItem[] {
+  const ccdlist: OpenVpnCCDItem[] = [];
   for (const filename of fs.readdirSync(ccdPath)) {
     const filepath = path.join(ccdPath, filename);
     const stats = fs.statSync(filepath);
@@ -22,5 +22,3 @@ function getCCD() {
   }
   return ccdlist;
 }
-
-module.exports = getCCD;
