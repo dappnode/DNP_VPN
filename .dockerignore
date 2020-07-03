@@ -9,5 +9,8 @@ build/*/test_files/*
 build/*/npm-debug.log
 build_*
 
+# Build artifacts
+build/src/dist
+
 # Version data file
 .version.json
