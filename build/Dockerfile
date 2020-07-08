@@ -26,18 +26,18 @@ RUN yarn build
 # results in /usr/src/app/dist
 
 
+
 # Compute git data
-#####################################
+##########################
 FROM node:12.18.0-alpine as git-data
 
 WORKDIR /usr/src/app
 
 RUN apk add --no-cache git jq
 COPY .git .git
-COPY dappnode_package.json .
-COPY build/src/getVersionData.sh .
-RUN sh getVersionData.sh
-# Results in /usr/src/app/.version.json
+COPY dappnode_package.json build/getGitData.js ./
+RUN node getGitData /usr/src/app/.git-data.json
+# Results in /usr/src/app/.git-data.json
 
 
 
@@ -57,6 +57,8 @@ COPY build/ui_openvpn .
 # build for production
 RUN yarn run build
 RUN node injectToHtml
+
+
 
 # Final stage
 ##########################
@@ -104,6 +106,7 @@ ENV EASYRSA=/usr/share/easy-rsa \
     INSTALLATION_STATIC_IP=/usr/src/app/config/static_ip \
     SALT_PATH=/usr/src/app/secrets/salt \
     SERVER_NAME_PATH=/etc/vpnname \
+    GIT_DATA_PATH=/usr/src/app/.git-data.json \
     # VPN management parameters - URLs
     DYNDNS_HOST=https://ns.dappnode.io \
     DYNDNS_DOMAIN=dyndns.dappnode.io \
@@ -113,21 +116,23 @@ ENV EASYRSA=/usr/share/easy-rsa \
 RUN mkdir -p ${OPENVPN_CRED_DIR} ${OPENVPN_CCD_DIR}
 
 # No need for webpack, node_modules is 3.3 MB
-COPY --from=build /usr/src/app /usr/src/app
+COPY --from=build /usr/src/app/node_modules /usr/src/app/node_modules
 COPY --from=build-src /usr/src/app/dist /usr/src/app/src
 COPY --from=build-ui /usr/src/app/build /usr/www/openvpn
-COPY --from=git-data /usr/src/app/.version.json .
+COPY --from=git-data /usr/src/app/.git-data.json $GIT_DATA_PATH
+COPY build/bin /usr/local/bin
 COPY build/nginx.conf /etc/nginx/nginx.conf
+COPY build/supervisord.conf build/entrypoint.sh ./
 
 VOLUME ["/etc/openvpn"]
 
 EXPOSE 1194/udp
 
-RUN ln -s /usr/src/app/src/getAdminCredentials.js /usr/local/bin/getAdminCredentials && \
+# Prepare external executables
+RUN chmod +x /usr/src/app/src/getAdminCredentials.js && \
+    chmod +x /usr/src/app/src/vpncli.js && \
+    ln -s /usr/src/app/src/getAdminCredentials.js /usr/local/bin/getAdminCredentials && \
     ln -s /usr/src/app/src/vpncli.js /usr/local/bin/vpncli
-
-COPY build/supervisord.conf .
-ADD build/bin /usr/local/bin
 
 # Use CMD so it can be replaced when using the VPN image for upnpc calls
 # Will setup the app, initialize variables and then call supervisord

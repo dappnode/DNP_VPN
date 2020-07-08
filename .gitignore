@@ -12,6 +12,7 @@ build/src/dist
 
 # Version data file
 .version.json
+.git-data.json
 
 # Logs
 logs
