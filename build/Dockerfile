@@ -1,3 +1,4 @@
+##########################
 # Build dependencies
 ##########################
 FROM node:12.18.0-alpine as build
@@ -13,20 +14,21 @@ RUN yarn install --production
 # Reduces the app dir size from 94.5MB to 71.8MB
 RUN npm config set unsafe-perm true
 RUN yarn global add modclean && modclean -r
-# Run the copy in two steps to cache the npm install
-COPY build/src .
 
 
 
+##########################
 # Build Typescript app
 ##########################
 FROM build as build-src
 RUN yarn install
+# Install only --production first to cache them, then install the rest
+COPY build/src .
 RUN yarn build
 # results in /usr/src/app/dist
 
 
-
+##########################
 # Compute git data
 ##########################
 FROM node:12.18.0-alpine as git-data
@@ -40,10 +42,10 @@ RUN node getGitData /usr/src/app/.git-data.json
 # Results in /usr/src/app/.git-data.json
 
 
-
+##########################
 # Build UI
 ##########################
-FROM node:12.18.0 as build-ui
+FROM node:12.18.0-alpine as build-ui
 
 WORKDIR /usr/src/app
 
@@ -59,7 +61,7 @@ RUN yarn run build
 RUN node injectToHtml
 
 
-
+##########################
 # Final stage
 ##########################
 FROM node:12.18.0-alpine
@@ -101,6 +103,7 @@ ENV EASYRSA=/usr/share/easy-rsa \
     OPENVPN_CRED_DIR=/usr/www/openvpn/cred \
     OPENVPN_CCD_DIR=$OPENVPN/ccd \
     OPENVPN_CRED_PORT=8092 \
+    ON_CLIENT_CONNECT_PATH=/usr/local/bin/ovpnOnClientConnect \
     # VPN management parameters - Node paths
     LOGIN_MSG_PATH=/usr/src/app/secrets/loginMsgFile.txt \
     INSTALLATION_STATIC_IP=/usr/src/app/config/static_ip \
@@ -131,8 +134,10 @@ EXPOSE 1194/udp
 # Prepare external executables
 RUN chmod +x /usr/src/app/src/getAdminCredentials.js && \
     chmod +x /usr/src/app/src/vpncli.js && \
+    chmod +x /usr/src/app/src/ovpnOnClientConnect.js && \
     ln -s /usr/src/app/src/getAdminCredentials.js /usr/local/bin/getAdminCredentials && \
-    ln -s /usr/src/app/src/vpncli.js /usr/local/bin/vpncli
+    ln -s /usr/src/app/src/vpncli.js /usr/local/bin/vpncli && \
+    ln -s /usr/src/app/src/ovpnOnClientConnect.js $ON_CLIENT_CONNECT_PATH
 
 # Use CMD so it can be replaced when using the VPN image for upnpc calls
 # Will setup the app, initialize variables and then call supervisord
@@ -141,4 +146,4 @@ RUN chmod +x /usr/src/app/src/getAdminCredentials.js && \
 # - ovpn_run
 # - nginx
 
-CMD ["./entrypoint.sh"]
+CMD ["node", "src/index"]

@@ -1,6 +1,5 @@
-import { getUserList } from "../utils/getUserList";
-import { getCCD } from "../utils/getCCD";
-import { VpnDevice } from "../types";
+import { getUserList, getCCD } from "../openvpn";
+import { VpnDevice, OpenVpnCCDItem } from "../types";
 
 /**
  * Returns a list of the existing devices, with the admin property
@@ -9,9 +8,16 @@ export async function listDevices(): Promise<VpnDevice[]> {
   const userList = await getUserList();
   const ccd = getCCD();
 
+  const ccdById = ccd.reduce(
+    (byId, device) => {
+      return { ...byId, [device.cn]: device };
+    },
+    {} as { [id: string]: OpenVpnCCDItem }
+  );
+
   return userList.map(user => ({
     id: user,
-    admin: ccd.some(obj => obj.cn === user),
-    ip: ""
+    admin: Boolean(ccdById[user]),
+    ip: (ccdById[user] || {}).ip || ""
   }));
 }

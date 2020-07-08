@@ -1,14 +1,11 @@
-import crypto from "crypto";
 import fs from "fs";
-import { getClient } from "../utils/getClient";
+import path from "path";
+import { getClient } from "../openvpn";
 import { encrypt, generateKey } from "../utils/encrypt";
 import { VpnDeviceCredentials } from "../types";
-import {
-  saltPath,
-  GLOBAL_ENVS,
-  credentialsDir,
-  credentialsPort
-} from "../params";
+import { SALT_PATH, OPENVPN_CRED_DIR, CRED_PORT } from "../params";
+import { sha256 } from "../utils/crypto";
+import { config } from "../config";
 
 /**
  * Creates a new OpenVPN credentials file, encrypted.
@@ -24,22 +21,19 @@ export async function getDeviceCredentials({
   const key = generateKey();
 
   const credentialsFileData = await getClient(id);
-  const encrypted = encrypt(credentialsFileData, key);
+  const encryptedCredentials = encrypt(credentialsFileData, key);
 
-  const salt = fs.readFileSync(saltPath, "utf-8");
-  const hostname = process.env[GLOBAL_ENVS.HOSTNAME];
+  const salt = fs.readFileSync(SALT_PATH, "utf-8");
+  const hostname = config.hostname;
 
-  if (!salt) throw Error("Salt not present.");
+  if (!salt) throw Error("Salt not set");
+  if (!hostname) throw Error("hostname not set");
 
-  const filename = crypto
-    .createHash("sha256")
-    .update(salt + id)
-    .digest("hex")
-    .substring(0, 16);
-  fs.writeFileSync(`${credentialsDir}/${filename}`, encrypted);
-  const url = `http://${hostname}:${credentialsPort}/?id=${filename}#${encodeURIComponent(
-    key
-  )}`;
+  const filename = sha256(salt + id).slice(0, 16);
+  fs.writeFileSync(path.join(OPENVPN_CRED_DIR, filename), encryptedCredentials);
+
+  const encodedKey = encodeURIComponent(key);
+  const url = `http://${hostname}:${CRED_PORT}/?id=${filename}#${encodedKey}`;
 
   return {
     filename,

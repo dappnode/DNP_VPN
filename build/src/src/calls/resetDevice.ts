@@ -1,5 +1,4 @@
-import { buildClient } from "../utils/buildClient";
-import { removeClient } from "../utils/removeClient";
+import { buildClient, removeClient } from "../openvpn";
 
 /**
  * Regenerates the credentials of the specified device.

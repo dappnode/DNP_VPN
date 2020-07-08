@@ -6,6 +6,7 @@ import { logs } from "../logs";
 import { LoggerMiddleware } from "../types";
 import { wrapHandler } from "./utils";
 import { isAdmin } from "./auth";
+import { OpenVpnClientConnectEnv } from "./clientConnect";
 
 /**
  * HTTP API
@@ -35,6 +36,16 @@ export function startHttpApi(port: number): void {
     isAdmin,
     wrapHandler(async (req, res) => res.send(await rpcHandler(req.body)))
   );
+
+  // OpenVPN hooks
+  app.post("/client-connect", (req, res) => {
+    if (!req.ip.includes("127.0.0.1")) res.status(403).send("only localhost");
+    else {
+      const ovpnEnv: OpenVpnClientConnectEnv = req.body;
+      console.log(`OpenVPN hook - client-connect`, req.ip, ovpnEnv);
+      res.status(200).send();
+    }
+  });
 
   app.listen(port, () => logs.info(`HTTP API started at ${port}`));
 }

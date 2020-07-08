@@ -1,4 +1,5 @@
-import { exec, ExecException } from "child_process";
+import dargs from "dargs";
+import { exec, ExecException, ExecOptions } from "child_process";
 
 /**
  * If timeout is greater than 0, the parent will send the signal
@@ -20,28 +21,36 @@ const defaultMaxBuffer = 1e7; // bytes
  */
 export async function shell(
   cmd: string,
-  options?: {
-    timeout?: number;
-    maxBuffer?: number;
-    pipeToMain?: boolean;
-    onData?: (data: string) => void;
-  }
+  options: ExecOptions = {}
 ): Promise<string> {
-  const { timeout = defaultTimeout, maxBuffer = defaultMaxBuffer } =
-    options || {};
+  if (!options.timeout) options.timeout = defaultTimeout;
+  if (!options.maxBuffer) options.maxBuffer = defaultMaxBuffer;
 
   return new Promise((resolve, reject): void => {
-    exec(cmd, { timeout, maxBuffer }, (err, stdout, stderr) => {
+    exec(cmd, options, (err, stdout, stderr) => {
       if (err) {
         // Rethrow a typed error, and ignore the internal NodeJS stack trace
         if (err.signal === "SIGTERM")
-          reject(new ShellError(err, `cmd timeout ${timeout}: ${cmd}`));
+          reject(new ShellError(err, `cmd timeout ${options.timeout}: ${cmd}`));
         else reject(new ShellError(err));
       } else {
         resolve(stdout.trim() || stderr);
       }
     });
   });
+}
+
+/**
+ * See `shell`.
+ * Parses kwargs object with `dargs` and appends the result to the command
+ */
+export async function shellArgs(
+  command: string,
+  kwargs: Parameters<typeof dargs>[0],
+  options: ExecOptions = {}
+): Promise<string> {
+  const args = dargs(kwargs, { useEquals: false }).join(" ");
+  return await shell(`${command} ${args}`, options);
 }
 
 /**
