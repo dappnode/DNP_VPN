@@ -103,7 +103,7 @@ ENV EASYRSA=/usr/share/easy-rsa \
     OPENVPN_CRED_DIR=/usr/www/openvpn/cred \
     OPENVPN_CCD_DIR=$OPENVPN/ccd \
     OPENVPN_CRED_PORT=8092 \
-    ON_CLIENT_CONNECT_PATH=/usr/local/bin/ovpnOnClientConnect \
+    ON_CLIENT_CONNECT_PATH=/usr/local/bin/ovpn_client_connect \
     # VPN management parameters - Node paths
     LOGIN_MSG_PATH=/usr/src/app/secrets/loginMsgFile.txt \
     INSTALLATION_STATIC_IP=/usr/src/app/config/static_ip \
@@ -134,10 +134,10 @@ EXPOSE 1194/udp
 # Prepare external executables
 RUN chmod +x /usr/src/app/src/getAdminCredentials.js && \
     chmod +x /usr/src/app/src/vpncli.js && \
-    chmod +x /usr/src/app/src/ovpnOnClientConnect.js && \
+    chmod +x /usr/src/app/src/ovpn_client_connect.js && \
     ln -s /usr/src/app/src/getAdminCredentials.js /usr/local/bin/getAdminCredentials && \
     ln -s /usr/src/app/src/vpncli.js /usr/local/bin/vpncli && \
-    ln -s /usr/src/app/src/ovpnOnClientConnect.js $ON_CLIENT_CONNECT_PATH
+    ln -s /usr/src/app/src/ovpn_client_connect.js $ON_CLIENT_CONNECT_PATH
 
 # Use CMD so it can be replaced when using the VPN image for upnpc calls
 # Will setup the app, initialize variables and then call supervisord

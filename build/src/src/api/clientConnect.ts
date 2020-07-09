@@ -1,5 +1,24 @@
-// OpenVPN hook - client-connect ::ffff:127.0.0.1
-export interface OpenVpnClientConnectEnv {
+import express from "express";
+import { removeCredFile } from "../openvpn/credentialsFile";
+
+/**
+ * Hook called by openvpn binary on each client connection
+ * Must attach its entire environment as a JSON body
+ */
+export const clientConnect: express.RequestHandler = (req, res) => {
+  const ovpnEnv: OpenVpnClientConnectEnv = req.body;
+  if (ovpnEnv.script_type !== "client-connect")
+    throw Error("Only client-connect script allowed");
+  if (!ovpnEnv.common_name) throw Error("No common_name provided");
+
+  removeCredFile(ovpnEnv.common_name);
+  res.send(`${ovpnEnv.common_name} connected`);
+};
+
+/**
+ * Environment injected by OpenVPN in the client_connect script hook
+ */
+interface OpenVpnClientConnectEnv {
   script_type: string; // "client-connect";
   time_unix: string; // "1594252007";
   time_ascii: string; // "Wed Jul  8 23:46:47 2020";
