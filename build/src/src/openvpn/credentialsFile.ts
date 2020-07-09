@@ -43,3 +43,11 @@ export function writeCredFile(
   fs.writeFileSync(filepath, encryptedCredentials);
   return { filename };
 }
+
+export function isValidCredFilename(filename: string): boolean {
+
+}
+
+export function getCredFile(filename: string): string {
+  
+}
