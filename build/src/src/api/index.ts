@@ -1,6 +1,4 @@
 import express from "express";
-import helmet from "helmet";
-import rateLimit from "express-rate-limit";
 import * as methods from "../calls";
 import { getRpcHandler } from "./getRpcHandler";
 import { logs } from "../logs";
@@ -38,27 +36,4 @@ export function startHttpApi(port: number): void {
   app.post("/client-connect", isLocalhost, wrapHandler(clientConnect));
 
   app.listen(port, () => logs.info(`HTTP API started at ${port}`));
-}
-
-export function webServer() {
-  const app = express();
-
-  app.use(helmet());
-  app.use(helmet.referrerPolicy());
-  // 100 req every 15 minutes
-  app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
-
-  app.get("/", (req, res) => {
-    res.send(400).send();
-  });
-
-  // Handle 404
-  app.use((req, res) => {
-    res.send(400).send();
-  });
-
-  // Handle 500
-  app.use((error, req, res, next) => {
-    res.send(500).send();
-  });
 }

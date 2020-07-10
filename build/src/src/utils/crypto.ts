@@ -10,3 +10,10 @@ export function sha256(data: string): string {
     .update(data)
     .digest("hex");
 }
+
+/**
+ * Random token of 32 bytes in hex using crypto.randomBytes
+ */
+export function getRandomToken(bytes = 32) {
+  return crypto.randomBytes(bytes).toString("hex");
+}

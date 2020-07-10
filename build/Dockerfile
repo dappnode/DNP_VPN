@@ -57,8 +57,10 @@ RUN yarn install --production
 # copy the contents of the app
 COPY build/ui_openvpn .
 # build for production
+ENV REACT_APP_CRED_URL_PATHNAME=/cred \
+    REACT_APP_CRED_URL_QUERY_PARAM=id
 RUN yarn run build
-RUN node injectToHtml
+RUN node injectToHtml build/index.html build/ui_openvpn.html
 
 
 ##########################
@@ -104,12 +106,16 @@ ENV EASYRSA=/usr/share/easy-rsa \
     OPENVPN_CCD_DIR=$OPENVPN/ccd \
     OPENVPN_CRED_PORT=8092 \
     ON_CLIENT_CONNECT_PATH=/usr/local/bin/ovpn_client_connect \
+    CRED_URL_PATHNAME=/cred \
+    CRED_URL_QUERY_PARAM=id \
     # VPN management parameters - Node paths
     LOGIN_MSG_PATH=/usr/src/app/secrets/loginMsgFile.txt \
     INSTALLATION_STATIC_IP=/usr/src/app/config/static_ip \
     SALT_PATH=/usr/src/app/secrets/salt \
     SERVER_NAME_PATH=/etc/vpnname \
     GIT_DATA_PATH=/usr/src/app/.git-data.json \
+    UI_OPENVPN_PATH=/usr/src/app/ui_openvpn.html \
+    TOKENS_DB_PATH=/usr/src/app/secrets/tokens-db.json \
     # VPN management parameters - URLs
     DYNDNS_HOST=https://ns.dappnode.io \
     DYNDNS_DOMAIN=dyndns.dappnode.io \
@@ -123,7 +129,7 @@ RUN mkdir -p ${OPENVPN_CRED_DIR} ${OPENVPN_CCD_DIR}
 # No need for webpack, node_modules is 3.3 MB
 COPY --from=build /usr/src/app/node_modules /usr/src/app/node_modules
 COPY --from=build-src /usr/src/app/dist /usr/src/app/src
-COPY --from=build-ui /usr/src/app/build /usr/www/openvpn
+COPY --from=build-ui /usr/src/app/build/ui_openvpn.html $UI_OPENVPN_PATH
 COPY --from=git-data /usr/src/app/.git-data.json $GIT_DATA_PATH
 COPY build/bin /usr/local/bin
 COPY build/nginx.conf /etc/nginx/nginx.conf

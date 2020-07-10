@@ -41,46 +41,45 @@ const options = [
     route: "macos",
     component: MacOS,
     icon: FaApple,
-    link: `${instructionsBaseUrl}#macos`
+    link: `${instructionsBaseUrl}#macos`,
   },
   {
     name: "iOS",
     route: "ios",
     component: iOS,
     icon: FaMobile,
-    link: `${instructionsBaseUrl}#ios`
+    link: `${instructionsBaseUrl}#ios`,
   },
   {
     name: "Windows",
     route: "windows",
     component: Windows,
     icon: FaWindows,
-    link: `${instructionsBaseUrl}#windows`
+    link: `${instructionsBaseUrl}#windows`,
   },
   {
     name: "Android",
     route: "android",
     component: Android,
     icon: FaAndroid,
-    link: `${instructionsBaseUrl}#android`
+    link: `${instructionsBaseUrl}#android`,
   },
   {
     name: "Linux",
     route: "linux",
     component: Linux,
     icon: FaLinux,
-    link: `${instructionsBaseUrl}#linux`
+    link: `${instructionsBaseUrl}#linux`,
   },
   {
     name: "Chromebook",
     route: "chromebook",
     component: Chromebook,
     icon: FaChrome,
-    link: `${instructionsBaseUrl}#android`
-  }
+    link: `${instructionsBaseUrl}#android`,
+  },
 ];
 
-const origin = window.location.origin;
 const ovpnType = "application/x-openvpn-profile";
 const fileExtension = "ovpn";
 
@@ -90,7 +89,7 @@ export default class App extends Component {
     this.state = {
       loading: false,
       error: null,
-      file: null
+      file: null,
     };
   }
 
@@ -99,7 +98,11 @@ export default class App extends Component {
       // 1. Get params from url
       this.setState({ loading: true });
       const { key, id, name, dev } = getParamsFromUrl();
-      const url = `${origin}/cred/${id}?id=${id}`;
+      // Construct url to request cred file with common ENVs on the webserver
+      const urlObj = new URL(window.location.origin);
+      urlObj.pathname = process.env.REACT_APP_CRED_URL_PATHNAME;
+      urlObj.searchParams.set(process.env.REACT_APP_CRED_URL_QUERY_PARAM, id);
+      const url = urlObj.toString();
 
       // Dev param to be able to work on the UI
       if (dev) {
@@ -118,18 +121,18 @@ export default class App extends Component {
       const encryptedFile = await res.text();
 
       // 3. Decrypt
-      if (!isBase64(encryptedFile))
+      if (!isBase64(encryptedFile)) {
+        const filePreview = (encryptedFile || "").substring(0, 100);
         throw Error(
-          `Incorrect ID or wrong file format (no-base64). url: ${url} encryptedFile: ${(
-            encryptedFile || ""
-          ).substring(0, 100)}...\n`
+          `Incorrect ID or wrong file format (no-base64). url: ${url} encryptedFile: ${filePreview}...\n`
         );
+      }
       const file = decrypt(encryptedFile, key);
       this.setState({ loading: false, file, name });
     } catch (err) {
       this.setState({
         loading: false,
-        error: err.message || "Unknown error"
+        error: err.message || "Unknown error",
       });
       console.error("Error resolving request", err);
     }

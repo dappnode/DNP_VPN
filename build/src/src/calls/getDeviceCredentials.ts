@@ -1,9 +1,6 @@
 import { getClient } from "../openvpn";
-import { encrypt, generateKey } from "../utils/encrypt";
 import { VpnDeviceCredentials } from "../types";
-import { CRED_PORT } from "../params";
-import { config } from "../config";
-import { writeCredFile } from "../openvpn/credentialsFile";
+import { getConnectUrl } from "../credentials/credentialsFile";
 
 /**
  * Creates a new OpenVPN credentials file, encrypted.
@@ -16,21 +13,8 @@ export async function getDeviceCredentials({
 }: {
   id: string;
 }): Promise<VpnDeviceCredentials> {
-  const hostname = config.hostname;
-  if (!hostname) throw Error("hostname not set");
+  // Make sure the client exists
+  await getClient(id);
 
-  const key = generateKey();
-  const credentialsFileData = await getClient(id);
-  const encryptedCredentials = encrypt(credentialsFileData, key);
-
-  const { filename } = writeCredFile(id, encryptedCredentials);
-
-  const encodedKey = encodeURIComponent(key);
-  const url = `http://${hostname}:${CRED_PORT}/?id=${filename}#${encodedKey}`;
-
-  return {
-    filename,
-    key,
-    url
-  };
+  return { url: getConnectUrl(id) };
 }

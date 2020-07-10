@@ -1,16 +1,21 @@
 import { startHttpApi } from "./api";
-import { API_PORT } from "./params";
+import { startCredentialsWebserver } from "./credentials";
+import { API_PORT, OPENVPN_CRED_PORT } from "./params";
 import { pollDappnodeConfig } from "./pollDappnodeConfig";
 import { initalizeOpenVpnConfig, openvpnBinary } from "./openvpn";
 import { createMasterAdminUser } from "./createMasterAdminUser";
 import { logs } from "./logs";
 import { config } from "./config";
+import { startCredentialsService } from "./credentials/credentialsFile";
 
 // Print version data
 require("./utils/getVersionData");
 
 // Start JSON RPC API
 startHttpApi(API_PORT);
+
+// Start credentials webserver
+startCredentialsWebserver(OPENVPN_CRED_PORT);
 
 // Configure and start VPN client
 pollDappnodeConfig()
@@ -26,3 +31,6 @@ pollDappnodeConfig()
     console.error("Error starting VPN", e);
     process.exit(1);
   });
+
+// Load persisted tokens and prune old on interval
+startCredentialsService();
