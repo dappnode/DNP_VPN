@@ -14,7 +14,9 @@ const adminIps = [
   // WIFI DNP ip, which may be applied to users in some situations
   "172.33.1.10",
   // DAPPMANAGER IP
-  "172.33.1.7"
+  "172.33.1.7",
+  // Also localhost calls
+  "127.0.0.1"
 ];
 
 const localhostIp = [
