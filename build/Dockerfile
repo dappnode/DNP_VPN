@@ -109,7 +109,6 @@ ENV EASYRSA=/usr/share/easy-rsa \
     CRED_URL_PATHNAME=/cred \
     CRED_URL_QUERY_PARAM=id \
     # VPN management parameters - Node paths
-    LOGIN_MSG_PATH=/usr/src/app/secrets/loginMsgFile.txt \
     INSTALLATION_STATIC_IP=/usr/src/app/config/static_ip \
     SALT_PATH=/usr/src/app/secrets/salt \
     SERVER_NAME_PATH=/etc/vpnname \
