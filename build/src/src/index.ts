@@ -1,4 +1,5 @@
 import { startHttpApi } from "./api";
+import { printGitData } from "./utils/gitData";
 import { startCredentialsWebserver } from "./credentials";
 import { API_PORT, OPENVPN_CRED_PORT } from "./params";
 import { pollDappnodeConfig } from "./pollDappnodeConfig";
@@ -9,7 +10,7 @@ import { config } from "./config";
 import { startCredentialsService } from "./credentials/credentialsFile";
 
 // Print version data
-require("./utils/getVersionData");
+printGitData();
 
 // Start JSON RPC API
 startHttpApi(API_PORT);
