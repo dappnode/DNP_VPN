@@ -3,7 +3,7 @@ import crypto from "crypto";
 import { shell, shellArgs } from "../utils/shell";
 import { directoryIsEmptyOrEnoent } from "../utils/fs";
 import { printEnvironment } from "../utils/env";
-import { SALT_PATH, PKI_PATH, PROXY_ARP_PATH } from "../params";
+import { PKI_PATH, PROXY_ARP_PATH } from "../params";
 
 /**
  * Initializes the OpenVPN configuration
@@ -16,11 +16,6 @@ export async function initalizeOpenVpnConfig({
   hostname: string;
   internalIp: string;
 }) {
-  // Check and generate random salt
-  if (!fs.existsSync(SALT_PATH)) {
-    fs.writeFileSync(SALT_PATH, crypto.randomBytes(32).toString("hex"));
-  }
-
   // Replicate environment used in entrypoint.sh
   const openVpnEnv = {
     ...process.env,

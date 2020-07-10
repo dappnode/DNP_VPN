@@ -3,11 +3,7 @@ import url from "url";
 import fs from "fs";
 import path from "path";
 import { isTokenKnown, generateCredFileFromToken } from "./credentialsFile";
-import {
-  UI_OPENVPN_PATH,
-  CRED_URL_QUERY_PARAM,
-  CRED_URL_PATHNAME
-} from "../params";
+import { CRED_URL_QUERY_PARAM, CRED_URL_PATHNAME } from "../params";
 
 // Make sure credPath is prepended by "/": "/cred".
 // Otherwise the switch string comparison will fail.
@@ -21,7 +17,8 @@ const credUrlPathname = path.join("/", CRED_URL_PATHNAME);
  * @param port
  */
 export function startCredentialsWebserver(port: number): void {
-  const indexHtml = fs.readFileSync(UI_OPENVPN_PATH, "utf8");
+  if (!process.env.UI_OPENVPN_PATH) throw Error("UI_OPENVPN_PATH not set");
+  const indexHtml = fs.readFileSync(process.env.UI_OPENVPN_PATH, "utf8");
 
   const server = http.createServer(async (req, res) => {
     try {
