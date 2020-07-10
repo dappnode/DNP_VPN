@@ -12,14 +12,21 @@
 // 3. Get the MASTER_ADMIN user URL to connect
 // 4. Print a nicely formated msg with a QR code
 
+import url from "url";
 import { getRpcCall } from "./api/getRpcCall";
-import { MASTER_ADMIN_NAME } from "./params";
+import { API_PORT, MASTER_ADMIN_NAME } from "./params";
 import { renderQrCode } from "./utils/renderQrCode";
 
 /* eslint-disable no-console */
 
 const statusTimeout = 60 * 1000;
-const api = getRpcCall("http://localhost:3000");
+const vpnRpcApiUrl = url.format({
+  protocol: "http",
+  hostname: "127.0.0.1",
+  port: API_PORT,
+  pathname: "rpc"
+});
+const api = getRpcCall(vpnRpcApiUrl);
 
 // ### TODO: Is this still necessary?
 process.on("SIGINT", () => process.exit(128));

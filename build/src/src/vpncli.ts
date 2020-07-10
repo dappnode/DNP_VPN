@@ -33,7 +33,8 @@ if (process.argv.length <= 2) {
     const vpnRpcApiUrl = url.format({
       protocol: "http",
       hostname: "127.0.0.1",
-      port: API_PORT
+      port: API_PORT,
+      pathname: "rpc"
     });
     // Initialize an RPC client connecting to the VPN RPC server
     const api = getRpcCall(vpnRpcApiUrl);
