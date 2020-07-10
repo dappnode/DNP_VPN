@@ -1,3 +1,13 @@
+export interface VpnStatus {
+  status:
+    | "STARTED"
+    | "FETCHING_CONFIG"
+    | "FETCHING_CONFIG_ERROR"
+    | "INITIALIZING"
+    | "READY";
+  msg?: string | undefined;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Args = any[];
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

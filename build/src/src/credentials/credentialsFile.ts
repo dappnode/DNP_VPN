@@ -60,7 +60,7 @@ function persistTokens(): void {
 
 function garbageCollectTokens(): void {
   try {
-    for (let [token, tokenData] of tokens)
+    for (const [token, tokenData] of tokens)
       if (Date.now() - tokenData.created > tokenDeleteMs) tokens.delete(token);
   } catch (e) {
     logs.error(`Error garbage collecting tokens: ${e.message}`);
@@ -117,7 +117,7 @@ export async function generateCredFileFromToken(token: string) {
  * When device connects invalidate its associated token
  */
 export function onDeviceConnected(id: string): void {
-  for (let [token, tokenData] of tokens)
+  for (const [token, tokenData] of tokens)
     if (tokenData.id === id) {
       const tokenData = tokens.get(token);
       if (tokenData) tokens.set(token, { ...tokenData, used: true });
@@ -126,7 +126,7 @@ export function onDeviceConnected(id: string): void {
 
 function getCredTokenAndKey(id: string): { token: string; key: string } {
   // Fetch old token if exists
-  for (let [token, tokenData] of tokens)
+  for (const [token, tokenData] of tokens)
     if (
       tokenData.id === id &&
       !isTokenUsed(tokenData) &&
@@ -148,22 +148,3 @@ function isTokenExpired(tokenData: TokenData): boolean {
 function isTokenUsed(tokenData: TokenData): boolean {
   return tokenData.used;
 }
-
-// /**
-//  * @param id "new-device"
-//  */
-// export function removeCredFile(id: string): void {
-//   const { filepath } = getCredFilePath(id);
-
-//   try {
-//     fs.unlinkSync(filepath);
-//   } catch (e) {
-//     if (e.code !== "ENOENT") throw e;
-//   }
-
-//   // Reset login text
-//   if (id === MASTER_ADMIN_NAME) {
-//     // echo "The admin credentials expired. Use the command below to generate a new download link:" > "$LOGIN_MSG_PATH"
-//     // echo "dappnode_get ${DEFAULT_ADMIN_USER}" >> "$LOGIN_MSG_PATH"
-//   }
-// }

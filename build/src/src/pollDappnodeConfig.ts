@@ -1,5 +1,4 @@
 import got from "got";
-import { logs } from "./logs";
 import {
   dappmanagerApiUrlGlobalEnvs,
   GLOBAL_ENVS_KEYS,
@@ -12,19 +11,20 @@ import {
  * It throws an error after about 15 min of retries. The error should cause
  * the main process to crash and be restarted by it's parent manager (i.e. docker)
  */
-export async function pollDappnodeConfig(): Promise<{
+export async function pollDappnodeConfig({
+  onRetry
+}: {
+  onRetry: (errorMsg: string, retryCount: number) => void;
+}): Promise<{
   hostname: string;
   internalIp: string;
 }> {
   // If ENVs are already available, do not poll
   const hostnameFromEnv = process.env[GLOBAL_ENVS.HOSTNAME];
   const internalIpFromEnv = process.env[GLOBAL_ENVS.INTERNAL_IP];
-  if (hostnameFromEnv && internalIpFromEnv) {
-    logs.info("Config parameters available in process ENV");
+  if (hostnameFromEnv && internalIpFromEnv)
     return { hostname: hostnameFromEnv, internalIp: internalIpFromEnv };
-  }
 
-  logs.info("Polling DAPPMANAGER for config ENVs");
   const hostname = await got(GLOBAL_ENVS_KEYS.HOSTNAME, {
     throwHttpErrors: true,
     prefixUrl: dappmanagerApiUrlGlobalEnvs,
@@ -32,19 +32,17 @@ export async function pollDappnodeConfig(): Promise<{
     hooks: {
       beforeRetry: [
         (_0, error, retryCount = 0) => {
-          const errorMessage = error ? `${error.code} ${error.message}` : "";
-          logs.info(`retry ${retryCount} - ${errorMessage}`);
+          const errorMsg = error ? `${error.code} ${error.message}` : "";
+          onRetry(errorMsg, retryCount);
         }
       ]
     }
   }).text();
-  logs.info(`Config ENV hostname: ${hostname}`);
 
   const internalIp = await got(GLOBAL_ENVS_KEYS.INTERNAL_IP, {
     throwHttpErrors: true,
     prefixUrl: dappmanagerApiUrlGlobalEnvs
   }).text();
-  logs.info(`Config ENV internalIp: ${internalIp}`);
 
   return { hostname, internalIp };
 }

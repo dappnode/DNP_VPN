@@ -6,6 +6,7 @@ import { LoggerMiddleware } from "../types";
 import { wrapHandler } from "./utils";
 import { isAdmin, isLocalhost } from "./auth";
 import { clientConnect } from "./clientConnect";
+import { CLIENT_CONNECT_PATHNAME } from "../params";
 
 /**
  * HTTP API
@@ -33,7 +34,7 @@ export function startHttpApi(port: number): void {
   app.post("/rpc", isAdmin, wrapHandler(rpcHandler));
 
   // OpenVPN hooks
-  app.post("/client-connect", isLocalhost, wrapHandler(clientConnect));
+  app.post(CLIENT_CONNECT_PATHNAME, isLocalhost, wrapHandler(clientConnect));
 
   app.listen(port, () => logs.info(`HTTP API started at ${port}`));
 }

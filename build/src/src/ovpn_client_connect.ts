@@ -6,5 +6,22 @@
 // - trusted_ip: Actual IP address of connecting client or peer which has been authenticated
 
 import got from "got";
+import url from "url";
+import { API_PORT, CLIENT_CONNECT_PATHNAME } from "./params";
 
-got.post("http://127.0.0.1:3000/client-connect", { json: process.env });
+//"http://127.0.0.1:3000/client-connect";
+const apiUrl = url.format({
+  protocol: "http",
+  hostname: "127.0.0.1",
+  port: API_PORT,
+  pathname: CLIENT_CONNECT_PATHNAME
+});
+
+got
+  .post(apiUrl, { json: process.env })
+  .then(
+    () => console.log(`Posted client-connect data to ${url}`),
+    e => console.error(`Error posting client-connect env to ${url}: ${e.stack}`)
+  )
+  // client-connect script must exit with code 0, otherwise OpenVPN will refuse to connect to the client
+  .then(() => process.exit(0));
