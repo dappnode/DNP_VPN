@@ -30,7 +30,7 @@ export function startCredentialsWebserver(port: number): void {
 
       switch (pathname) {
         case "/":
-          res.writeHead(200, { "Content-Type": "text/plain" });
+          res.writeHead(200, { "Content-Type": "text/html" });
           return res.end(indexHtml, "utf-8");
 
         case credUrlPathname:
