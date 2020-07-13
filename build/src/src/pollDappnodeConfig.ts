@@ -1,9 +1,11 @@
 import got from "got";
+import ip from "ip";
 import {
   dappmanagerApiUrlGlobalEnvs,
   GLOBAL_ENVS_KEYS,
   GLOBAL_ENVS
 } from "./params";
+import { isDomain } from "./utils/domain";
 
 /**
  * Polls the DAPPMANAGER to get the necessary config variables to start
@@ -39,6 +41,11 @@ export async function pollDappnodeConfig({
     }
   }).text();
 
+  if (!hostname) throw Error("No hostname returned");
+  if (!ip.isV4Format(hostname) || !isDomain(hostname))
+    throw Error(`Invalid hostname returned: ${hostname}`);
+
+  // internal IP is an optional feature for when NAT-Loopback is off
   const internalIp = await got(GLOBAL_ENVS_KEYS.INTERNAL_IP, {
     throwHttpErrors: true,
     prefixUrl: dappmanagerApiUrlGlobalEnvs
