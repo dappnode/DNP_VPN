@@ -1,3 +1,4 @@
+import "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
 import proxyquire from "proxyquire";
@@ -11,10 +12,10 @@ describe("Call function: listDevices", () => {
     { cn: "tom", ip: "172.33.0.2" }
   ];
   const userResult = [
-    { id: "dappnode_admin", admin: true, ip: "" },
+    { id: "dappnode_admin", admin: true, ip: "172.33.0.1" },
     { id: "mobile", admin: false, ip: "" },
     { id: "guest", admin: false, ip: "" },
-    { id: "tom", admin: true, ip: "" }
+    { id: "tom", admin: true, ip: "172.33.0.2" }
   ];
   // sinon.replace(,));   <--- to replace an inside function
   const getUserList = sinon.stub();
@@ -22,8 +23,7 @@ describe("Call function: listDevices", () => {
   const getCCD = sinon.stub();
   getCCD.returns(ccdList);
   const { listDevices } = proxyquire("../../src/calls/listDevices", {
-    "../utils/getUserList": { getUserList },
-    "../utils/getCCD": { getCCD }
+    "../openvpn": { getUserList, getCCD }
   });
 
   it("should return success message and the users array", async () => {
