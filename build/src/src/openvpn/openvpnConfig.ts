@@ -1,8 +1,6 @@
 import fs from "fs";
-import crypto from "crypto";
 import { shell, shellArgs } from "../utils/shell";
 import { directoryIsEmptyOrEnoent } from "../utils/fs";
-import { printEnvironment } from "../utils/env";
 import { PKI_PATH, PROXY_ARP_PATH } from "../params";
 
 /**
@@ -48,8 +46,4 @@ export async function initalizeOpenVpnConfig({
 
   // Enable Proxy ARP (needs privileges)
   fs.writeFileSync(PROXY_ARP_PATH, "1");
-
-  // Save environment with the path configuration so it's accessible to scripts
-  // run by OpenVPN on hooks
-  fs.writeFileSync("/etc/env.sh", printEnvironment(openVpnEnv));
 }
