@@ -22,7 +22,7 @@ startCredentialsWebserver(OPENVPN_CRED_PORT);
 startCredentialsService();
 
 // Configure and start VPN client
-(async function startVpnClient() {
+(async function startVpnClient(): Promise<void> {
   try {
     vpnStatus.status = "FETCHING_CONFIG";
     const { hostname, internalIp } = await pollDappnodeConfig({

@@ -13,7 +13,7 @@ export async function initalizeOpenVpnConfig({
 }: {
   hostname: string;
   internalIp: string;
-}) {
+}): Promise<void> {
   // Replicate environment used in entrypoint.sh
   const openVpnEnv = {
     ...process.env,

@@ -31,7 +31,7 @@ const api = getRpcCall(vpnRpcApiUrl);
 // ### TODO: Is this still necessary?
 process.on("SIGINT", () => process.exit(128));
 
-(async function() {
+(async function(): Promise<void> {
   await waitForOkStatus();
 
   try {
@@ -53,7 +53,7 @@ ${url}`);
 /**
  * Wait for VPN status to be READY, use separate function to exit the while loop with return
  */
-async function waitForOkStatus() {
+async function waitForOkStatus(): Promise<void> {
   const start = Date.now();
 
   while (Date.now() - start < statusTimeout) {

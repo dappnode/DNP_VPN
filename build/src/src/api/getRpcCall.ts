@@ -1,21 +1,22 @@
 import got from "got";
 import { Routes, routesData } from "../api/routes";
 import { mapValues } from "lodash";
+import { Args, Result } from "../types";
 
 interface RpcResponse {
-  result?: any;
-  error?: { code: number; message: string; data?: any };
+  result?: Result;
+  error?: { code: number; message: string; data: string };
 }
 
 export function getRpcCall(vpnApiRpcUrl: string): Routes {
   return mapValues(routesData, (_0, route) => {
-    return async function(...args: any[]) {
+    return async function(...args: Args): Promise<Result> {
       const body = await got
         .post(vpnApiRpcUrl, { json: { method: route, params: args } })
         .json<RpcResponse>();
 
       // RPC response are always code 200
-      return parseRpcResponse<any>(body);
+      return parseRpcResponse<Result>(body);
     };
   });
 }
@@ -43,7 +44,7 @@ async function parseRpcResponse<R>(body: RpcResponse): Promise<R> {
  */
 class JsonRpcResError extends Error {
   code: number;
-  data: any;
+  data?: string;
   constructor(jsonRpcError: RpcResponse["error"]) {
     super((jsonRpcError || {}).message);
     this.code = (jsonRpcError || {}).code || -32603;

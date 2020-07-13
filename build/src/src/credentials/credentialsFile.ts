@@ -33,7 +33,7 @@ interface TokenData {
 // OpenVPN + this NodeJS cannot differentiate different tokens used to get the same device
 const tokens = new Map<string, TokenData>();
 
-export function startCredentialsService() {
+export function startCredentialsService(): void {
   loadPersistedTokens();
 
   process.on("exit", persistTokens);
@@ -103,7 +103,9 @@ export function isTokenKnown(token: string): boolean {
  * Generate and encrypt a ovpn file with the stored token data
  * Check if the token is known, not used and not expired
  */
-export async function generateCredFileFromToken(token: string) {
+export async function generateCredFileFromToken(
+  token: string
+): Promise<string> {
   const tokenData = tokens.get(token);
   if (!tokenData) throw Error("Unknown token data");
   if (isTokenUsed(tokenData)) throw Error("Token used");

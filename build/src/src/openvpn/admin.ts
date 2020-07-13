@@ -15,7 +15,7 @@ import {
  * Warning: Does not enforce that `ip` actually holds admin priviledges
  * @param id "my-device"
  */
-export function grantAdmin(id: string) {
+export function grantAdmin(id: string): void {
   const ip =
     id === MASTER_ADMIN_NAME
       ? MASTER_ADMIN_IP
@@ -29,7 +29,7 @@ export function grantAdmin(id: string) {
  * Revokes admin credentials to device `id`
  * @param id "my-device"
  */
-export function revokeAdmin(id: string) {
+export function revokeAdmin(id: string): void {
   if (id === MASTER_ADMIN_NAME) throw Error(`Cannot revoke master admin`);
   try {
     fs.unlinkSync(getCcdFilePath(id));
@@ -42,6 +42,6 @@ export function revokeAdmin(id: string) {
  * Path to the CCD file that controls if a device is admin or not
  * @param id "my-device"
  */
-function getCcdFilePath(id: string) {
+function getCcdFilePath(id: string): string {
   return path.join(CCD_PATH, id);
 }

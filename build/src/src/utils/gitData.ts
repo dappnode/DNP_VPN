@@ -20,7 +20,7 @@ export function getGitData(): VersionData {
  *   "commit": "ab991e1482b44065ee4d6f38741bd89aeaeb3cec" }
  * SAFE: Wrapped in try / catch
  */
-export function printGitData() {
+export function printGitData(): void {
   try {
     logs.info("Version info", getGitData());
   } catch (e) {

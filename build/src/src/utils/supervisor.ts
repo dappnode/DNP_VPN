@@ -15,6 +15,7 @@ const signalsToPass: NodeJS.Signals[] = [
  * @param args
  * @param options
  */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function Supervisor(
   command: string,
   args: string[],
@@ -40,14 +41,14 @@ export function Supervisor(
     killChild("SIGTERM");
   });
 
-  function killChild(signal: NodeJS.Signals | number) {
+  function killChild(signal: NodeJS.Signals | number): void {
     if (child) {
       log("Received " + signal + ", killing child process...");
       child.kill(signal);
     }
   }
 
-  function startChild() {
+  function startChild(): void {
     crashQueued = false;
     child = spawn(command, args, { stdio: "inherit" });
     log(
@@ -67,7 +68,7 @@ export function Supervisor(
     });
   }
 
-  function restartChild() {
+  function restartChild(): void {
     if (crashQueued) return;
 
     crashQueued = true;
