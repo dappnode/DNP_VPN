@@ -6,7 +6,7 @@ import { API_PORT, OPENVPN_CRED_PORT, MASTER_ADMIN_NAME } from "./params";
 import { pollDappnodeConfig } from "./pollDappnodeConfig";
 import { initalizeOpenVpnConfig, openvpnBinary } from "./openvpn";
 import { config, vpnStatus } from "./config";
-import { startCredentialsService } from "./credentials/credentialsFile";
+import { startCredentialsService } from "./credentials";
 import { logs } from "./logs";
 
 // Print version data

@@ -1,5 +1,5 @@
 import express from "express";
-import { onDeviceConnected } from "../credentials/credentialsFile";
+import { onDeviceConnected } from "../credentials";
 
 /**
  * Hook called by openvpn binary on each client connection

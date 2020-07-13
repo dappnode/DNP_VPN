@@ -7,6 +7,17 @@ import { formatCredUrl } from "./formatCredUrl";
 import { logs } from "../logs";
 import { TOKENS_DB_PATH } from "../params";
 
+// Sharing credentials flow
+// 1) ADMIN requests new link for `deviceId`
+// 2) Server creates `idToken` that maps to `secretKey` and `deviceId`
+// 3) ADMIN gets sharable link with http://$host:$port/?$idToken#$secretKey
+// 4) New user opens the link, shared via a private channel
+// 5) Server checks `idToken` is valid and unused
+// 6) Server retrieves `secretKey` and `deviceId` from the DB
+// 7) Server creates ovpn file for `deviceId` and encrypts it with `secretKey`
+// 8) Server serves encrypted ovpn to the user
+// 9) Server marks `idToken` as used but keeps it in the DB for some time
+
 const tokenExpireMs = 5 * 24 * 60 * 60 * 1000; // 5 days
 const tokenDeleteMs = 30 * 24 * 60 * 60 * 1000; // 30 days
 const pruneTokensInterval = 24 * 60 * 60 * 1000; // 1 day
@@ -18,10 +29,9 @@ interface TokenData {
   used: boolean;
 }
 
-const tokens = new Map<string, TokenData>();
-
 // Only one token per device. If the same url is requested twice give the same token
 // OpenVPN + this NodeJS cannot differentiate different tokens used to get the same device
+const tokens = new Map<string, TokenData>();
 
 export function startCredentialsService() {
   loadPersistedTokens();
@@ -66,17 +76,6 @@ function garbageCollectTokens(): void {
     logs.error(`Error garbage collecting tokens: ${e.message}`);
   }
 }
-
-// Sharing credentials flow
-// 1) ADMIN create a new link for a given `deviceId`
-// 2) Server creates `idToken` that maps to `secretKey` (created), `deviceId`
-// 3) ADMIN gets sharable link with http://$host:$port/?$idToken#$secretKey
-// 4) New user opens the link, shared via a private channel
-// 5) Server checks `idToken` is valid and unused
-// 6) Server retrieves `secretKey` and `deviceId` from the DB
-// 7) Server creates ovpn file for `deviceId` and encrypts it with `secretKey`
-// 8) Server send encrypted ovpn to the user
-// 9) Server marks `idToken` as used but keeps it in the DB for some time
 
 /**
  * Return a URL that a new user can browse to get access to their credentials

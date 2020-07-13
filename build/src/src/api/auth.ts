@@ -1,8 +1,9 @@
 import express from "express";
+import { logs } from "../logs";
 
 const allowAllIps = Boolean(process.env.ALLOW_ALL_IPS);
 
-if (allowAllIps) console.log(`WARNING! ALLOWING ALL IPFS`);
+if (allowAllIps) logs.warn(`WARNING! ALLOWING ALL IPFS`);
 
 // Authorize by IP
 
@@ -19,7 +20,7 @@ const adminIps = [
   "127.0.0.1"
 ];
 
-const localhostIp = [
+const localhostIps = [
   // Internal calls from the same container
   "127.0.0.1"
 ];
@@ -29,7 +30,7 @@ function isAdminIp(ip: string): boolean {
 }
 
 function isLocalhostIp(ip: string): boolean {
-  return allowAllIps || localhostIp.some(_ip => ip.includes(_ip));
+  return allowAllIps || localhostIps.some(_ip => ip.includes(_ip));
 }
 
 export const isAdmin: express.RequestHandler = (req, res, next) => {

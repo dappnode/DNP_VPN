@@ -34,6 +34,7 @@ export function startHttpApi(port: number): void {
   app.post("/rpc", isAdmin, wrapHandler(rpcHandler));
 
   // OpenVPN hooks
+  // Hook called by openvpn binary on each client connection
   app.post(CLIENT_CONNECT_PATHNAME, isLocalhost, wrapHandler(clientConnect));
 
   app.listen(port, () => logs.info(`HTTP API started at ${port}`));

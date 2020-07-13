@@ -1,11 +1,11 @@
 import { getClient } from "../openvpn";
 import { VpnDeviceCredentials } from "../types";
-import { getConnectUrl } from "../credentials/credentialsFile";
+import { getConnectUrl } from "../credentials";
 
 /**
- * Creates a new OpenVPN credentials file, encrypted.
- * The filename is the (16 chars short) result of hashing the generated salt in the db,
- * concatenated with the device id.
+ * Returns a URL browsable from outside the DAppNode network
+ * The URL contains necessary credentials (token + encryption key) to retrieve
+ * and download an OpenVPN credentials file for the device `id`
  * @param id "new-device"
  */
 export async function getDeviceCredentials({
