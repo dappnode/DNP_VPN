@@ -40,10 +40,12 @@ export async function pollDappnodeConfig({
         }
       ]
     }
-  }).text();
+  })
+    .text()
+    .then(res => res.trim());
 
   if (!hostname) throw Error("No hostname returned");
-  if (!ip.isV4Format(hostname.trim()) && !isDomain(hostname.trim()))
+  if (!ip.isV4Format(hostname) && !isDomain(hostname))
     throw Error(`Invalid hostname returned: ${hostname}`);
 
   // internal IP is an optional feature for when NAT-Loopback is off
@@ -51,7 +53,10 @@ export async function pollDappnodeConfig({
     const internalIp = await got(GLOBAL_ENVS_KEYS.INTERNAL_IP, {
       throwHttpErrors: true,
       prefixUrl: dappmanagerApiUrlGlobalEnvs
-    }).text();
+    })
+      .text()
+      .then(res => res.trim());
+
     return { hostname, internalIp };
   } catch (e) {
     logs.warn(`Error getting internal IP from DAPPMANAGER`, e);
