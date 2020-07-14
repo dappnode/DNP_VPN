@@ -1,12 +1,12 @@
 ##########################
 # Build dependencies
 ##########################
-FROM node:12.18.0-alpine as build
+FROM alpine:3.9 as build
 
 WORKDIR /usr/src/app
 
 RUN apk add --update --no-cache \
-    build-base python libpcap-dev linux-headers bash
+    build-base python libpcap-dev linux-headers bash nodejs yarn npm
 
 COPY build/src/package.json ./
 COPY build/src/yarn.lock ./
@@ -31,11 +31,11 @@ RUN yarn build
 ##########################
 # Compute git data
 ##########################
-FROM node:12.18.0-alpine as git-data
+FROM alpine:3.9 as git-data
 
 WORKDIR /usr/src/app
 
-RUN apk add --no-cache git
+RUN apk add --no-cache git nodejs
 COPY .git .git
 COPY dappnode_package.json build/getGitData.js ./
 RUN node getGitData /usr/src/app/.git-data.json
@@ -45,7 +45,7 @@ RUN node getGitData /usr/src/app/.git-data.json
 ##########################
 # Build UI
 ##########################
-FROM node:12.18.0-alpine as build-ui
+FROM alpine:3.9 as build-ui
 
 WORKDIR /usr/src/app
 
@@ -53,6 +53,7 @@ WORKDIR /usr/src/app
 COPY build/ui_openvpn/package*.json ./
 COPY build/ui_openvpn/*lock* ./
 # install dependencies
+RUN apk add --no-cache nodejs yarn
 RUN yarn install --production
 # copy the contents of the app
 COPY build/ui_openvpn .
@@ -66,7 +67,7 @@ RUN node injectToHtml build/index.html build/ui_openvpn.html
 ##########################
 # Final stage
 ##########################
-FROM node:12.18.0-alpine
+FROM alpine:3.9
 
 WORKDIR /usr/src/app
 
@@ -77,7 +78,8 @@ RUN apk add --update \
     easy-rsa \ 
     openssl \
     jq \
-    sed
+    sed \
+    nodejs
 RUN ln -s /usr/share/easy-rsa/easyrsa /usr/local/bin && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/* /var/cache/distfiles/*
 

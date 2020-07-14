@@ -43,7 +43,7 @@ export async function pollDappnodeConfig({
   }).text();
 
   if (!hostname) throw Error("No hostname returned");
-  if (!ip.isV4Format(hostname) || !isDomain(hostname))
+  if (!ip.isV4Format(hostname.trim()) && !isDomain(hostname.trim()))
     throw Error(`Invalid hostname returned: ${hostname}`);
 
   // internal IP is an optional feature for when NAT-Loopback is off
