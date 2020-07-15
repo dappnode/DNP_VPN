@@ -78,8 +78,17 @@ function garbageCollectTokens(): void {
 }
 
 /**
+ * Delete a device associated tokens when it's deleted
+ * @param id "new-device"
+ */
+export function deleteTokenForId(id: string): void {
+  for (const [token, tokenData] of tokens)
+    if (tokenData.id === id) tokens.delete(token);
+}
+
+/**
  * Return a URL that a new user can browse to get access to their credentials
- * @param id
+ * @param id "new-device"
  */
 export function getConnectUrl(id: string): string {
   const { token, key } = getCredTokenAndKey(id);

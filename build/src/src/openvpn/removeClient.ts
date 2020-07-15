@@ -1,5 +1,6 @@
-import { shell } from "../utils/shell";
 import fs from "fs";
+import { deleteTokenForId } from "../credentials";
+import { shell } from "../utils/shell";
 
 const revokeCommand = "/usr/local/bin/ovpn_revokeclient";
 
@@ -16,6 +17,8 @@ export async function removeClient(id: string): Promise<void> {
       `${process.env.OPENVPN}/pki/issued/${id}.crt`
     ])
       fs.unlinkSync(file);
+
+    deleteTokenForId(id);
   } catch (err) {
     throw Error(`Error removing device ${id}: ${err.message}`);
   }
