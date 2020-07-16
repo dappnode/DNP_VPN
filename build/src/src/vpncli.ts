@@ -41,7 +41,7 @@ yargs
     }
   })
   .command({
-    command: "get",
+    command: "get <id>",
     describe: "Generate device URL to download config file.",
     builder: idArg,
     handler: async ({ id }) => {
@@ -50,7 +50,7 @@ yargs
     }
   })
   .command({
-    command: "add",
+    command: "add <id>",
     describe: "Add device.",
     builder: idArg,
     handler: async ({ id }) => {
@@ -59,7 +59,7 @@ yargs
     }
   })
   .command({
-    command: "rm",
+    command: "rm <id>",
     describe: "Remove device.",
     builder: idArg,
     handler: async ({ id }) => {
@@ -68,7 +68,7 @@ yargs
     }
   })
   .command({
-    command: "toggle",
+    command: "toggle <id>",
     describe: "Give/remove admin rights to device.",
     builder: idArg,
     handler: async ({ id }) => {
@@ -77,7 +77,7 @@ yargs
     }
   })
   .command({
-    command: "reset",
+    command: "reset <id>",
     describe: "Reset device credentials.",
     builder: idArg,
     handler: async ({ id }) => {
