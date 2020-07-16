@@ -11,22 +11,22 @@
 // 2. Wait for MASTER_ADMIN user to exist
 // 3. Get the MASTER_ADMIN user URL to connect
 // 4. Print a nicely formated msg with a QR code
+//
+// This script is run by this command
+// alias dappnode_connect='docker run --rm \
+//   -v dncore_vpndnpdappnodeeth_data:/usr/src/app/secrets \
+//   $(docker inspect DAppNodeCore-vpn.dnp.dappnode.eth --format '{{.Config.Image}}') \
+//   getAdminCredentials'
+//
 
-import url from "url";
-import { getRpcCall } from "./api/getRpcCall";
-import { API_PORT, MASTER_ADMIN_NAME } from "./params";
+import { getVpnRpcApiClient } from "./api/getRpcCall";
+import { MASTER_ADMIN_NAME } from "./params";
 import { renderQrCode } from "./utils/renderQrCode";
 
 /* eslint-disable no-console */
 
 const statusTimeout = 60 * 1000;
-const vpnRpcApiUrl = url.format({
-  protocol: "http",
-  hostname: "127.0.0.1",
-  port: API_PORT,
-  pathname: "rpc"
-});
-const api = getRpcCall(vpnRpcApiUrl);
+const api = getVpnRpcApiClient();
 
 // ### TODO: Is this still necessary?
 process.on("SIGINT", () => process.exit(128));

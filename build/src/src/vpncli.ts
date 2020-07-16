@@ -1,22 +1,14 @@
 #!/usr/bin/env node
 
 import yargs, { CommandBuilder } from "yargs";
-import url from "url";
 import chalk from "chalk";
 import prettyjson from "prettyjson";
-import { getRpcCall } from "./api/getRpcCall";
-import { API_PORT } from "./params";
+import { getVpnRpcApiClient } from "./api/getRpcCall";
 
 /* eslint-disable no-console */
 
-const vpnRpcApiUrl = url.format({
-  protocol: "http",
-  hostname: "127.0.0.1",
-  port: API_PORT,
-  pathname: "rpc"
-});
 // Initialize an RPC client connecting to the VPN RPC server
-const api = getRpcCall(vpnRpcApiUrl);
+const api = getVpnRpcApiClient();
 
 const idArg: CommandBuilder<{}, { id: string }> = yargs =>
   yargs.positional("id", {

@@ -26,6 +26,9 @@ export const CLIENT_CONNECT_PATHNAME = "/client-connect";
 export const OPENVPN_CRED_PORT = 8092;
 export const CRED_URL_QUERY_PARAM = "id";
 export const CRED_URL_PATHNAME = "/cred";
+export const RPC_TOKEN_PATH = "/usr/src/app/secrets/rpc-token";
+export const RPC_TOKEN_HEADER = "token";
+export const VPN_DNP_IP = "172.33.1.4";
 
 // Global ENVs names
 export const GLOBAL_ENVS = {

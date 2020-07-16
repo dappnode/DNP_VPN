@@ -2,9 +2,8 @@ import express from "express";
 import * as methods from "../calls";
 import { getRpcHandler } from "./getRpcHandler";
 import { logs } from "../logs";
-import { LoggerMiddleware } from "../types";
 import { wrapHandler } from "./utils";
-import { isAdmin, isLocalhost } from "./auth";
+import { getAuthHandlers } from "./auth";
 import { clientConnect } from "./clientConnect";
 import { CLIENT_CONNECT_PATHNAME } from "../params";
 
@@ -17,13 +16,12 @@ import { CLIENT_CONNECT_PATHNAME } from "../params";
 export function startHttpApi(port: number): void {
   const app = express();
 
-  // RPC
-  const routesLogger: LoggerMiddleware = {
+  const rpcHandler = getRpcHandler(methods, {
     onCall: (method, args) => logs.debug(`RPC call ${method}`, args || []),
     onSuccess: (method, result) => logs.debug(`RPC success ${method}`, result),
     onError: (method, e) => logs.error(`RPC error ${method}`, e)
-  };
-  const rpcHandler = getRpcHandler(methods, routesLogger);
+  });
+  const { isAdmin, isLocalhost } = getAuthHandlers();
 
   app.use(express.json());
 
