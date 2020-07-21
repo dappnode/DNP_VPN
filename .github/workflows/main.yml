@@ -29,8 +29,17 @@ jobs:
         working-directory: ${{ env.working-directory }}
       - run: yarn test
         working-directory: ${{ env.working-directory }}
-      - run: yarn test:int
-        working-directory: ${{ env.working-directory }}
+
+  openvpn-test:
+    runs-on: ubuntu-16.04
+    name: OpenVPN test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build image with test files
+        run: docker build -t int-test -f build/src/test/Dockerfile.test.int .
+      - name: Run containerized tests
+        run: docker run int-test
 
   build-test:
     runs-on: ubuntu-16.04
