@@ -40,6 +40,21 @@ jobs:
         run: docker build -t int-test -f build/src/test/Dockerfile.test.int .
       - name: Run containerized tests
         run: docker run int-test
+      - run: docker-compose build
+      - name: Compile integration test
+        working-directory: build/src
+        run: |
+          yarn install
+          tsc test/client.test.int.ts
+      - name: Run dockerized integration test
+        run: |
+          docker run -d --name test $(docker images vpn.dnp.dappnode.eth -q) sleep 1000
+          docker cp build/src/ test:/usr/src/app
+
+          docker cp build/src/test/client.test.int.js test:/usr/src/app
+          docker exec test apk add yarn
+          docker exec test yarn add mocha chai
+          docker exec test node_modules/.bin/mocha client.test.int.js
 
   build-test:
     runs-on: ubuntu-16.04
