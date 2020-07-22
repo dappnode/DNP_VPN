@@ -1,5 +1,5 @@
 import { startHttpApi } from "./api";
-import { addDevice } from "./calls";
+import { addDevice, toggleAdmin } from "./calls";
 import { printGitData } from "./utils/gitData";
 import { startCredentialsWebserver } from "./credentials";
 import { API_PORT, OPENVPN_CRED_PORT, MASTER_ADMIN_NAME } from "./params";
@@ -41,6 +41,7 @@ startCredentialsService();
 
     try {
       await addDevice({ id: MASTER_ADMIN_NAME });
+      await toggleAdmin({ id: MASTER_ADMIN_NAME });
     } catch (e) {
       if (!e.message.includes("exist"))
         logs.error(`Error creating ${MASTER_ADMIN_NAME} device`, e);
