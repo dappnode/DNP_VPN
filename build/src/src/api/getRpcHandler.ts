@@ -1,3 +1,4 @@
+import express from "express";
 import { Routes } from "./routes";
 import { LoggerMiddleware, RpcRequest, RpcResponse } from "../types";
 
@@ -9,10 +10,11 @@ import { LoggerMiddleware, RpcRequest, RpcResponse } from "../types";
 export const getRpcHandler = (
   methods: Routes,
   loggerMiddleware?: LoggerMiddleware
-): ((body: RpcRequest) => Promise<RpcResponse>) => {
+): express.RequestHandler => {
   const { onCall, onSuccess, onError } = loggerMiddleware || {};
 
-  return async (body: RpcRequest): Promise<RpcResponse> => {
+  return async (req, res): Promise<void> => {
+    const body: RpcRequest = req.body;
     try {
       const { method, params } = parseRpcRequest(body);
 
@@ -25,16 +27,16 @@ export const getRpcHandler = (
 
       const result = await handler(...params);
       if (onSuccess) onSuccess(method, result, params);
-      return { result };
+      res.send({ result });
     } catch (e) {
       if (e instanceof JsonRpcReqError) {
         // JSON RPC request formating errors, do not log
-        return { error: { code: e.code, message: e.message } };
+        res.send({ error: { code: e.code, message: e.message } });
       } else {
         // Unexpected error, log and send more details
         const { method, params } = tryToParseRpcRequest(body);
         if (onError) onError(method || "unknown-method", e, params || []);
-        return { error: { code: -32603, message: e.message, data: e.stack } };
+        res.send({ error: { message: e.message, data: e.stack } });
       }
     }
   };

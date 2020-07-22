@@ -1,6 +1,4 @@
-import { getUserList } from "../utils/getUserList";
-import { getCCD } from "../utils/getCCD";
-import { removeClient } from "../utils/removeClient";
+import { getUserList, getCCD, removeClient } from "../openvpn";
 
 /**
  * Removes the device with the provided id, if exists.

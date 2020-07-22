@@ -1,19 +1,55 @@
 import { startHttpApi } from "./api";
+import { addDevice } from "./calls";
+import { printGitData } from "./utils/gitData";
+import { startCredentialsWebserver } from "./credentials";
+import { API_PORT, OPENVPN_CRED_PORT, MASTER_ADMIN_NAME } from "./params";
+import { pollDappnodeConfig } from "./pollDappnodeConfig";
+import { initalizeOpenVpnConfig, openvpnBinary } from "./openvpn";
+import { config, vpnStatus } from "./config";
+import { startCredentialsService } from "./credentials";
 import { logs } from "./logs";
-import { API_PORT, GLOBAL_ENVS } from "./params";
 
 // Print version data
-require("./utils/getVersionData");
+printGitData();
 
 // Start JSON RPC API
 startHttpApi(API_PORT);
 
-// Check env vars existance and log them
-for (const v of [
-  GLOBAL_ENVS.HOSTNAME,
-  GLOBAL_ENVS.UPNP_AVAILABLE,
-  GLOBAL_ENVS.NO_NAT_LOOPBACK,
-  GLOBAL_ENVS.INTERNAL_IP
-])
-  if (!process.env[v]) logs.warn(`Required global env not set: ${v}`);
-  else logs.info(`${v}: ${process.env[v]}`);
+// Start credentials webserver
+startCredentialsWebserver(OPENVPN_CRED_PORT);
+
+// Load persisted tokens and prune old on interval
+startCredentialsService();
+
+// Configure and start VPN client
+(async function startVpnClient(): Promise<void> {
+  try {
+    vpnStatus.status = "FETCHING_CONFIG";
+    const { hostname, internalIp } = await pollDappnodeConfig({
+      onRetry: (errorMsg, retryCount) => {
+        vpnStatus.status = "FETCHING_CONFIG_ERROR";
+        vpnStatus.msg = `#${retryCount} - ${errorMsg}`;
+        logs.info(`Fetching config retry: ${vpnStatus.msg}`);
+      }
+    });
+    config.hostname = hostname;
+    config.internalIp = internalIp;
+
+    logs.info("Initializing OpenVPN config", { hostname, internalIp });
+    vpnStatus.status = "INITIALIZING";
+    await initalizeOpenVpnConfig({ hostname, internalIp });
+
+    try {
+      await addDevice({ id: MASTER_ADMIN_NAME });
+    } catch (e) {
+      if (!e.message.includes("exist"))
+        logs.error(`Error creating ${MASTER_ADMIN_NAME} device`, e);
+    }
+
+    vpnStatus.status = "READY";
+    openvpnBinary.restart();
+  } catch (e) {
+    logs.error("Error starting VPN", e);
+    process.exit(1);
+  }
+})();

@@ -1,73 +1,89 @@
 #!/usr/bin/env node
 
+import yargs, { CommandBuilder } from "yargs";
+import url from "url";
+import chalk from "chalk";
+import prettyjson from "prettyjson";
+import { getRpcCall } from "./api/getRpcCall";
+import { API_PORT } from "./params";
+
 /* eslint-disable no-console */
 
-import cmd from "commander";
-import chalk from "chalk";
-import {
-  addDevice,
-  getDeviceCredentials,
-  listDevices,
-  removeDevice,
-  resetDevice,
-  toggleAdmin
-} from "./calls";
-import { generateAndWriteLoginMsg } from "./loginMsg";
-import prettyjson from "prettyjson";
+const vpnRpcApiUrl = url.format({
+  protocol: "http",
+  hostname: "127.0.0.1",
+  port: API_PORT,
+  pathname: "rpc"
+});
+// Initialize an RPC client connecting to the VPN RPC server
+const api = getRpcCall(vpnRpcApiUrl);
 
-const adminUser = process.env.DEFAULT_ADMIN_USER
-  ? process.env.DEFAULT_ADMIN_USER
-  : "dappnode_admin";
+const idArg: CommandBuilder<{}, { id: string }> = yargs =>
+  yargs.positional("id", {
+    describe: "Device id",
+    type: "string",
+    demandOption: true
+  });
 
-cmd
-  .option("ls", "List devices.")
-  .option("get <id>", "Generate device URL to download config file.")
-  .option("add <id>", "Add device.")
-  .option("rm <id>", "Remove device.")
-  .option("toggle <id>", "Give/remove admin rights to device.")
-  .option("reset <id>", "Reset device credentials.")
-  .parse(process.argv);
-
-if (process.argv.length === 2) {
-  console.log(`Usage: ${chalk.yellow("vpntool [option]")}`);
-  console.log(
-    `       ${chalk.yellow("vpntool --help")}\t to view available options\n`
-  );
-  process.exit(1);
-}
-
-runVpnCli().catch(err => console.error(chalk.red(err)));
-
-/**
- * Parses a commander instance
- * Returns null or throws an error
- */
-async function runVpnCli(): Promise<void> {
-  const id = cmd.add || cmd.get || cmd.rm || cmd.toggle || cmd.reset;
-  if (cmd.add) {
-    await addDevice({ id });
-    console.log(chalk.green(`Added device ${id}`));
-  } else if (cmd.get) {
-    const { url } = await getDeviceCredentials({ id });
-    if (cmd.get != adminUser) {
-      console.log(chalk.green(`Credentials generated for ${id}: ${url}`));
-    } else {
-      const loginMsg = await generateAndWriteLoginMsg(url);
-      console.log(loginMsg);
+yargs
+  .usage(`Usage: vpncli <command> [options]`)
+  .alias("h", "help")
+  .alias("v", "version")
+  // blank scriptName so that help text doesn't display the cli name before each command
+  .scriptName("")
+  .demandCommand(1)
+  .command({
+    command: "ls",
+    describe: "List devices.",
+    handler: async () => {
+      const devices = await api.listDevices();
+      console.log(prettyjson.render(devices));
     }
-  } else if (cmd.ls) {
-    const devices = await listDevices();
-    console.log(prettyjson.render(devices));
-  } else if (cmd.rm) {
-    await removeDevice({ id });
-    console.log(chalk.green(`Removed device ${id}`));
-  } else if (cmd.toggle) {
-    await toggleAdmin({ id });
-    console.log(chalk.green(`Toggled admin status of ${id}`));
-  } else if (cmd.reset) {
-    await resetDevice({ id });
-    console.log(chalk.green(`Reset device ${id}`));
-  } else {
-    console.log(chalk.yellow("Command unknown!"));
-  }
-}
+  })
+  .command({
+    command: "get <id>",
+    describe: "Generate device URL to download config file.",
+    builder: idArg,
+    handler: async ({ id }) => {
+      const { url } = await api.getDeviceCredentials({ id });
+      console.log(chalk.green(`Credentials generated for ${id}: ${url}`));
+    }
+  })
+  .command({
+    command: "add <id>",
+    describe: "Add device.",
+    builder: idArg,
+    handler: async ({ id }) => {
+      await api.addDevice({ id });
+      console.log(chalk.green(`Added device ${id}`));
+    }
+  })
+  .command({
+    command: "rm <id>",
+    describe: "Remove device.",
+    builder: idArg,
+    handler: async ({ id }) => {
+      await api.removeDevice({ id });
+      console.log(chalk.green(`Removed device ${id}`));
+    }
+  })
+  .command({
+    command: "toggle <id>",
+    describe: "Give/remove admin rights to device.",
+    builder: idArg,
+    handler: async ({ id }) => {
+      await api.toggleAdmin({ id });
+      console.log(chalk.green(`Toggled admin status of ${id}`));
+    }
+  })
+  .command({
+    command: "reset <id>",
+    describe: "Reset device credentials.",
+    builder: idArg,
+    handler: async ({ id }) => {
+      await api.resetDevice({ id });
+      console.log(chalk.green(`Reset device ${id}`));
+    }
+  })
+  // Run CLI
+  .parse();

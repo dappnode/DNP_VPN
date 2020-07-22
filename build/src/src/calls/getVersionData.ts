@@ -1,4 +1,4 @@
-import versionData from "../utils/getVersionData";
+import { getGitData } from "../utils/gitData";
 import { VersionData } from "../types";
 
 /**
@@ -11,4 +11,4 @@ import { VersionData } from "../types";
  *   "commit": "ab991e1482b44065ee4d6f38741bd89aeaeb3cec"
  * }
  */
-export const getVersionData = async (): Promise<VersionData> => versionData;
+export const getVersionData = async (): Promise<VersionData> => getGitData();

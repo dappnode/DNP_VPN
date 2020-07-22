@@ -1,4 +1,4 @@
-import { VpnDeviceCredentials, VpnDevice } from "../types";
+import { VpnDeviceCredentials, VpnDevice, VpnStatus } from "../types";
 
 export interface Routes {
   /**
@@ -17,6 +17,11 @@ export interface Routes {
   getDeviceCredentials: (kwargs: {
     id: string;
   }) => Promise<VpnDeviceCredentials>;
+
+  /**
+   * Returns the current status of the VPN server
+   */
+  getStatus: () => Promise<VpnStatus>;
 
   /**
    * Removes the device with the provided id, if exists.
@@ -45,6 +50,7 @@ export interface Routes {
 export const routesData: { [P in keyof Routes]: {} } = {
   addDevice: {},
   getDeviceCredentials: {},
+  getStatus: {},
   removeDevice: {},
   resetDevice: {},
   toggleAdmin: {},

@@ -1,3 +1,4 @@
+import "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
 import proxyquire from "proxyquire";
@@ -18,9 +19,7 @@ describe("Call function: removeDevice", () => {
   removeClient.resolves("");
 
   const { removeDevice } = proxyquire("../../src/calls/removeDevice", {
-    "../utils/getUserList": { getUserList },
-    "../utils/getCCD": { getCCD },
-    "../utils/removeClient": { removeClient }
+    "../openvpn": { getUserList, getCCD, removeClient }
   });
 
   it("should return success message when user is not admin", async () => {

@@ -1,11 +1,12 @@
 import express from "express";
-import bodyParser from "body-parser";
 import * as methods from "../calls";
 import { getRpcHandler } from "./getRpcHandler";
 import { logs } from "../logs";
 import { LoggerMiddleware } from "../types";
 import { wrapHandler } from "./utils";
-import { isAdmin } from "./auth";
+import { isAdmin, isLocalhost } from "./auth";
+import { clientConnect } from "./clientConnect";
+import { CLIENT_CONNECT_PATHNAME } from "../params";
 
 /**
  * HTTP API
@@ -24,17 +25,17 @@ export function startHttpApi(port: number): void {
   };
   const rpcHandler = getRpcHandler(methods, routesLogger);
 
-  app.use(bodyParser.json());
+  app.use(express.json());
 
   // Ping / hello endpoint
-  app.get("/", (req, res) => res.send("VPN HTTP API"));
+  app.get("/", (_0, res) => res.send("VPN HTTP API"));
 
   // Rest of RPC methods
-  app.post(
-    "/rpc",
-    isAdmin,
-    wrapHandler(async (req, res) => res.send(await rpcHandler(req.body)))
-  );
+  app.post("/rpc", isAdmin, wrapHandler(rpcHandler));
+
+  // OpenVPN hooks
+  // Hook called by openvpn binary on each client connection
+  app.post(CLIENT_CONNECT_PATHNAME, isLocalhost, wrapHandler(clientConnect));
 
   app.listen(port, () => logs.info(`HTTP API started at ${port}`));
 }

@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - "build/**"
+      - ".github/workflows/main.yml"
   push:
     branches:
       - "master"
@@ -13,7 +14,7 @@ on:
 jobs:
   unit-test:
     runs-on: ubuntu-16.04
-    name: Unit tests
+    name: Tests
     env:
       working-directory: ./build/src
     steps:
@@ -27,6 +28,8 @@ jobs:
       - run: yarn lint
         working-directory: ${{ env.working-directory }}
       - run: yarn test
+        working-directory: ${{ env.working-directory }}
+      - run: yarn test:int
         working-directory: ${{ env.working-directory }}
 
   build-test:

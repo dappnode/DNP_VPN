@@ -9,6 +9,7 @@ uploader
 
 # Build artifacts
 build/src/dist
+build/ui_openvpn/build
 
 # Version data file
 .version.json

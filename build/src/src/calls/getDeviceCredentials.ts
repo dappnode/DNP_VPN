@@ -1,19 +1,11 @@
-import crypto from "crypto";
-import fs from "fs";
-import { getClient } from "../utils/getClient";
-import { encrypt, generateKey } from "../utils/encrypt";
+import { getClient } from "../openvpn";
 import { VpnDeviceCredentials } from "../types";
-import {
-  saltPath,
-  GLOBAL_ENVS,
-  credentialsDir,
-  credentialsPort
-} from "../params";
+import { getConnectUrl } from "../credentials";
 
 /**
- * Creates a new OpenVPN credentials file, encrypted.
- * The filename is the (16 chars short) result of hashing the generated salt in the db,
- * concatenated with the device id.
+ * Returns a URL browsable from outside the DAppNode network
+ * The URL contains necessary credentials (token + encryption key) to retrieve
+ * and download an OpenVPN credentials file for the device `id`
  * @param id "new-device"
  */
 export async function getDeviceCredentials({
@@ -21,29 +13,8 @@ export async function getDeviceCredentials({
 }: {
   id: string;
 }): Promise<VpnDeviceCredentials> {
-  const key = generateKey();
+  // Make sure the client exists
+  await getClient(id);
 
-  const credentialsFileData = await getClient(id);
-  const encrypted = encrypt(credentialsFileData, key);
-
-  const salt = fs.readFileSync(saltPath, "utf-8");
-  const hostname = process.env[GLOBAL_ENVS.HOSTNAME];
-
-  if (!salt) throw Error("Salt not present.");
-
-  const filename = crypto
-    .createHash("sha256")
-    .update(salt + id)
-    .digest("hex")
-    .substring(0, 16);
-  fs.writeFileSync(`${credentialsDir}/${filename}`, encrypted);
-  const url = `http://${hostname}:${credentialsPort}/?id=${filename}#${encodeURIComponent(
-    key
-  )}`;
-
-  return {
-    filename,
-    key,
-    url
-  };
+  return { url: getConnectUrl(id) };
 }
