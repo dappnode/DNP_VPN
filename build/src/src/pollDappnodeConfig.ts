@@ -1,5 +1,6 @@
 import got from "got";
 import ip from "ip";
+import retry from "async-retry";
 import {
   dappmanagerApiUrlGlobalEnvs,
   GLOBAL_ENVS_KEYS,
@@ -28,25 +29,37 @@ export async function pollDappnodeConfig({
   if (hostnameFromEnv && internalIpFromEnv)
     return { hostname: hostnameFromEnv, internalIp: internalIpFromEnv };
 
-  const hostname = await got(GLOBAL_ENVS_KEYS.HOSTNAME, {
-    throwHttpErrors: true,
-    prefixUrl: dappmanagerApiUrlGlobalEnvs,
-    retry: 10, // Should be about 15 minutes
-    hooks: {
-      beforeRetry: [
-        (_0, error, retryCount = 0): void => {
-          const errorMsg = error ? `${error.code} ${error.message}` : "";
-          onRetry(errorMsg, retryCount);
+  // Add async-retry in case the DAPPMANAGER returns an 200 code with empty hostname
+  const hostname = await retry(
+    () =>
+      got(GLOBAL_ENVS_KEYS.HOSTNAME, {
+        throwHttpErrors: true,
+        prefixUrl: dappmanagerApiUrlGlobalEnvs,
+        retry: 10, // Should be about 15 minutes
+        hooks: {
+          beforeRetry: [
+            (_0, error, retryCount = 0): void => {
+              const errorMsg = error ? `${error.code} ${error.message}` : "";
+              onRetry(errorMsg, retryCount);
+            }
+          ]
         }
-      ]
+      })
+        .text()
+        .then(res => res.trim())
+        .then(data => {
+          if (!data) throw Error("No hostname returned");
+          if (!ip.isV4Format(data) && !isDomain(data))
+            throw Error(`Invalid hostname returned: ${data}`);
+          return data;
+        }),
+    {
+      retries: 10,
+      onRetry: (error, retryCount) => {
+        onRetry(error.message, retryCount);
+      }
     }
-  })
-    .text()
-    .then(res => res.trim());
-
-  if (!hostname) throw Error("No hostname returned");
-  if (!ip.isV4Format(hostname) && !isDomain(hostname))
-    throw Error(`Invalid hostname returned: ${hostname}`);
+  );
 
   // internal IP is an optional feature for when NAT-Loopback is off
   try {
