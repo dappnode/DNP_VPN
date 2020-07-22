@@ -32,6 +32,20 @@ yargs
   // blank scriptName so that help text doesn't display the cli name before each command
   .scriptName("")
   .demandCommand(1)
+  .showHelpOnFail(false)
+  .recommendCommands()
+  .help()
+  .fail((msg, err) => {
+    // Show command help message when no command is provided
+    if (msg && msg.includes("Not enough non-option arguments")) {
+      yargs.showHelp();
+      console.log("\n");
+    }
+
+    console.error(` ✖ ${err.stack}\n`);
+    process.exit(1);
+  })
+
   .command({
     command: "ls",
     describe: "List devices.",
