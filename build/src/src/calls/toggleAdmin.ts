@@ -14,9 +14,10 @@ export async function toggleAdmin({ id }: { id: string }): Promise<void> {
   const ccdArray = getCCD();
   const isAdmin = ccdArray.find(c => c.cn === id);
 
-  if (id === MASTER_ADMIN_NAME) {
-    throw Error("Cannot remove the master admin user");
-  } else if (isAdmin) {
+  if (isAdmin) {
+    if (id === MASTER_ADMIN_NAME) {
+      throw Error("Cannot remove the master admin user");
+    }
     revokeAdmin(id);
   } else {
     grantAdmin(id);
