@@ -9,7 +9,10 @@ import {
   listDevices
 } from "../src/calls";
 
-describe("Integration test", () => {
+// This test need to be run in a special environment with access to 
+// the OpenVPN binaries and other features available only in the production
+// container of the VPN.
+describe.skip("Integration test", () => {
   const id0 = "Jordi";
   const id1 = "Hal";
   const id2 = "Wardog";
