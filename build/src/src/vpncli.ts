@@ -60,7 +60,7 @@ yargs
     builder: idArg,
     handler: async ({ id }) => {
       const { url } = await api.getDeviceCredentials({ id });
-      console.log(chalk.green(`Credentials generated for ${id}: ${url}`));
+      console.log(chalk.green(`Credentials generated for ${id}:\n${url}`));
     }
   })
   .command({
