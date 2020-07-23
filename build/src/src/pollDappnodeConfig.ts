@@ -38,9 +38,8 @@ export async function pollDappnodeConfig({
         retry: 10, // Should be about 15 minutes
         hooks: {
           beforeRetry: [
-            (_0, error, retryCount = 0): void => {
-              const errorMsg = error ? `${error.code} ${error.message}` : "";
-              onRetry(errorMsg, retryCount);
+            (_0, e, retryCount = 0): void => {
+              onRetry(e ? `${e.code} ${e.message}` : "", retryCount);
             }
           ]
         }
@@ -55,8 +54,8 @@ export async function pollDappnodeConfig({
         }),
     {
       retries: 10,
-      onRetry: (error, retryCount) => {
-        onRetry(error.message, retryCount);
+      onRetry: (e, retryCount) => {
+        onRetry(e.message, retryCount);
       }
     }
   );

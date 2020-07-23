@@ -13,13 +13,13 @@
 // 4. Print a nicely formated msg with a QR code
 
 import url from "url";
+import retry from "async-retry";
 import { getRpcCall } from "./api/getRpcCall";
 import { API_PORT } from "./params";
 import { renderQrCode } from "./utils/renderQrCode";
 
 /* eslint-disable no-console */
 
-const statusTimeout = 60 * 1000;
 const vpnRpcApiUrl = url.format({
   protocol: "http",
   hostname: "127.0.0.1",
@@ -28,31 +28,37 @@ const vpnRpcApiUrl = url.format({
 });
 const api = getRpcCall(vpnRpcApiUrl);
 
-// ### TODO: Is this still necessary?
+// If user does CTRL + C, exit process
 process.on("SIGINT", () => process.exit(128));
 
 (async function(): Promise<void> {
-  await waitForOkStatus();
+  try {
+    // Wait for READY status
+    await retry(
+      async () => {
+        const status = await api.getStatus();
+        if (status.status !== "READY")
+          throw Error(`VPN not ready, status: ${status.status} ${status.msg}`);
+      },
+      {
+        retries: 10,
+        onRetry: (e, retryCount) => {
+          console.log(`retry: #${retryCount} - ${e.message}`);
+        }
+      }
+    );
 
-  const { url } = await api.getMasterAdminCred();
+    const { url } = await api.getMasterAdminCred();
 
-  console.log(`
-${await renderQrCode(url)}
+    // If rendering the QR fails, show the error and continue, the raw URL is consumable
+    console.log(`
+${await renderQrCode(url).catch(e => e.stack)}
 
 To connect to your DAppNode scan the QR above or copy/paste link below into your browser:
 ${url}`);
-})();
-
-/**
- * Wait for VPN status to be READY, use separate function to exit the while loop with return
- */
-async function waitForOkStatus(): Promise<void> {
-  const start = Date.now();
-
-  while (Date.now() - start < statusTimeout) {
-    const status = await api.getStatus();
-    if (status.status === "READY") return;
-    else console.log(`VPN not ready, status: ${status.status} ${status.msg}`);
+  } catch (e) {
+    // Exit process cleanly to prevent showing 'Unhandled rejection'
+    console.error(e);
+    process.exit(1);
   }
-  throw Error(`Timeout`);
-}
+})();
