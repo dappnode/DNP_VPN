@@ -1,5 +1,5 @@
 import { startHttpApi } from "./api";
-import { addDevice, toggleAdmin } from "./calls";
+import { addDevice, toggleAdmin, getMasterAdminCred } from "./calls";
 import { printGitData } from "./utils/gitData";
 import { startCredentialsWebserver } from "./credentials";
 import { API_PORT, OPENVPN_CRED_PORT, MASTER_ADMIN_NAME } from "./params";
@@ -40,11 +40,9 @@ startCredentialsService();
     await initalizeOpenVpnConfig({ hostname, internalIp });
 
     try {
-      await addDevice({ id: MASTER_ADMIN_NAME });
-      await toggleAdmin({ id: MASTER_ADMIN_NAME });
+      await getMasterAdminCred();
     } catch (e) {
-      if (!e.message.includes("exist"))
-        logs.error(`Error creating ${MASTER_ADMIN_NAME} device`, e);
+      logs.error(`Error creating ${MASTER_ADMIN_NAME} device`, e);
     }
 
     vpnStatus.status = "READY";

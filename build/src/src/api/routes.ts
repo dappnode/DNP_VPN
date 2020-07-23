@@ -19,6 +19,14 @@ export interface Routes {
   }) => Promise<VpnDeviceCredentials>;
 
   /**
+   * Ensures the MASTER_ADMIN device is created
+   * Returns a URL browsable from outside the DAppNode network
+   * The URL contains necessary credentials (token + encryption key) to retrieve
+   * and download an OpenVPN credentials file for the MASTER_ADMIN device
+   */
+  getMasterAdminCred: () => Promise<VpnDeviceCredentials>;
+
+  /**
    * Returns the current status of the VPN server
    */
   getStatus: () => Promise<VpnStatus>;
@@ -50,6 +58,7 @@ export interface Routes {
 export const routesData: { [P in keyof Routes]: {} } = {
   addDevice: {},
   getDeviceCredentials: {},
+  getMasterAdminCred: {},
   getStatus: {},
   removeDevice: {},
   resetDevice: {},

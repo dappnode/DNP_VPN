@@ -14,7 +14,7 @@
 
 import url from "url";
 import { getRpcCall } from "./api/getRpcCall";
-import { API_PORT, MASTER_ADMIN_NAME } from "./params";
+import { API_PORT } from "./params";
 import { renderQrCode } from "./utils/renderQrCode";
 
 /* eslint-disable no-console */
@@ -34,14 +34,7 @@ process.on("SIGINT", () => process.exit(128));
 (async function(): Promise<void> {
   await waitForOkStatus();
 
-  try {
-    await api.addDevice({ id: MASTER_ADMIN_NAME });
-  } catch (e) {
-    if (!e.message.includes("exist"))
-      console.error(`Error creating ${MASTER_ADMIN_NAME} device`, e);
-  }
-
-  const { url } = await api.getDeviceCredentials({ id: MASTER_ADMIN_NAME });
+  const { url } = await api.getMasterAdminCred();
 
   console.log(`
 ${await renderQrCode(url)}

@@ -1,5 +1,6 @@
 export * from "./addDevice";
 export * from "./getDeviceCredentials";
+export * from "./getMasterAdminCred";
 export * from "./getStatus";
 export * from "./getVersionData";
 export * from "./listDevices";
