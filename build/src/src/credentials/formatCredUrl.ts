@@ -23,8 +23,7 @@ export function formatCredUrl({
     hash: encodeURIComponent(key),
     search: search.toString(),
     // Must have forward slash "/" at the end of the path
-    // The end forward slash is necessary for Linux terminals to recognize
-    // the entire URL as the same and be clickable
+    // "/" is necessary for Linux terminals to make the entire URL clickable
     pathname: "/"
   });
 }

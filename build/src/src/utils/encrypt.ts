@@ -1,5 +1,8 @@
 import { secretbox, randomBytes } from "tweetnacl";
 
+/**
+ * Generates a tweetnacl key at the predefined `secretbox.keyLength`
+ */
 export function generateKey(): string {
   return Buffer.from(randomBytes(secretbox.keyLength)).toString("base64");
 }

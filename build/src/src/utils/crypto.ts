@@ -14,6 +14,10 @@ export function sha256(data: string): string {
 /**
  * Random token of 32 bytes in hex using crypto.randomBytes
  */
-export function getRandomToken(bytes = 32): string {
-  return crypto.randomBytes(bytes).toString("hex");
+export function getRandomToken(length = 16): string {
+  return crypto
+    .randomBytes(length * 4)
+    .toString("base64")
+    .replace(/\W/g, "")
+    .slice(0, length);
 }

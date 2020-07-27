@@ -145,7 +145,7 @@ function getCredTokenAndKey(id: string): { token: string; key: string } {
       return { token, key: tokenData.key };
 
   // If no token, or used: create new token
-  const token = getRandomToken();
+  const token = getRandomToken(16);
   const key = generateKey();
   tokens.set(token, { id, key, created: Date.now(), used: false });
   return { token, key };
