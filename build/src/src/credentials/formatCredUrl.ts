@@ -21,6 +21,10 @@ export function formatCredUrl({
     hostname,
     port: OPENVPN_CRED_PORT,
     hash: encodeURIComponent(key),
-    search: search.toString()
+    search: search.toString(),
+    // Must have forward slash "/" at the end of the path
+    // The end forward slash is necessary for Linux terminals to recognize
+    // the entire URL as the same and be clickable
+    pathname: "/"
   });
 }
