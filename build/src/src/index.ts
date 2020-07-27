@@ -1,5 +1,5 @@
 import { startHttpApi } from "./api";
-import { addDevice, toggleAdmin, getMasterAdminCred } from "./calls";
+import { getMasterAdminCred } from "./calls";
 import { printGitData } from "./utils/gitData";
 import { startCredentialsWebserver } from "./credentials";
 import { API_PORT, OPENVPN_CRED_PORT, MASTER_ADMIN_NAME } from "./params";
