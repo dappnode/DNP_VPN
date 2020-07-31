@@ -7,8 +7,13 @@ build/src/vpndb/
 build/src/vpndb.json
 uploader
 
+# Build artifacts
+build/src/dist
+build/ui_openvpn/build
+
 # Version data file
 .version.json
+.git-data.json
 
 # Logs
 logs

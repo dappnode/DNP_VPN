@@ -1,2 +1,9 @@
 node_modules
 node_modules/
+npm-debug.log
+build_*
+
+# Test files, artifacts
+build/src/dist
+build/src/test
+build/ui_openvpn/build

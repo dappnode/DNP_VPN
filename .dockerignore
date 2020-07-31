@@ -2,10 +2,17 @@
 build/Dockerfile
 
 # Acelerate ADD build/src . command
-build/src/node_modules/
-build/src/vpndb.json
-build/src/test_files/
-build/src/test_files/*
+build/*/node_modules/
+build/*/vpndb.json
+build/*/test_files/
+build/*/test_files/*
+build/*/npm-debug.log
+build_*
+
+# Build artifacts
+build/src/dist
+build/ui_openvpn/build
 
 # Version data file
 .version.json
+.git-data.json
