@@ -4,7 +4,8 @@ import retry from "async-retry";
 import {
   dappmanagerApiUrlGlobalEnvs,
   GLOBAL_ENVS_KEYS,
-  GLOBAL_ENVS
+  GLOBAL_ENVS,
+  NO_HOSTNAME_RETURNED_ERROR
 } from "./params";
 import { isDomain } from "./utils/domain";
 import { logs } from "./logs";
@@ -47,7 +48,7 @@ export async function pollDappnodeConfig({
         .text()
         .then(res => res.trim())
         .then(data => {
-          if (!data) throw Error("No hostname returned");
+          if (!data) throw Error(NO_HOSTNAME_RETURNED_ERROR);
           if (!ip.isV4Format(data) && !isDomain(data))
             throw Error(`Invalid hostname returned: ${data}`);
           return data;
