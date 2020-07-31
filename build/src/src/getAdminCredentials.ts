@@ -47,6 +47,13 @@ class NotReadyError extends Error {
 
 (async function(): Promise<void> {
   try {
+    console.log(
+      `Fetching DAppNode VPN credentials. It may take some time; use CTRL + C to stop`
+    );
+
+    // Track time to not log errors right away
+    const fetchStartTime = Date.now();
+
     // Wait for READY status
     await retry(
       async () => {
@@ -62,8 +69,11 @@ class NotReadyError extends Error {
               ? "Initializing DAppNode..."
               : e.message;
 
+          // Don't log errors for the first 3 seconds
+          if (Date.now() - fetchStartTime < 3000) return;
+
           // If the same error message has already been printed, print just a dot
-          if (lastRetryMessage !== errorMsg) console.log(errorMsg);
+          if (lastRetryMessage !== errorMsg) process.stdout.write(errorMsg);
           else process.stdout.write(".");
           lastRetryMessage = errorMsg;
         }
@@ -74,6 +84,7 @@ class NotReadyError extends Error {
 
     // If rendering the QR fails, show the error and continue, the raw URL is consumable
     console.log(`
+
 ${await renderQrCode(url).catch(e => e.stack)}
 
 To connect to your DAppNode scan the QR above or copy/paste link below into your browser:
