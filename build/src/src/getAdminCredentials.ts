@@ -15,8 +15,9 @@
 import url from "url";
 import retry from "async-retry";
 import { getRpcCall } from "./api/getRpcCall";
-import { API_PORT } from "./params";
+import { API_PORT, NO_HOSTNAME_RETURNED_ERROR } from "./params";
 import { renderQrCode } from "./utils/renderQrCode";
+import { VpnStatus } from "./types";
 
 /* eslint-disable no-console */
 
@@ -31,19 +32,40 @@ const api = getRpcCall(vpnRpcApiUrl);
 // If user does CTRL + C, exit process
 process.on("SIGINT", () => process.exit(128));
 
+let lastRetryMessage: string;
+
+/**
+ * Utility error to track expected 'still initializing' errors
+ */
+class NotReadyError extends Error {
+  status: VpnStatus;
+  constructor(status: VpnStatus) {
+    super(`Initializing VPN, ${status.status} ${status.msg}`);
+    this.status = status;
+  }
+}
+
 (async function(): Promise<void> {
   try {
     // Wait for READY status
     await retry(
       async () => {
         const status = await api.getStatus();
-        if (status.status !== "READY")
-          throw Error(`VPN not ready, status: ${status.status} ${status.msg}`);
+        if (status.status !== "READY") throw new NotReadyError(status);
       },
       {
         retries: 10,
-        onRetry: (e, retryCount) => {
-          console.log(`retry: #${retryCount} - ${e.message}`);
+        onRetry: e => {
+          const errorMsg =
+            e instanceof NotReadyError &&
+            e.status.msg === NO_HOSTNAME_RETURNED_ERROR
+              ? "Initializing DAppNode..."
+              : e.message;
+
+          // If the same error message has already been printed, print just a dot
+          if (lastRetryMessage !== errorMsg) console.log(errorMsg);
+          else process.stdout.write(".");
+          lastRetryMessage = errorMsg;
         }
       }
     );

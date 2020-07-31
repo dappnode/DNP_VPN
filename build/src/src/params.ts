@@ -53,3 +53,11 @@ export const GLOBAL_ENVS_KEYS: { [K in keyof typeof GLOBAL_ENVS]: K } = {
   PUBLIC_IP: "PUBLIC_IP",
   SERVER_NAME: "SERVER_NAME"
 };
+
+// Internal error messages
+/**
+ * This error happens when the config is polled from the DAPPMANAGER which is
+ * already active but has not completed the initializeDb process. When this error
+ * happens show OK messages to the user since it's an expected situation
+ */
+export const NO_HOSTNAME_RETURNED_ERROR = "No hostname returned";

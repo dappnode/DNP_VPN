@@ -6,6 +6,7 @@ export interface VpnStatus {
     | "INITIALIZING"
     | "READY";
   msg?: string | undefined;
+  retryCount?: number;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
