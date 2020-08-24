@@ -3,6 +3,7 @@
   "version": "0.2.7",
   "description": "Dappnode package responsible for providing the VPN (OpenVPN) connection",
   "type": "dncore",
+  "architectures": ["amd64", "arm64"],
   "author": "DAppNode Association <admin@dappnode.io> (https://github.com/dappnode)",
   "contributors": [
     "Eduardo Antuña <eduadiez@gmail.com> (https://github.com/eduadiez)",
@@ -10,11 +11,7 @@
     "vdo <vdo@giveth.io> (https://github.com/vdo)",
     "Alex Floyd <alex@giveth.io> (https://github.com/mex20)"
   ],
-  "keywords": [
-    "DAppNodeCore",
-    "VPN",
-    "OpenVPN"
-  ],
+  "keywords": ["DAppNodeCore", "VPN", "OpenVPN"],
   "links": {
     "homepage": "https://github.com/dappnode/DNP_VPN#readme"
   },
