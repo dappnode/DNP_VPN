@@ -71,14 +71,7 @@ FROM alpine:3.9
 WORKDIR /usr/src/app
 
 RUN apk add --update \
-    openvpn \
-    iptables \ 
-    bash \
-    easy-rsa \ 
-    openssl \
-    jq \
-    sed \
-    nodejs
+    openvpn iptables bash easy-rsa openssl nodejs
 RUN ln -s /usr/share/easy-rsa/easyrsa /usr/local/bin && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/* /var/cache/distfiles/*
 
