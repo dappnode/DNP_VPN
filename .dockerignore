@@ -13,6 +13,9 @@ build_*
 build/src/dist
 build/ui_openvpn/build
 
+# Ignore tests
+build/src/test
+
 # Version data file
 .version.json
 .git-data.json
