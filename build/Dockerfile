@@ -1,7 +1,7 @@
 ##########################
 # Build dependencies
 ##########################
-FROM amd64/node:10.15.3-alpine as build
+FROM amd64/node:10.19.0-alpine as build
 
 WORKDIR /usr/src/app
 
@@ -31,7 +31,7 @@ RUN yarn build
 ##########################
 # Compute git data
 ##########################
-FROM amd64/node:10.15.3-alpine as git-data
+FROM amd64/node:10.19.0-alpine as git-data
 
 WORKDIR /usr/src/app
 
@@ -45,7 +45,7 @@ RUN node getGitData /usr/src/app/.git-data.json
 ##########################
 # Build UI
 ##########################
-FROM amd64/node:10.15.3-alpine as build-ui
+FROM amd64/node:10.19.0-alpine as build-ui
 
 WORKDIR /usr/src/app
 
