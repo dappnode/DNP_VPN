@@ -1,7 +1,9 @@
 ##########################
 # Build dependencies
+# ARCH is used to avoid emulated builds in muti-arch builds
 ##########################
-FROM alpine:3.9 as build
+ARG ARCH=
+FROM ${ARCH}alpine:3.9 as build
 
 WORKDIR /usr/src/app
 
@@ -31,7 +33,7 @@ RUN yarn build
 ##########################
 # Compute git data
 ##########################
-FROM alpine:3.9 as git-data
+FROM ${ARCH}alpine:3.9 as git-data
 
 WORKDIR /usr/src/app
 
@@ -45,7 +47,7 @@ RUN node getGitData /usr/src/app/.git-data.json
 ##########################
 # Build UI
 ##########################
-FROM alpine:3.9 as build-ui
+FROM ${ARCH}alpine:3.9 as build-ui
 
 WORKDIR /usr/src/app
 
