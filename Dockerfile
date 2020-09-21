@@ -3,7 +3,7 @@
 ##########################
 # --platform=$BUILDPLATFORM is used build javascript source with host arch
 # Otherwise webpack builds on emulated archs can be extremely slow (+1h)
-FROM --platform=$BUILDPLATFORM node:10.19.0-alpine as build
+FROM --platform=${BUILDPLATFORM:-amd64} node:10.19.0-alpine as build
 
 WORKDIR /usr/src/app
 
@@ -33,7 +33,7 @@ RUN yarn build
 ##########################
 # Compute git data
 ##########################
-FROM --platform=$BUILDPLATFORM node:10.19.0-alpine as git-data
+FROM --platform=${BUILDPLATFORM:-amd64} node:10.19.0-alpine as git-data
 
 WORKDIR /usr/src/app
 
@@ -47,7 +47,7 @@ RUN node getGitData /usr/src/app/.git-data.json
 ##########################
 # Build UI
 ##########################
-FROM --platform=$BUILDPLATFORM node:10.19.0-alpine as build-ui
+FROM --platform=${BUILDPLATFORM:-amd64} node:10.19.0-alpine as build-ui
 
 WORKDIR /usr/src/app
 
