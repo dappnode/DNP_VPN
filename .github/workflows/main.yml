@@ -12,8 +12,9 @@ jobs:
   unit-test:
     runs-on: ubuntu-16.04
     name: Tests
-    env:
-      working-directory: ./build/src
+    defaults:
+      run:
+        working-directory: ./build/src
     steps:
       - uses: actions/checkout@v2
       - name: Setup node
@@ -21,13 +22,9 @@ jobs:
         with:
           node-version: "10.x"
       - run: yarn install
-        working-directory: ${{ env.working-directory }}
       - run: yarn lint
-        working-directory: ${{ env.working-directory }}
       - run: yarn test
-        working-directory: ${{ env.working-directory }}
       - run: yarn test:int
-        working-directory: ${{ env.working-directory }}
 
   build-test:
     runs-on: ubuntu-16.04
