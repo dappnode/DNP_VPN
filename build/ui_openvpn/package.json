@@ -10,14 +10,13 @@
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
     "react-scripts": "1.1.4",
-    "source-map-explorer": "^1.6.0",
     "tweetnacl": "^1.0.0",
     "tweetnacl-util": "^0.15.0",
     "ua-parser-js": "^0.7.18"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts --max_old_space_size=3800 build",
+    "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
@@ -29,6 +28,7 @@
     "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-prettier": "^2.6.0",
     "gh-pages": "^1.1.0",
-    "prettier": "^1.13.5"
+    "prettier": "^1.13.5",
+    "source-map-explorer": "^1.6.0"
   }
 }

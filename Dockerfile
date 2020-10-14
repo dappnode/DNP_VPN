@@ -1,12 +1,14 @@
 ##########################
 # Build dependencies
 ##########################
-FROM alpine:3.9 as build
+# --platform=$BUILDPLATFORM is used build javascript source with host arch
+# Otherwise webpack builds on emulated archs can be extremely slow (+1h)
+FROM --platform=${BUILDPLATFORM:-amd64} node:10.19.0-alpine as build
 
 WORKDIR /usr/src/app
 
 RUN apk add --update --no-cache \
-    build-base python libpcap-dev linux-headers bash nodejs yarn npm
+    build-base python libpcap-dev linux-headers bash
 
 COPY build/src/package.json ./
 COPY build/src/yarn.lock ./
@@ -31,7 +33,7 @@ RUN yarn build
 ##########################
 # Compute git data
 ##########################
-FROM alpine:3.9 as git-data
+FROM --platform=${BUILDPLATFORM:-amd64} node:10.19.0-alpine as git-data
 
 WORKDIR /usr/src/app
 
@@ -45,7 +47,7 @@ RUN node getGitData /usr/src/app/.git-data.json
 ##########################
 # Build UI
 ##########################
-FROM alpine:3.9 as build-ui
+FROM --platform=${BUILDPLATFORM:-amd64} node:10.19.0-alpine as build-ui
 
 WORKDIR /usr/src/app
 
@@ -53,7 +55,6 @@ WORKDIR /usr/src/app
 COPY build/ui_openvpn/package*.json ./
 COPY build/ui_openvpn/*lock* ./
 # install dependencies
-RUN apk add --no-cache nodejs yarn
 RUN yarn install --production
 # copy the contents of the app
 COPY build/ui_openvpn .
@@ -72,14 +73,7 @@ FROM alpine:3.9
 WORKDIR /usr/src/app
 
 RUN apk add --update \
-    openvpn \
-    iptables \ 
-    bash \
-    easy-rsa \ 
-    openssl \
-    jq \
-    sed \
-    nodejs
+    openvpn iptables bash easy-rsa openssl nodejs
 RUN ln -s /usr/share/easy-rsa/easyrsa /usr/local/bin && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/* /var/cache/distfiles/*
 
