@@ -304,8 +304,13 @@ set -u
 # fi
 
 # Save the current OVPN_ vars to the ovpn_env.sh file
+
+# Clean file to not concatenate config
+rm $OVPN_ENV
+touch $OVPN_ENV
+
 (set | grep '^OVPN_') | while read -r var; do
-  echo "declare -x $var" >>"$OVPN_ENV"
+  echo "declare -x $var" >> "$OVPN_ENV"
 done
 
 conf=${OPENVPN:-}/openvpn.conf
