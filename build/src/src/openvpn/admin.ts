@@ -30,10 +30,6 @@ export function grantAdmin(id: string): void {
  * @param id "my-device"
  */
 export function revokeAdmin(id: string): void {
-  if (id === MAIN_ADMIN_NAME) {
-    throw Error("Cannot revoke the main admin user");
-  }
-
   try {
     fs.unlinkSync(getCcdFilePath(id));
   } catch (err) {

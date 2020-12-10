@@ -16,7 +16,7 @@ export async function toggleAdmin({ id }: { id: string }): Promise<void> {
 
   if (isAdmin) {
     if (id === MAIN_ADMIN_NAME) {
-      throw Error("Cannot remove the main admin user");
+      throw Error("Cannot revoke the main admin user");
     }
     revokeAdmin(id);
   } else {
