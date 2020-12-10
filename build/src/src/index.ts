@@ -2,7 +2,7 @@ import { startHttpApi } from "./api";
 import { getMasterAdminCred } from "./calls";
 import { printGitData } from "./utils/gitData";
 import { startCredentialsWebserver } from "./credentials";
-import { API_PORT, OPENVPN_CRED_PORT, MASTER_ADMIN_NAME } from "./params";
+import { API_PORT, OPENVPN_CRED_PORT, MAIN_ADMIN_NAME } from "./params";
 import { pollDappnodeConfig } from "./pollDappnodeConfig";
 import { initalizeOpenVpnConfig, openvpnBinary } from "./openvpn";
 import { config } from "./config";
@@ -45,7 +45,7 @@ startCredentialsService();
     try {
       await getMasterAdminCred();
     } catch (e) {
-      logs.error(`Error creating ${MASTER_ADMIN_NAME} device`, e);
+      logs.error(`Error creating ${MAIN_ADMIN_NAME} device`, e);
     }
 
     config.vpnStatus = { status: "READY" };

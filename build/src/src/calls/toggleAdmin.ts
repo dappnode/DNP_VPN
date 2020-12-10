@@ -1,5 +1,5 @@
 import { getCCD, getUserList, revokeAdmin, grantAdmin } from "../openvpn";
-import { MASTER_ADMIN_NAME } from "../params";
+import { MAIN_ADMIN_NAME } from "../params";
 
 /**
  * Gives/removes admin rights to the provided device id.
@@ -15,8 +15,8 @@ export async function toggleAdmin({ id }: { id: string }): Promise<void> {
   const isAdmin = ccdArray.find(c => c.cn === id);
 
   if (isAdmin) {
-    if (id === MASTER_ADMIN_NAME) {
-      throw Error("Cannot remove the master admin user");
+    if (id === MAIN_ADMIN_NAME) {
+      throw Error("Cannot remove the main admin user");
     }
     revokeAdmin(id);
   } else {
