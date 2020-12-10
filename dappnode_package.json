@@ -1,6 +1,6 @@
 {
   "name": "vpn.dnp.dappnode.eth",
-  "version": "0.2.7",
+  "version": "0.2.9",
   "description": "Dappnode package responsible for providing the VPN (OpenVPN) connection",
   "type": "dncore",
   "architectures": ["linux/amd64", "linux/arm64"],
