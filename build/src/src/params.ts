@@ -7,7 +7,7 @@ export const dappmanagerApiUrlGlobalEnvs = `${dappmanagerApiUrl}/global-envs`;
 // OpenVPN parameters
 export const USER_LIMIT = 500;
 export const CCD_MASK = "255.255.252.0";
-export const MASTER_ADMIN_NAME = "dappnode_admin";
+export const MAIN_ADMIN_NAME = "dappnode_admin";
 export const MASTER_ADMIN_IP = "172.33.10.1";
 export const ADMIN_IP_RANGE = ["172.33.10.2", "172.33.11.250"];
 
