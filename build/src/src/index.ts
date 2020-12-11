@@ -25,7 +25,7 @@ startCredentialsService();
 (async function startVpnClient(): Promise<void> {
   try {
     config.vpnStatus = { status: "FETCHING_CONFIG" };
-    const { hostname, internalIp } = await pollDappnodeConfig({
+    const hostname = await pollDappnodeConfig({
       onRetry: (errorMsg, retryCount) => {
         config.vpnStatus = {
           status: "FETCHING_CONFIG_ERROR",
@@ -36,11 +36,9 @@ startCredentialsService();
       }
     });
     config.hostname = hostname;
-    config.internalIp = internalIp;
-
-    logs.info("Initializing OpenVPN config", { hostname, internalIp });
+    logs.info("Initializing OpenVPN config", config.hostname);
     config.vpnStatus = { status: "INITIALIZING" };
-    await initalizeOpenVpnConfig({ hostname, internalIp });
+    await initalizeOpenVpnConfig(config.hostname);
 
     try {
       await getMasterAdminCred();

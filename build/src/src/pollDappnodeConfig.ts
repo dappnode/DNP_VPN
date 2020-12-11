@@ -8,7 +8,6 @@ import {
   NO_HOSTNAME_RETURNED_ERROR
 } from "./params";
 import { isDomain } from "./utils/domain";
-import { logs } from "./logs";
 
 /**
  * Polls the DAPPMANAGER to get the necessary config variables to start
@@ -20,23 +19,9 @@ export async function pollDappnodeConfig({
   onRetry
 }: {
   onRetry: (errorMsg: string, retryCount: number) => void;
-}): Promise<{
-  hostname: string;
-  internalIp: string;
-}> {
-  return {
-    hostname:
-      process.env[GLOBAL_ENVS.HOSTNAME] || (await getHostname({ onRetry })),
-    internalIp: await getInternalIp()
-  };
-}
-
-async function getHostname({
-  onRetry
-}: {
-  onRetry: (errorMsg: string, retryCount: number) => void;
 }): Promise<string> {
-  // Add async-retry in case the DAPPMANAGER returns an 200 code with empty hostname
+  const hostNameFromEnv = process.env[GLOBAL_ENVS.HOSTNAME];
+  if (hostNameFromEnv) return hostNameFromEnv;
   return await retry(
     () =>
       got(GLOBAL_ENVS_KEYS.HOSTNAME, {
@@ -66,21 +51,4 @@ async function getHostname({
       }
     }
   );
-}
-
-async function getInternalIp(): Promise<string> {
-  // internal IP is an optional feature for when NAT-Loopback is off
-  try {
-    const internalIp = await got(GLOBAL_ENVS_KEYS.INTERNAL_IP, {
-      throwHttpErrors: true,
-      prefixUrl: dappmanagerApiUrlGlobalEnvs
-    })
-      .text()
-      .then(res => res.trim());
-
-    return internalIp;
-  } catch (e) {
-    logs.warn(`Error getting internal IP from DAPPMANAGER`, e);
-    return process.env[GLOBAL_ENVS.INTERNAL_IP] || "";
-  }
 }

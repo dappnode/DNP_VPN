@@ -7,7 +7,6 @@ import { VpnStatus } from "./types";
  */
 export const config: {
   hostname?: string;
-  internalIp?: string;
   vpnStatus: VpnStatus;
 } = {
   vpnStatus: { status: "STARTED" }

@@ -7,18 +7,11 @@ import { PKI_PATH, PROXY_ARP_PATH } from "../params";
  * Initializes the OpenVPN configuration
  * This function MUST be called before starting the openvpn binary
  */
-export async function initalizeOpenVpnConfig({
-  hostname,
-  internalIp
-}: {
-  hostname: string;
-  internalIp: string;
-}): Promise<void> {
+export async function initalizeOpenVpnConfig(hostname: string): Promise<void> {
   // Replicate environment used in entrypoint.sh
   const openVpnEnv = {
     ...process.env,
     OVPN_CN: hostname,
-    DAPPNODE_INTERNAL_IP: internalIp,
     EASYRSA_REQ_CN: hostname
   };
 
