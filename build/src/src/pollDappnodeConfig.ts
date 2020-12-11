@@ -24,14 +24,20 @@ export async function pollDappnodeConfig({
   hostname: string;
   internalIp: string;
 }> {
-  // If ENVs are already available, do not poll
-  const hostnameFromEnv = process.env[GLOBAL_ENVS.HOSTNAME];
-  const internalIpFromEnv = process.env[GLOBAL_ENVS.INTERNAL_IP];
-  if (hostnameFromEnv && internalIpFromEnv)
-    return { hostname: hostnameFromEnv, internalIp: internalIpFromEnv };
+  return {
+    hostname:
+      process.env[GLOBAL_ENVS.HOSTNAME] || (await getHostname({ onRetry })),
+    internalIp: await getInternalIp()
+  };
+}
 
+async function getHostname({
+  onRetry
+}: {
+  onRetry: (errorMsg: string, retryCount: number) => void;
+}): Promise<string> {
   // Add async-retry in case the DAPPMANAGER returns an 200 code with empty hostname
-  const hostname = await retry(
+  return await retry(
     () =>
       got(GLOBAL_ENVS_KEYS.HOSTNAME, {
         throwHttpErrors: true,
@@ -60,7 +66,9 @@ export async function pollDappnodeConfig({
       }
     }
   );
+}
 
+async function getInternalIp(): Promise<string> {
   // internal IP is an optional feature for when NAT-Loopback is off
   try {
     const internalIp = await got(GLOBAL_ENVS_KEYS.INTERNAL_IP, {
@@ -70,9 +78,9 @@ export async function pollDappnodeConfig({
       .text()
       .then(res => res.trim());
 
-    return { hostname, internalIp };
+    return internalIp;
   } catch (e) {
     logs.warn(`Error getting internal IP from DAPPMANAGER`, e);
-    return { hostname, internalIp: "" };
+    return process.env[GLOBAL_ENVS.INTERNAL_IP] || "";
   }
 }

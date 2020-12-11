@@ -18,7 +18,7 @@ export async function initalizeOpenVpnConfig({
   const openVpnEnv = {
     ...process.env,
     OVPN_CN: hostname,
-    OVPN_INTERNAL_IP: internalIp,
+    DAPPNODE_INTERNAL_IP: internalIp,
     EASYRSA_REQ_CN: hostname
   };
 
