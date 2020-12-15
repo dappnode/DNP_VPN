@@ -3,7 +3,7 @@ import { getMasterAdminCred } from "./calls";
 import { printGitData } from "./utils/gitData";
 import { startCredentialsWebserver } from "./credentials";
 import { API_PORT, OPENVPN_CRED_PORT, MAIN_ADMIN_NAME } from "./params";
-import { pollDappnodeConfig } from "./pollDappnodeConfig";
+import { fetchHostname } from "./dappmanager/fetchHostname";
 import { initalizeOpenVpnConfig, openvpnBinary } from "./openvpn";
 import { config } from "./config";
 import { startCredentialsService } from "./credentials";
@@ -25,7 +25,7 @@ startCredentialsService();
 (async function startVpnClient(): Promise<void> {
   try {
     config.vpnStatus = { status: "FETCHING_CONFIG" };
-    const { hostname, internalIp } = await pollDappnodeConfig({
+    const hostname = await fetchHostname({
       onRetry: (errorMsg, retryCount) => {
         config.vpnStatus = {
           status: "FETCHING_CONFIG_ERROR",
@@ -36,11 +36,9 @@ startCredentialsService();
       }
     });
     config.hostname = hostname;
-    config.internalIp = internalIp;
-
-    logs.info("Initializing OpenVPN config", { hostname, internalIp });
+    logs.info(`Initializing OpenVPN config, hostname: ${config.hostname}`);
     config.vpnStatus = { status: "INITIALIZING" };
-    await initalizeOpenVpnConfig({ hostname, internalIp });
+    await initalizeOpenVpnConfig(config.hostname);
 
     try {
       await getMasterAdminCred();
