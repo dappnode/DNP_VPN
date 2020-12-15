@@ -6,16 +6,16 @@ import {
   GLOBAL_ENVS_KEYS,
   GLOBAL_ENVS,
   NO_HOSTNAME_RETURNED_ERROR
-} from "./params";
-import { isDomain } from "./utils/domain";
+} from "../params";
+import { isDomain } from "../utils/domain";
 
 /**
- * Polls the DAPPMANAGER to get the necessary config variables to start
+ * Polls the DAPPMANAGER to get the HOSTNAME (domain or IP) necessary to start
  * the VPN config. If available, fetches the ENVs from process.env
  * It throws an error after about 15 min of retries. The error should cause
  * the main process to crash and be restarted by it's parent manager (i.e. docker)
  */
-export async function pollDappnodeConfig({
+export async function fetchHostname({
   onRetry
 }: {
   onRetry: (errorMsg: string, retryCount: number) => void;
