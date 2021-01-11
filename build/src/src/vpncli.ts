@@ -42,7 +42,7 @@ yargs
       console.log("\n");
     }
 
-    console.error(` ✖ ${err.stack}\n`);
+    console.error(` ✖ ${(err ? err.stack : msg) || "Unknown error"}\n`);
     process.exit(1);
   })
 
