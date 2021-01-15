@@ -15,7 +15,9 @@ import { listDevices } from "./listDevices";
 export async function getMasterAdminCred(): Promise<VpnDeviceCredentials> {
   try {
     const devices = await listDevices();
-    if (!devices.find(d => d.id === MAIN_ADMIN_NAME)) {
+    if (devices.find(d => d.id === MAIN_ADMIN_NAME)) {
+      logs.info(`User ${MAIN_ADMIN_NAME} already exists`);
+    } else {
       await addDevice({ id: MAIN_ADMIN_NAME });
       await toggleAdmin({ id: MAIN_ADMIN_NAME });
     }

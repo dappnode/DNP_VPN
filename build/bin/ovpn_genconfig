@@ -306,8 +306,8 @@ set -u
 # Save the current OVPN_ vars to the ovpn_env.sh file
 
 # Clean file to not concatenate config
-rm $OVPN_ENV
-touch $OVPN_ENV
+# Syntax `true > $PATH` deletes the contents of $PATH without deleting the file
+true > $OVPN_ENV
 
 (set | grep '^OVPN_') | while read -r var; do
   echo "declare -x $var" >> "$OVPN_ENV"

@@ -12,7 +12,7 @@ export async function getClient(id: string): Promise<string> {
 
   try {
     return await shell(`${fetchCredsCommand} ${id}`, {
-      env: { DAPPNODE_INTERNAL_IP }
+      env: { ...process.env, DAPPNODE_INTERNAL_IP }
     });
   } catch (err) {
     throw Error(`Error retrieving client ${id}: ${err.message}`);

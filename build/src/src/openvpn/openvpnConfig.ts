@@ -10,7 +10,6 @@ import { PKI_PATH, PROXY_ARP_PATH } from "../params";
 export async function initalizeOpenVpnConfig(hostname: string): Promise<void> {
   // Replicate environment used in entrypoint.sh
   const openVpnEnv = {
-    ...process.env,
     OVPN_CN: hostname,
     EASYRSA_REQ_CN: hostname
   };
@@ -30,12 +29,14 @@ export async function initalizeOpenVpnConfig(hostname: string): Promise<void> {
       p: `"route 172.33.0.0 255.255.0.0"`,
       n: `"172.33.1.2"`
     },
-    { env: openVpnEnv }
+    { env: { ...process.env, ...openVpnEnv } }
   );
 
   // Check if PKI is initalized already, if not use hostname as CN
   if (directoryIsEmptyOrEnoent(PKI_PATH))
-    await shell("ovpn_initpki nopass", { env: openVpnEnv });
+    await shell("ovpn_initpki nopass", {
+      env: { ...process.env, ...openVpnEnv }
+    });
 
   // Enable Proxy ARP (needs privileges)
   fs.writeFileSync(PROXY_ARP_PATH, "1");
