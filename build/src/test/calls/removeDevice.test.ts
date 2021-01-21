@@ -2,6 +2,7 @@ import "mocha";
 import { expect } from "chai";
 import sinon from "sinon";
 import proxyquire from "proxyquire";
+import { REMOVE_MAIN_ADMIN_ERROR } from "../../src/calls/removeDevice";
 
 describe("Call function: removeDevice", () => {
   // This function calls getUserList and getCCD to build
@@ -46,6 +47,6 @@ describe("Call function: removeDevice", () => {
     } catch (e) {
       error = e.message;
     }
-    expect(error).to.equal("You cannot remove an admin user");
+    expect(error).to.equal(REMOVE_MAIN_ADMIN_ERROR);
   });
 });
