@@ -64,6 +64,15 @@ yargs
     }
   })
   .command({
+    command: "print <id>",
+    describe: "Print config file to stdout.",
+    builder: idArg,
+    handler: async ({ id }) => {
+      const credFile = await api.getCredFile({ id });
+      console.log(credFile);
+    }
+  })
+  .command({
     command: "add <id>",
     describe: "Add device.",
     builder: idArg,

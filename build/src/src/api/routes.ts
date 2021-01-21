@@ -9,6 +9,12 @@ export interface Routes {
   addDevice: (kwargs: { id: string }) => Promise<void>;
 
   /**
+   * Returns the credentials file (.ovpn) for device `id`
+   * @param id "new-device"
+   */
+  getCredFile({ id }: { id: string }): Promise<string>;
+
+  /**
    * Creates a new OpenVPN credentials file, encrypted.
    * The filename is the (16 chars short) result of hashing the generated salt in the db,
    * concatenated with the device id.
@@ -57,6 +63,7 @@ export interface Routes {
 
 export const routesData: { [P in keyof Routes]: {} } = {
   addDevice: {},
+  getCredFile: {},
   getDeviceCredentials: {},
   getMasterAdminCred: {},
   getStatus: {},
