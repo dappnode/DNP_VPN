@@ -7,4 +7,3 @@ export * from "./getVersionData";
 export * from "./listDevices";
 export * from "./removeDevice";
 export * from "./resetDevice";
-export * from "./toggleAdmin";

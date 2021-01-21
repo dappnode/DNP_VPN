@@ -1,4 +1,4 @@
-import { getUserList, getCCD, removeClient } from "../openvpn";
+import { getUserList, removeClient } from "../openvpn";
 import { MAIN_ADMIN_NAME } from "../params";
 
 /**
@@ -7,10 +7,6 @@ import { MAIN_ADMIN_NAME } from "../params";
  */
 export async function removeDevice({ id }: { id: string }): Promise<void> {
   const deviceArray = await getUserList();
-  const ccdArray = getCCD();
-
-  if (ccdArray.find(c => c.cn === id))
-    throw Error("You cannot remove an admin user");
 
   if (id === MAIN_ADMIN_NAME) {
     throw Error("Cannot remove the main admin user");

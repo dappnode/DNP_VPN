@@ -91,15 +91,6 @@ yargs
     }
   })
   .command({
-    command: "toggle <id>",
-    describe: "Give/remove admin rights to device.",
-    builder: idArg,
-    handler: async ({ id }) => {
-      await api.toggleAdmin({ id });
-      console.log(chalk.green(`Toggled admin status of ${id}`));
-    }
-  })
-  .command({
     command: "reset <id>",
     describe: "Reset device credentials.",
     builder: idArg,

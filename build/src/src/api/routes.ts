@@ -50,12 +50,6 @@ export interface Routes {
   resetDevice: (kwargs: { id: string }) => Promise<void>;
 
   /**
-   * Gives/removes admin rights to the provided device id.
-   * @param id Device id name
-   */
-  toggleAdmin: (kwargs: { id: string }) => Promise<void>;
-
-  /**
    * Returns a list of the existing devices, with the admin property
    */
   listDevices: () => Promise<VpnDevice[]>;
@@ -69,7 +63,6 @@ export const routesData: { [P in keyof Routes]: {} } = {
   getStatus: {},
   removeDevice: {},
   resetDevice: {},
-  toggleAdmin: {},
   listDevices: {}
 };
 
