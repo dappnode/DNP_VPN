@@ -1,6 +1,4 @@
-export * from "./admin";
 export * from "./buildClient";
-export * from "./getCCD";
 export * from "./getClient";
 export * from "./getUserList";
 export * from "./openvpnBinary";

@@ -38,15 +38,8 @@ export interface VersionData {
 
 export interface VpnDevice {
   id: string;
-  admin: boolean;
-  ip: string;
 }
 
 export interface VpnDeviceCredentials {
   url: string;
-}
-
-export interface OpenVpnCCDItem {
-  cn: string;
-  ip: string;
 }

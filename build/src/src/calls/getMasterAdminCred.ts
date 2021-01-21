@@ -1,5 +1,4 @@
 import { addDevice } from "./addDevice";
-import { toggleAdmin } from "./toggleAdmin";
 import { MAIN_ADMIN_NAME } from "../params";
 import { logs } from "../logs";
 import { getDeviceCredentials } from "./getDeviceCredentials";
@@ -19,7 +18,6 @@ export async function getMasterAdminCred(): Promise<VpnDeviceCredentials> {
       logs.info(`User ${MAIN_ADMIN_NAME} already exists`);
     } else {
       await addDevice({ id: MAIN_ADMIN_NAME });
-      await toggleAdmin({ id: MAIN_ADMIN_NAME });
     }
   } catch (e) {
     if (!e.message.includes("exist"))
