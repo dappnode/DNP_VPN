@@ -6,8 +6,7 @@ export const dappmanagerApiUrlGlobalEnvs = `${dappmanagerApiUrl}/global-envs`;
 
 // OpenVPN parameters
 export const USER_LIMIT = 500;
-export const CCD_MASK = "255.255.252.0";
-export const MASTER_ADMIN_NAME = "dappnode_admin";
+export const MAIN_ADMIN_NAME = "dappnode_admin";
 export const MASTER_ADMIN_IP = "172.33.10.1";
 export const ADMIN_IP_RANGE = ["172.33.10.2", "172.33.11.250"];
 
@@ -17,7 +16,6 @@ export const OPENVPN = "/etc/openvpn";
 export const OPENVPN_CCD_DIR = path.join(OPENVPN, "ccd");
 export const PKI_PATH = path.join(OPENVPN, "/pki/reqs");
 export const PROXY_ARP_PATH = "/proc/sys/net/ipv4/conf/eth0/proxy_arp";
-export const CCD_PATH = "/etc/openvpn/ccd";
 export const OPENVPN_CRED_DIR = "/usr/www/openvpn/cred";
 
 // API params

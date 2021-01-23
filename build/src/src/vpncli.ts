@@ -42,7 +42,7 @@ yargs
       console.log("\n");
     }
 
-    console.error(` ✖ ${err.stack}\n`);
+    console.error(` ✖ ${(err ? err.stack : msg) || "Unknown error"}\n`);
     process.exit(1);
   })
 
@@ -64,6 +64,15 @@ yargs
     }
   })
   .command({
+    command: "print <id>",
+    describe: "Print config file to stdout.",
+    builder: idArg,
+    handler: async ({ id }) => {
+      const credFile = await api.getCredFile({ id });
+      console.log(credFile);
+    }
+  })
+  .command({
     command: "add <id>",
     describe: "Add device.",
     builder: idArg,
@@ -79,15 +88,6 @@ yargs
     handler: async ({ id }) => {
       await api.removeDevice({ id });
       console.log(chalk.green(`Removed device ${id}`));
-    }
-  })
-  .command({
-    command: "toggle <id>",
-    describe: "Give/remove admin rights to device.",
-    builder: idArg,
-    handler: async ({ id }) => {
-      await api.toggleAdmin({ id });
-      console.log(chalk.green(`Toggled admin status of ${id}`));
     }
   })
   .command({

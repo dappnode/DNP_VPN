@@ -1,6 +1,5 @@
 import { addDevice } from "./addDevice";
-import { toggleAdmin } from "./toggleAdmin";
-import { MASTER_ADMIN_NAME } from "../params";
+import { MAIN_ADMIN_NAME } from "../params";
 import { logs } from "../logs";
 import { getDeviceCredentials } from "./getDeviceCredentials";
 import { VpnDeviceCredentials } from "../types";
@@ -15,14 +14,15 @@ import { listDevices } from "./listDevices";
 export async function getMasterAdminCred(): Promise<VpnDeviceCredentials> {
   try {
     const devices = await listDevices();
-    if (!devices.find(d => d.id === MASTER_ADMIN_NAME)) {
-      await addDevice({ id: MASTER_ADMIN_NAME });
-      await toggleAdmin({ id: MASTER_ADMIN_NAME });
+    if (devices.find(d => d.id === MAIN_ADMIN_NAME)) {
+      logs.info(`User ${MAIN_ADMIN_NAME} already exists`);
+    } else {
+      await addDevice({ id: MAIN_ADMIN_NAME });
     }
   } catch (e) {
     if (!e.message.includes("exist"))
-      logs.error(`Error creating ${MASTER_ADMIN_NAME} device`, e);
+      logs.error(`Error creating ${MAIN_ADMIN_NAME} device`, e);
   }
 
-  return await getDeviceCredentials({ id: MASTER_ADMIN_NAME });
+  return await getDeviceCredentials({ id: MAIN_ADMIN_NAME });
 }

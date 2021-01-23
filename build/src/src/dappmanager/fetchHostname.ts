@@ -6,32 +6,26 @@ import {
   GLOBAL_ENVS_KEYS,
   GLOBAL_ENVS,
   NO_HOSTNAME_RETURNED_ERROR
-} from "./params";
-import { isDomain } from "./utils/domain";
-import { logs } from "./logs";
+} from "../params";
+import { isDomain } from "../utils/domain";
 
 /**
- * Polls the DAPPMANAGER to get the necessary config variables to start
+ * Polls the DAPPMANAGER to get the HOSTNAME (domain or IP) necessary to start
  * the VPN config. If available, fetches the ENVs from process.env
  * It throws an error after about 15 min of retries. The error should cause
  * the main process to crash and be restarted by it's parent manager (i.e. docker)
  */
-export async function pollDappnodeConfig({
+export async function fetchHostname({
   onRetry
 }: {
   onRetry: (errorMsg: string, retryCount: number) => void;
-}): Promise<{
-  hostname: string;
-  internalIp: string;
-}> {
+}): Promise<string> {
   // If ENVs are already available, do not poll
-  const hostnameFromEnv = process.env[GLOBAL_ENVS.HOSTNAME];
-  const internalIpFromEnv = process.env[GLOBAL_ENVS.INTERNAL_IP];
-  if (hostnameFromEnv && internalIpFromEnv)
-    return { hostname: hostnameFromEnv, internalIp: internalIpFromEnv };
+  const hostNameFromEnv = process.env[GLOBAL_ENVS.HOSTNAME];
+  if (hostNameFromEnv) return hostNameFromEnv;
 
   // Add async-retry in case the DAPPMANAGER returns an 200 code with empty hostname
-  const hostname = await retry(
+  return await retry(
     () =>
       got(GLOBAL_ENVS_KEYS.HOSTNAME, {
         throwHttpErrors: true,
@@ -61,18 +55,6 @@ export async function pollDappnodeConfig({
     }
   );
 
-  // internal IP is an optional feature for when NAT-Loopback is off
-  try {
-    const internalIp = await got(GLOBAL_ENVS_KEYS.INTERNAL_IP, {
-      throwHttpErrors: true,
-      prefixUrl: dappmanagerApiUrlGlobalEnvs
-    })
-      .text()
-      .then(res => res.trim());
-
-    return { hostname, internalIp };
-  } catch (e) {
-    logs.warn(`Error getting internal IP from DAPPMANAGER`, e);
-    return { hostname, internalIp: "" };
-  }
+  // internal IP not fetched here, it is an optional feature
+  // for when NAT-Loopback is off
 }
