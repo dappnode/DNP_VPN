@@ -12,7 +12,7 @@ services:
     image: "vpn.dnp.dappnode.eth:0.2.8"
     container_name: DAppNodeCore-vpn.dnp.dappnode.eth
     privileged: true
-    restart: always
+    restart: unless-stopped
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/etc/hostname:/etc/vpnname:ro"
