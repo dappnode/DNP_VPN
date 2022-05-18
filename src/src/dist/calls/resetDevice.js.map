@@ -1,1 +1,0 @@
-{"version":3,"file":"resetDevice.js","sourceRoot":"","sources":["../../src/calls/resetDevice.ts"],"names":[],"mappings":";;;;;;;;;;;;AAAA,wCAAuD;AAEvD;;;GAGG;AACH,SAAsB,WAAW,CAAC,EAAE,EAAE,EAAkB;;QACtD,IAAI,EAAE,KAAK,EAAE,EAAE;YACb,MAAM,KAAK,CAAC,iCAAiC,CAAC,CAAC;SAChD;QAED,MAAM,sBAAY,CAAC,EAAE,CAAC,CAAC;QACvB,MAAM,qBAAW,CAAC,EAAE,CAAC,CAAC;IACxB,CAAC;CAAA;AAPD,kCAOC"}
