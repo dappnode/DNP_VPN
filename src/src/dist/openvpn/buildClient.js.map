@@ -1,0 +1,1 @@
+{"version":3,"file":"buildClient.js","sourceRoot":"","sources":["../../src/openvpn/buildClient.ts"],"names":[],"mappings":";;;;;;;;;;;;AAAA,0CAAuC;AAEvC;;GAEG;AACH,SAAsB,WAAW,CAAC,EAAU;;QAC1C,IAAI;YACF,MAAM,aAAK,CAAC,6BAA6B,EAAE,SAAS,CAAC,CAAC;SACvD;QAAC,OAAO,GAAG,EAAE;YACZ,MAAM,KAAK,CAAC,0BAA0B,GAAG,CAAC,OAAO,EAAE,CAAC,CAAC;SACtD;IACH,CAAC;CAAA;AAND,kCAMC"}

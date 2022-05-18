@@ -1,0 +1,1 @@
+{"version":3,"file":"listDevices.js","sourceRoot":"","sources":["../../src/calls/listDevices.ts"],"names":[],"mappings":";;;;;;;;;;;;AAAA,wCAAyC;AAGzC;;GAEG;AACH,SAAsB,WAAW;;QAC/B,MAAM,QAAQ,GAAG,MAAM,qBAAW,EAAE,CAAC;QAErC,OAAO,QAAQ,CAAC,GAAG,CAAC,IAAI,CAAC,EAAE,CAAC,CAAC;YAC3B,EAAE,EAAE,IAAI;SACT,CAAC,CAAC,CAAC;IACN,CAAC;CAAA;AAND,kCAMC"}
