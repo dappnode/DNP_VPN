@@ -10,8 +10,8 @@ WORKDIR /usr/src/app
 RUN apk add --update --no-cache \
     build-base python libpcap-dev linux-headers bash
 
-COPY build/src/package.json ./
-COPY build/src/yarn.lock ./
+COPY src/package.json ./
+COPY src/yarn.lock ./
 RUN yarn install --production
 # Reduces the app dir size from 94.5MB to 71.8MB
 RUN npm config set unsafe-perm true
@@ -25,7 +25,7 @@ RUN yarn global add modclean && modclean -r
 FROM build as build-src
 RUN yarn install
 # Install only --production first to cache them, then install the rest
-COPY build/src .
+COPY src .
 RUN yarn build
 # results in /usr/src/app/dist
 
@@ -39,7 +39,7 @@ WORKDIR /usr/src/app
 
 RUN apk add --no-cache git nodejs
 COPY .git .git
-COPY dappnode_package.json build/getGitData.js ./
+COPY dappnode_package.json scripts/getGitData.js ./
 RUN node getGitData /usr/src/app/.git-data.json
 # Results in /usr/src/app/.git-data.json
 
@@ -52,12 +52,12 @@ FROM --platform=${BUILDPLATFORM:-amd64} node:10.19.0-alpine as build-ui
 WORKDIR /usr/src/app
 
 # ensuring both package.json AND package-lock.json are copied
-COPY build/ui_openvpn/package*.json ./
-COPY build/ui_openvpn/*lock* ./
+COPY ui_openvpn/package*.json ./
+COPY ui_openvpn/*lock* ./
 # install dependencies
 RUN yarn install --production
 # copy the contents of the app
-COPY build/ui_openvpn .
+COPY ui_openvpn .
 # build for production
 ENV REACT_APP_CRED_URL_PATHNAME=/cred \
     REACT_APP_CRED_URL_QUERY_PARAM=id
@@ -118,7 +118,7 @@ COPY --from=build /usr/src/app/node_modules /usr/src/app/node_modules
 COPY --from=build-src /usr/src/app/dist /usr/src/app/src
 COPY --from=build-ui /usr/src/app/build/ui_openvpn.html $UI_OPENVPN_PATH
 COPY --from=git-data /usr/src/app/.git-data.json $GIT_DATA_PATH
-COPY build/bin /usr/local/bin
+COPY bin /usr/local/bin
 
 VOLUME ["/etc/openvpn"]
 
