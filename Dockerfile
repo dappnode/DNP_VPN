@@ -68,7 +68,7 @@ RUN node injectToHtml build/index.html build/ui_openvpn.html
 ##########################
 # Final stage
 ##########################
-FROM alpine:3.9
+FROM alpine:3.12.12
 
 WORKDIR /usr/src/app
 
