@@ -7,7 +7,7 @@ volumes:
   vpndnpdappnodeeth_data: {}
   vpndnpdappnodeeth_config: {}
 services:
-  vpn.dnp.dappnode.eth:
+  vpn:
     build: .
     image: "vpn.dnp.dappnode.eth:0.2.8"
     container_name: DAppNodeCore-vpn.dnp.dappnode.eth
@@ -29,5 +29,6 @@ services:
         ipv4_address: 172.33.1.4
         aliases:
           - vpn.dappnode
+          - vpn.vpn.dappnode
     logging:
       driver: journald
