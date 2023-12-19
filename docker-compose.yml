@@ -1,11 +1,4 @@
 version: "3.5"
-networks:
-  dncore_network:
-    name: dncore_network
-    external: true
-volumes:
-  vpndnpdappnodeeth_data: {}
-  vpndnpdappnodeeth_config: {}
 services:
   vpn.dnp.dappnode.eth:
     build: .
@@ -31,3 +24,12 @@ services:
           - vpn.dappnode
     logging:
       driver: journald
+
+networks:
+  dncore_network:
+    name: dncore_network
+    external: true
+
+volumes:
+  vpndnpdappnodeeth_data: {}
+  vpndnpdappnodeeth_config: {}
