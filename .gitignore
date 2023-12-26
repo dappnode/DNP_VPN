@@ -5,3 +5,5 @@ ui_openvpn/build
 
 src/node_modules
 src/dist
+
+build_*
