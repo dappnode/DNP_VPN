@@ -60,9 +60,9 @@ interface OpenVpnClientConnectEnv {
   daemon: string; // '0',
   verb: string; // '3',
   config: string; // '/etc/openvpn/openvpn.conf',
-  ifconfig_local: string; // '172.33.8.1',
-  ifconfig_netmask: string; // '255.255.252.0',
-  ifconfig_broadcast: string; // '172.33.11.255',
+  ifconfig_local: string; // '10.20.0.241' (s: "10.20.0.240/28")
+  ifconfig_netmask: string; // '255.255.255.0',
+  ifconfig_broadcast: string; // '10.20.0.255',
   script_context: string; // 'init',
   tun_mtu: string; // '1500',
   link_mtu: string; // '1622',
