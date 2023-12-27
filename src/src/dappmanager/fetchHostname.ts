@@ -8,6 +8,7 @@ import {
   NO_HOSTNAME_RETURNED_ERROR
 } from "../params";
 import { isDomain } from "../utils/domain";
+import { logs } from "../logs";
 
 /**
  * Polls the DAPPMANAGER to get the HOSTNAME (domain or IP) necessary to start
@@ -22,7 +23,13 @@ export async function fetchHostname({
 }): Promise<string> {
   // If ENVs are already available, do not poll
   const hostNameFromEnv = process.env[GLOBAL_ENVS.HOSTNAME];
-  if (hostNameFromEnv) return hostNameFromEnv;
+
+  if (hostNameFromEnv) {
+    logs.info(`Using hostname from ENV: ${hostNameFromEnv}`);
+    return hostNameFromEnv;
+  }
+
+  logs.info(`Fetching hostname from DAPPMANAGER: ${dappmanagerApiUrlGlobalEnvs}`);
 
   // Add async-retry in case the DAPPMANAGER returns an 200 code with empty hostname
   return await retry(
