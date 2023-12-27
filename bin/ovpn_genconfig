@@ -283,7 +283,8 @@ OVPN_DNS_SERVERS=("10.20.0.2")
 OVPN_SERVER="10.20.0.240/28"
 
 # Push route to server subnet
-OVPN_PUSH=("route 10.20.0.0 255.255.255.0")
+#OVPN_PUSH=("route 10.20.0.0 255.255.255.0")
+OVPN_PUSH=("route")
 
 # Create ccd directory for static routes
 [ ! -d "${OPENVPN:-}/ccd" ] && mkdir -p ${OPENVPN:-}/ccd
