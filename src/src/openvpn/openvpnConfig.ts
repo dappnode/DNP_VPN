@@ -2,6 +2,7 @@ import fs from "fs";
 import { shell, shellArgs } from "../utils/shell";
 import { directoryIsEmptyOrEnoent } from "../utils/fs";
 import { PKI_PATH, PROXY_ARP_PATH } from "../params";
+import { logs } from "../logs";
 
 /**
  * Initializes the OpenVPN configuration
@@ -14,23 +15,29 @@ export async function initalizeOpenVpnConfig(hostname: string): Promise<void> {
     EASYRSA_REQ_CN: hostname
   };
 
+  logs.info(`Initializing OpenVPN config, hostname: ${hostname}`);
+
   // Initialize config and PKI
-  // -c: Client to Client
-  // -d: disable default route (disables NAT without '-N')
-  // -p "route 172.33.0.0 255.255.0.0": Route to push to the client
-  // -n "172.33.1.2": DNS server (BIND)
-  await shellArgs(
+  // -c: Enable traffic among the clients connected to the VPN
+  // -d: Disable default route (disables NAT without '-N'). Only specific traffic will go through the VPN
+  // -u "udp://<hostname>": Hostname the clients will use to connect to the VPN
+  // -s Subnet the server will use to assign IPs to the clients
+  // -p "route 10.20.0.0 255.255.255.0": Route to push to the client
+  // -n "bind.dappnode": DNS server (BIND)
+  const output = await shellArgs(
     "ovpn_genconfig",
     {
       c: true,
       d: true,
-      u: `udp://"${hostname}"`,
-      s: "172.33.8.0/22",
-      p: `"route 172.33.0.0 255.255.0.0"`,
-      n: `"172.33.1.2"`
+      u: `udp://${hostname}`, // DYNDNS domain
+      s: "10.20.0.240/28",
+      p: "route 10.20.0.0 255.255.255.0",
+      n: "10.20.0.2"
     },
     { env: { ...process.env, ...openVpnEnv } }
   );
+
+  logs.info(output);
 
   // Check if PKI is initalized already, if not use hostname as CN
   if (directoryIsEmptyOrEnoent(PKI_PATH))
