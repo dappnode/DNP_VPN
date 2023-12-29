@@ -272,20 +272,6 @@ while getopts ":a:e:E:C:T:r:s:du:bcp:n:k:DNm:f:tz2" opt; do
   esac
 done
 
-# HARDCODED CONFIG AFTER IP RANGE MIGRATION
-
-echo "Applying config after IP range migration to private IP block..."
-
-# Set DNS servers to Bind
-OVPN_DNS_SERVERS=("10.20.0.2")
-
-# Set server subnet
-OVPN_SERVER="10.20.0.240/28"
-
-# Push route to server subnet
-#OVPN_PUSH=("route 10.20.0.0 255.255.255.0")
-OVPN_PUSH=("route")
-
 # Create ccd directory for static routes
 [ ! -d "${OPENVPN:-}/ccd" ] && mkdir -p ${OPENVPN:-}/ccd
 
