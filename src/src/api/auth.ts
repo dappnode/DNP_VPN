@@ -33,12 +33,6 @@ function isLocalhostIp(ip: string): boolean {
   return allowAllIps || localhostIps.some(_ip => ip.includes(_ip));
 }
 
-export const isAdmin: express.RequestHandler = (req, res, next) => {
-  const ip = req.ip;
-  if (isAdminIp(ip)) next();
-  else res.status(403).send(`Requires admin permission. Forbidden ip: ${ip}`);
-};
-
 export const isLocalhost: express.RequestHandler = (req, res, next) => {
   const ip = req.ip;
   if (isLocalhostIp(ip)) next();
