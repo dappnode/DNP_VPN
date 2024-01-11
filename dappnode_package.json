@@ -29,5 +29,7 @@
       "services": ["vpn.dnp.dappnode.eth"]
     }
   ],
-  "minimumDappnodeVersion": "0.2.85"
+  "requirements": {
+    "minimumDappnodeVersion": "0.2.85"
+  }
 }
