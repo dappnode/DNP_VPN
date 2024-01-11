@@ -6,5 +6,11 @@
       "dappnode": "Tue, 19 Nov 2019 17:32:32 GMT"
     },
     "link": "http://my.dappnode/#/sdk/publish/r=vpn.dnp.dappnode.eth&v=0.2.4&h=%2Fipfs%2FQmaP4xFLPXiNzcMCWoSboQZgrDLicrohs7SbfaFcJJMEPD"
+  },
+  "0.2.8": {
+    "hash": "/ipfs/QmdnAPxx8vm4w92vGUPBhMrNDALd6EGVc8JrZAzDKRzBWR",
+    "uploadedTo": {
+      "http://10.20.0.16:5001": "Thu, 11 Jan 2024 15:43:20 GMT"
+    }
   }
 }
