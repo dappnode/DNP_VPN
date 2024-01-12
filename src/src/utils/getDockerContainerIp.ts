@@ -1,24 +1,23 @@
-import os from 'os';
+import { Resolver } from 'dns';
 import { logs } from '../logs';
 
-export function getDockerContainerIP(): string | null {
-    const networkInterfaces = os.networkInterfaces();
+export async function getContainerIP(containerName: string): Promise<string | null> {
 
-    // Docker typically uses eth0 as the first network interface for bridge networks
-    const eth0 = networkInterfaces['eth0'];
+    const resolver = new Resolver();
 
-    if (!eth0) {
-        logs.error('Network interface eth0 not found.');
-        return null;
-    }
+    // Use Docker's DNS server to resolve container name.
+    resolver.setServers(['127.0.0.11']);
 
-    // Filter for IPv4 address
-    const ipv4 = eth0.find(info => info.family === 'IPv4');
-
-    if (!ipv4) {
-        console.error('IPv4 address for eth0 not found.');
-        return null;
-    }
-
-    return ipv4.address;
+    return new Promise((resolve) => {
+        resolver.resolve4(containerName, (err, addresses) => {
+            if (err) {
+                logs.error(`Error resolving ${containerName} IP address: ${err}`);
+                resolve(null);
+            } else {
+                // Resolve with the first address found (if any).
+                logs.info(`Resolved ${containerName} IP addresses: ${addresses}`);
+                resolve(addresses.length > 0 ? addresses[0] : null);
+            }
+        });
+    });
 }

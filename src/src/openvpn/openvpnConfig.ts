@@ -3,7 +3,7 @@ import { shell, shellArgs } from "../utils/shell";
 import { directoryIsEmptyOrEnoent } from "../utils/fs";
 import { PKI_PATH, PROXY_ARP_PATH } from "../params";
 import { logs } from "../logs";
-import { getDockerContainerIP } from "../utils/getDockerContainerIp";
+import { getContainerIP } from "../utils/getDockerContainerIp";
 
 type OvpnGenConfigFlags = {
   c: string; // Enable traffic among the clients connected to the VPN (Boolean, no value)
@@ -20,6 +20,7 @@ type OvpnGenConfigFlags = {
  * This function MUST be called before starting the openvpn binary
  */
 export async function initalizeOpenVpnConfig(hostname: string): Promise<void> {
+  const vpnContainerDomain = "vpn.dappnode";
   // Replicate environment used in entrypoint.sh
   const openVpnEnv = {
     OVPN_CN: hostname,
@@ -30,7 +31,7 @@ export async function initalizeOpenVpnConfig(hostname: string): Promise<void> {
   logs.info("Initializing OpenVPN configuration");
 
   // Check current IP range
-  const containerIp = getDockerContainerIP();
+  const containerIp = await getContainerIP(vpnContainerDomain);
 
   // If container IP is inside 172.33.0.0/16 --> generate credentials A
   if (containerIp && containerIp.startsWith("172.33.")) {
