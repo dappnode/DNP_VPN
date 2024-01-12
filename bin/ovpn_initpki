@@ -14,6 +14,19 @@ source "$OPENVPN/ovpn_env.sh"
 
 nopass=$1
 
+# The vars file is used to set the default values for the certificate fields. It is necessary to run the init-pki.
+if [ -z "$EASYRSA_VARS_FILE" ]; then
+  EASYRSA_VARS_FILE="$OPENVPN/vars"
+fi
+
+if [ ! -f "$EASYRSA_VARS_FILE" ]; then
+  if [ -f "/usr/share/easy-rsa/vars.example" ]; then
+    cp /usr/share/easy-rsa/vars.example "$EASYRSA_VARS_FILE"
+  else
+    touch "$EASYRSA_VARS_FILE"
+  fi
+fi
+
 # Provides a sufficient warning before erasing pre-existing files
 easyrsa init-pki
 

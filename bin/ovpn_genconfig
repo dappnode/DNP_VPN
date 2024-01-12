@@ -307,10 +307,10 @@ set -u
 
 # Clean file to not concatenate config
 # Syntax `true > $PATH` deletes the contents of $PATH without deleting the file
-true > $OVPN_ENV
+true >$OVPN_ENV
 
 (set | grep '^OVPN_') | while read -r var; do
-  echo "declare -x $var" >> "$OVPN_ENV"
+  echo "declare -x $var" >>"$OVPN_ENV"
 done
 
 conf=${OPENVPN:-}/openvpn.conf

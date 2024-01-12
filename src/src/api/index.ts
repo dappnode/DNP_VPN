@@ -4,7 +4,7 @@ import { getRpcHandler } from "./getRpcHandler";
 import { logs } from "../logs";
 import { LoggerMiddleware } from "../types";
 import { wrapHandler } from "./utils";
-import { isAdmin, isLocalhost } from "./auth";
+import { isLocalhost } from "./auth";
 import { clientConnect } from "./clientConnect";
 import { CLIENT_CONNECT_PATHNAME } from "../params";
 
@@ -31,7 +31,7 @@ export function startHttpApi(port: number): void {
   app.get("/", (_0, res) => res.send("VPN HTTP API"));
 
   // Rest of RPC methods
-  app.post("/rpc", isAdmin, wrapHandler(rpcHandler));
+  app.post("/rpc", wrapHandler(rpcHandler));
 
   // OpenVPN hooks
   // Hook called by openvpn binary on each client connection

@@ -1,7 +1,7 @@
 import path from "path";
 
 // DAPPMANAGER Params
-export const dappmanagerApiUrl = "http://172.33.1.7";
+export const dappmanagerApiUrl = "http://dappmanager.dappnode";
 export const dappmanagerApiUrlGlobalEnvs = `${dappmanagerApiUrl}/global-envs`;
 
 // OpenVPN parameters
