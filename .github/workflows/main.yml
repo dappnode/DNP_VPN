@@ -10,17 +10,17 @@ on:
 
 jobs:
   unit-test:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     name: Tests
     defaults:
       run:
         working-directory: ./build/src
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Setup node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: "10.x"
+          node-version: "18.x"
       - run: yarn install
       - run: yarn lint
       - run: yarn test
@@ -32,7 +32,7 @@ jobs:
     needs: [unit-test]
     if: github.event_name == 'push'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Publish
         run: npx @dappnode/dappnodesdk publish patch --dappnode_team_preset
         env:
