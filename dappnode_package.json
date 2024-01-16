@@ -28,8 +28,5 @@
       "envs": ["HOSTNAME", "INTERNAL_IP"],
       "services": ["vpn.dnp.dappnode.eth"]
     }
-  ],
-  "requirements": {
-    "minimumDappnodeVersion": "0.2.85"
-  }
+  ]
 }
