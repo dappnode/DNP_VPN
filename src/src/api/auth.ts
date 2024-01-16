@@ -5,29 +5,10 @@ const allowAllIps = Boolean(process.env.ALLOW_ALL_IPS);
 
 if (allowAllIps) logs.warn(`WARNING! ALLOWING ALL IPFS`);
 
-// Authorize by IP
-
-const adminIps = [
-  // Admin users connecting from the VPN
-  "172.33.10.",
-  // Admin users connecting from the WIFI
-  "172.33.12.",
-  // WIFI DNP ip, which may be applied to users in some situations
-  "172.33.1.10",
-  // DAPPMANAGER IP
-  "172.33.1.7",
-  // Also localhost calls
-  "127.0.0.1"
-];
-
 const localhostIps = [
   // Internal calls from the same container
   "127.0.0.1"
 ];
-
-function isAdminIp(ip: string): boolean {
-  return allowAllIps || adminIps.some(_ip => ip.includes(_ip));
-}
 
 function isLocalhostIp(ip: string): boolean {
   return allowAllIps || localhostIps.some(_ip => ip.includes(_ip));
