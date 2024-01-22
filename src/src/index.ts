@@ -8,9 +8,13 @@ import { initalizeOpenVpnConfig, openvpnBinary } from "./openvpn";
 import { config } from "./config";
 import { startCredentialsService } from "./credentials";
 import { logs } from "./logs";
+import { createVarsFileIfNotExist } from "./createVarsFileIfNotExist";
 
 // Print version data
 printGitData();
+
+// Create /etc/openvpn/vars file if it doesn't exist
+createVarsFileIfNotExist();
 
 // Start JSON RPC API
 startHttpApi(API_PORT);
