@@ -27,5 +27,3 @@ services:
       dncore_network:
         aliases:
           - vpn.dappnode
-    logging:
-      driver: journald
