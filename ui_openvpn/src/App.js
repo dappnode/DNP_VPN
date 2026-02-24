@@ -20,6 +20,7 @@ import getServerName from "./utils/getServerName";
 import errorLogo from "./img/error.png";
 import okLogo from "./img/ok.png";
 import logo from "./img/logo.png";
+import loadingGif from "./img/loading.gif";
 // Icons
 import FaAndroid from "./icons/FaAndroid";
 import FaApple from "./icons/FaApple";
@@ -155,7 +156,7 @@ export default class App extends Component {
     if (loading) {
       return (
         <div className="status-panel card-surface">
-          <img src={logo} className="main-logo" alt="loading" />
+          <img src={loadingGif} className="loading-logo" alt="loading" />
           <h6 className="main-text">Loading...</h6>
         </div>
       );

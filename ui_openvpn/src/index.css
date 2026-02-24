@@ -85,6 +85,12 @@ a:hover {
   margin: 16px 0;
 }
 
+.loading-logo {
+  height: 56px;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
 .main-text {
   font-weight: 500;
   color: var(--muted);
