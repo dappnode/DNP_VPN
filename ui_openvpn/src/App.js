@@ -145,75 +145,76 @@ export default class App extends Component {
 
     if (error) {
       return (
-        <div className="container text-center mt-5">
-          <img src={errorLogo} className="main-logo" alt="logo" />
+        <div className="status-panel card-surface">
+          <img src={errorLogo} className="main-logo" alt="error" />
           <h6 className="main-text">{error}</h6>
         </div>
       );
     }
 
-    if (!file) {
+    if (loading) {
+      return (
+        <div className="status-panel card-surface">
+          <img src={logo} className="main-logo" alt="loading" />
+          <h6 className="main-text">Loading...</h6>
+        </div>
+      );
+    }
+
+    if (file) {
       return (
         <React.Fragment>
-          <div className="container">
-            <h2 className="mt-5">Set up your Dappnode OpenVPN connection</h2>
-            <p className="jumotron-subtitle">
-              Download the .ovpn file provided by your Dappnode administrator
-              and import it to your client. You can follow the guides below on
-              how to import an .ovpn file.
-            </p>
-            <div className="text-center">
-              <h6 className="main-text mt-4">
-                <img
-                  src={okLogo}
-                  className="main-logo"
-                  alt="ok"
-                  style={{ height: "18px", margin: "0px 7px 0px 0px" }}
-                />
-                Successfully decrypted .ovpn file
-              </h6>
-              <button
-                className="btn btn-primary dappnode-background-color"
-                onClick={saveAs.bind(this, blob, filename)}
-              >
-                Download
-              </button>
-            </div>
-
-            <p className="jumotron-subtitle navigate-to-dappnode">
-              After setting up your connection with the .ovpn and successfully
-              connecting to the VPN, start using your DAppNode by going to{" "}
-              <a className="dappnode-color" href={adminUiUrl}>
-                my.dappnode
-              </a>
-            </p>
-            <div className="text-center">
-              <a
-                className="btn btn-primary dappnode-background-color"
-                href={adminUiUrl}
-              >
-                Go to my.dappnode
-              </a>
-            </div>
-          </div>
-
-          <div className="jumbotron-area">
-            <div className="container text-center">
-              <h2 className="jumbotron-title">
-                Haven't installed an OpenVPN client already?
+          <div className="hero-section">
+            <div className="card-surface">
+              <h2 className="hero-title">
+                Set up your Dappnode OpenVPN connection
               </h2>
-              <p className="jumotron-subtitle">Choose your OS below</p>
+              <p className="hero-subtitle">
+                Download the .ovpn file provided by your Dappnode administrator
+                and import it to your client. You can follow the guides below on
+                how to import an .ovpn file.
+              </p>
+
+              <div className="hero-actions">
+                <div className="status-pill">
+                  <img src={okLogo} className="status-icon" alt="ok" />
+                  <span>Successfully decrypted</span>
+                </div>
+                <button
+                  className="btn btn-primary dappnode-background-color"
+                  onClick={saveAs.bind(this, blob, filename)}
+                >
+                  Download .ovpn
+                </button>
+              </div>
+
+              <div className="hero-footer">
+                <p>
+                  After connecting to the VPN, access your DAppNode at{" "}
+                  <a href={adminUiUrl}>my.dappnode</a>
+                </p>
+                <a
+                  className="btn btn-primary dappnode-background-color"
+                  href={adminUiUrl}
+                >
+                  Go to my.dappnode
+                </a>
+              </div>
             </div>
           </div>
 
-          <div className="container">
-            <div className="row instructions-row">
+          <div className="section-divider">
+            <div className="container">
+              <h2>Haven't installed an OpenVPN client already?</h2>
+              <p>Choose your OS below</p>
+            </div>
+          </div>
+
+          <div className="container instructions-section">
+            <div className="instructions-row">
               {options.map((option, i) => (
-                <div key={i} className="col-6 col-sm-6 col-md-4 col-lg-2 mt-4">
-                  <a
-                    className="instructions-link text-center nav-link"
-                    href={option.link}
-                  >
+                <div key={i} className="instructions-card">
+                  <a className="instructions-link" href={option.link}>
                     <div className="nav-icon">
                       <option.icon />
                     </div>
@@ -229,17 +230,8 @@ export default class App extends Component {
       );
     }
 
-    if (loading) {
-      return (
-        <div className="container text-center mt-5">
-          <img src={logo} className="main-logo" alt="logo" />
-          <h6 className="main-text">Loading...</h6>
-        </div>
-      );
-    }
-
     return (
-      <div className="container text-center mt-5">
+      <div className="status-panel card-surface">
         <img src={logo} className="main-logo" alt="logo" />
         <h6 className="main-text">¯\_(ツ)_/¯</h6>
       </div>
