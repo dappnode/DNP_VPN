@@ -31,7 +31,7 @@ import FaWindows from "./icons/FaWindows";
 window.saveAs = saveAs;
 
 const instructionsBaseUrl =
-  "https://github.com/dappnode/dappnode/wiki/openvpn-client-guide";
+  "https://docs.dappnode.io/docs/user/access-your-dappnode/vpn/openvpn";
 
 const adminUiUrl = "http://my.dappnode/";
 
@@ -115,7 +115,7 @@ export default class App extends Component {
       // 2. Fetch file from server
       const res = await fetch(url);
       if (res.status === 404)
-        throw Error("Link expired, contact your DAppNode administrator");
+        throw Error("Link expired, contact your Dappnode administrator");
       if (!res.ok)
         throw Error(`Error fetching your credentials file: ${res.statusText}`);
       const encryptedFile = await res.text();
@@ -124,7 +124,7 @@ export default class App extends Component {
       if (!isBase64(encryptedFile)) {
         const filePreview = (encryptedFile || "").substring(0, 100);
         throw Error(
-          `Incorrect ID or wrong file format (no-base64). url: ${url} encryptedFile: ${filePreview}...\n`
+          `Incorrect ID or wrong file format (no-base64). url: ${url} encryptedFile: ${filePreview}...\n`,
         );
       }
       const file = decrypt(encryptedFile, key);
@@ -152,13 +152,13 @@ export default class App extends Component {
       );
     }
 
-    if (file) {
+    if (!file) {
       return (
         <React.Fragment>
           <div className="container">
-            <h2 className="mt-5">Set up your DAppNode OpenVPN connection</h2>
+            <h2 className="mt-5">Set up your Dappnode OpenVPN connection</h2>
             <p className="jumotron-subtitle">
-              Download the .ovpn file provided by your DAppNode administrator
+              Download the .ovpn file provided by your Dappnode administrator
               and import it to your client. You can follow the guides below on
               how to import an .ovpn file.
             </p>
