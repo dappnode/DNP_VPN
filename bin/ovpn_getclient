@@ -39,6 +39,9 @@ remote-cert-tls server
 
 remote $OVPN_HOSTNAME $OVPN_PORT $OVPN_PROTO"
 
+    # Always include localhost as an additional connection target
+    echo "remote localhost $OVPN_PORT $OVPN_PROTO"
+
     if [ -n "$DAPPNODE_INTERNAL_IP" ]; then
         echo "remote $DAPPNODE_INTERNAL_IP $OVPN_PORT $OVPN_PROTO"
     fi
