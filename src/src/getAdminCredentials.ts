@@ -17,6 +17,7 @@ import retry from "async-retry";
 import { getRpcCall } from "./api/getRpcCall";
 import { API_PORT, NO_HOSTNAME_RETURNED_ERROR } from "./params";
 import { renderQrCode } from "./utils/renderQrCode";
+import { withHostname } from "./utils/withHostname";
 import { VpnStatus } from "./types";
 
 /* eslint-disable no-console */
@@ -47,6 +48,8 @@ class NotReadyError extends Error {
 
 (async function(): Promise<void> {
   try {
+    const localhost = process.argv.includes("--localhost");
+
     console.log(
       `Fetching DAppNode VPN credentials. It may take some time; use CTRL + C to stop`
     );
@@ -81,14 +84,15 @@ class NotReadyError extends Error {
     );
 
     const { url } = await api.getMasterAdminCred();
+    const outputUrl = localhost ? withHostname(url, "localhost") : url;
 
     // If rendering the QR fails, show the error and continue, the raw URL is consumable
     console.log(`
 
-${await renderQrCode(url).catch(e => e.stack)}
+${await renderQrCode(outputUrl).catch(e => e.stack)}
 
 To connect to your DAppNode scan the QR above or copy/paste link below into your browser:
-${url}`);
+${outputUrl}`);
   } catch (e) {
     // Exit process cleanly to prevent showing 'Unhandled rejection'
     console.error(e);
