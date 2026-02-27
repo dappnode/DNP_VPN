@@ -153,7 +153,7 @@ export default class App extends Component {
       );
     }
 
-    if (loading) {
+    if (!loading) {
       return (
         <div className="status-panel card-surface">
           <img src={loadingGif} className="loading-logo" alt="loading" />
@@ -162,7 +162,7 @@ export default class App extends Component {
       );
     }
 
-    if (file) {
+    if (!file) {
       return (
         <React.Fragment>
           <div className="hero-section">
@@ -190,13 +190,12 @@ export default class App extends Component {
               </div>
 
               <div className="hero-footer">
-                <p>
-                  After connecting to the VPN, access your DAppNode at{" "}
-                  <a href={adminUiUrl}>my.dappnode</a>
-                </p>
+                <p>After connecting to the VPN, access your Dappnode</p>
                 <a
                   className="btn btn-primary dappnode-background-color"
                   href={adminUiUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   Go to my.dappnode
                 </a>
@@ -215,7 +214,12 @@ export default class App extends Component {
             <div className="instructions-row">
               {options.map((option, i) => (
                 <div key={i} className="instructions-card">
-                  <a className="instructions-link" href={option.link}>
+                  <a
+                    className="instructions-link"
+                    href={option.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <div className="nav-icon">
                       <option.icon />
                     </div>
