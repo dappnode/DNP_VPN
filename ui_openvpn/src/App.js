@@ -31,7 +31,7 @@ import FaWindows from "./icons/FaWindows";
 
 window.saveAs = saveAs;
 
-const instructionsBaseUrl =
+const dappnodeVpnDocsUrl =
   "https://docs.dappnode.io/docs/user/access-your-dappnode/vpn/openvpn";
 
 const adminUiUrl = "http://my.dappnode/";
@@ -42,42 +42,42 @@ const options = [
     route: "macos",
     component: MacOS,
     icon: FaApple,
-    link: `${instructionsBaseUrl}#macos`,
+    link: `https://openvpn.net/client/`,
   },
   {
     name: "iOS",
     route: "ios",
     component: iOS,
     icon: FaMobile,
-    link: `${instructionsBaseUrl}#ios`,
+    link: `https://apps.apple.com/us/app/openvpn-connect/id590379981`,
   },
   {
     name: "Windows",
     route: "windows",
     component: Windows,
     icon: FaWindows,
-    link: `${instructionsBaseUrl}#windows`,
+    link: `https://openvpn.net/client/`,
   },
   {
     name: "Android",
     route: "android",
     component: Android,
     icon: FaAndroid,
-    link: `${instructionsBaseUrl}#android`,
+    link: `https://play.google.com/store/apps/details?id=net.openvpn.openvpn`,
   },
   {
     name: "Linux",
     route: "linux",
     component: Linux,
     icon: FaLinux,
-    link: `${instructionsBaseUrl}#linux`,
+    link: `https://openvpn.net/community-docs/openvpn-client-for-linux.html`,
   },
   {
     name: "Chromebook",
     route: "chromebook",
     component: Chromebook,
     icon: FaChrome,
-    link: `${instructionsBaseUrl}#android`,
+    link: `https://play.google.com/store/apps/details?id=net.openvpn.openvpn`,
   },
 ];
 
@@ -227,6 +227,22 @@ export default class App extends Component {
                   </a>
                 </div>
               ))}
+            </div>
+          </div>
+
+          <div className="help-section">
+            <div className="container">
+              <p>
+                Having trouble?{" "}
+                <a
+                  className="dappnode-color"
+                  href={dappnodeVpnDocsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Check out the full documentation
+                </a>
+              </p>
             </div>
           </div>
 

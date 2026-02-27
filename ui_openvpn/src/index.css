@@ -275,6 +275,17 @@ ol li {
 }
 
 /* ===== Responsive ===== */
+.help-section {
+  text-align: center;
+  /* padding: 28px 0 40px; */
+  color: var(--muted);
+}
+
+.help-section p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
 @media (max-width: 640px) {
   .hero-section {
     margin-top: 2rem;
