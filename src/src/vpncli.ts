@@ -6,6 +6,7 @@ import chalk from "chalk";
 import prettyjson from "prettyjson";
 import { getRpcCall } from "./api/getRpcCall";
 import { API_PORT } from "./params";
+import { withHostname } from "./utils/withHostname";
 
 /* eslint-disable no-console */
 
@@ -23,6 +24,13 @@ const idArg: CommandBuilder<{}, { id: string }> = yargs =>
     describe: "Device id",
     type: "string",
     demandOption: true
+  });
+
+const getArg: CommandBuilder<{}, { id: string; localhost: boolean }> = yargs =>
+  idArg(yargs).option("localhost", {
+    describe: "Print URL using localhost instead of the configured hostname",
+    type: "boolean",
+    default: false
   });
 
 yargs
@@ -57,10 +65,13 @@ yargs
   .command({
     command: "get <id>",
     describe: "Generate device URL to download config file.",
-    builder: idArg,
-    handler: async ({ id }) => {
+    builder: getArg,
+    handler: async ({ id, localhost }) => {
       const { url } = await api.getDeviceCredentials({ id });
-      console.log(chalk.green(`Credentials generated for ${id}:\n${url}`));
+      const outputUrl = localhost ? withHostname(url, "localhost") : url;
+      console.log(
+        chalk.green(`Credentials generated for ${id}:\n${outputUrl}`)
+      );
     }
   })
   .command({
