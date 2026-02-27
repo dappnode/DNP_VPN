@@ -153,7 +153,7 @@ export default class App extends Component {
       );
     }
 
-    if (!loading) {
+    if (loading) {
       return (
         <div className="status-panel card-surface">
           <img src={loadingGif} className="loading-logo" alt="loading" />
@@ -162,7 +162,7 @@ export default class App extends Component {
       );
     }
 
-    if (!file) {
+    if (file) {
       return (
         <React.Fragment>
           <div className="hero-section">
