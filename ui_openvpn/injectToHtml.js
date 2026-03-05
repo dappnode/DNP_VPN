@@ -17,6 +17,18 @@ if (!indexHtmlPath || !outputHtmlPath)
 const baseDir = path.parse(indexHtmlPath).dir;
 let htmlString = fs.readFileSync(indexHtmlPath, "utf8");
 
+function getMimeType(fileName) {
+  const ext = path.extname(fileName).toLowerCase();
+  if (ext === ".png") return "image/png";
+  if (ext === ".gif") return "image/gif";
+  if (ext === ".jpg" || ext === ".jpeg") return "image/jpeg";
+  if (ext === ".svg") return "image/svg+xml";
+  if (ext === ".webp") return "image/webp";
+  if (ext === ".ico") return "image/x-icon";
+  if (ext === ".bmp") return "image/bmp";
+  return "application/octet-stream";
+}
+
 // Replace js scripts
 
 const jsTags = htmlString.match(/<script[^<>]+><\/script>/g) || [];
@@ -61,6 +73,23 @@ for (const cssTag of cssTags) {
       `Error splitting html string. ${cssPath} must be within the html body`
     );
   htmlString = a + "<style>\n" + cssString + "\n</style>" + b;
+}
+
+// Inline media assets referenced by js/css bundles
+const mediaDir = path.resolve(baseDir, "./static/media");
+if (fs.existsSync(mediaDir)) {
+  const mediaFiles = fs.readdirSync(mediaDir);
+  for (const mediaFile of mediaFiles) {
+    const mediaPath = path.resolve(mediaDir, mediaFile);
+    const mediaSubPath = `/static/media/${mediaFile}`;
+    const mediaBase64 = fs.readFileSync(mediaPath).toString("base64");
+    const mediaDataUri = `data:${getMimeType(mediaFile)};base64,${mediaBase64}`;
+
+    if (htmlString.includes(mediaSubPath)) {
+      htmlString = htmlString.split(mediaSubPath).join(mediaDataUri);
+      console.log({ inlinedMedia: mediaSubPath });
+    }
+  }
 }
 
 fs.writeFileSync(outputHtmlPath, htmlString);
