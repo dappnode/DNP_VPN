@@ -19,8 +19,7 @@ import getServerName from "./utils/getServerName";
 // Logos
 import errorLogo from "./img/error.png";
 import okLogo from "./img/ok.png";
-import logo from "./img/logo.png";
-import loadingGif from "./img/loading.gif";
+import logo from "./img/dappnode-logo.png";
 // Icons
 import FaAndroid from "./icons/FaAndroid";
 import FaApple from "./icons/FaApple";
@@ -156,7 +155,7 @@ export default class App extends Component {
     if (loading) {
       return (
         <div className="status-panel card-surface">
-          <img src={loadingGif} className="loading-logo" alt="loading" />
+          <div className="loading-spinner"></div>
           <h6 className="main-text">Loading...</h6>
         </div>
       );

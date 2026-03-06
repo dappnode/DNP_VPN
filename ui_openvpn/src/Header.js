@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import dappnodeLogo from "./img/logo.png";
+import dappnodeLogo from "./img/dappnode-logo.png";
 
 class Header extends Component {
   render() {
