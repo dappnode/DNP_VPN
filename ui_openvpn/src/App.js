@@ -4,13 +4,6 @@ import saveAs from "file-saver";
 // General components
 import HiddenRedirector from "./HiddenRedirector";
 // Platform dedicated components
-// import Instructions from "./Instructions/Instructions";
-import MacOS from "./Instructions/MacOS";
-import Windows from "./Instructions/Windows";
-import Android from "./Instructions/Android";
-import iOS from "./Instructions/iOS";
-import Linux from "./Instructions/Linux";
-import Chromebook from "./Instructions/Chromebook";
 // Utils
 import getParamsFromUrl from "./utils/getParamsFromUrl";
 import isBase64 from "./utils/isBase64";
@@ -20,65 +13,14 @@ import getServerName from "./utils/getServerName";
 import errorLogo from "./img/error.png";
 import okLogo from "./img/ok.png";
 import logo from "./img/dappnode-logo.png";
-// Icons
-import FaAndroid from "./icons/FaAndroid";
-import FaApple from "./icons/FaApple";
-import FaChrome from "./icons/FaChrome";
-import FaLinux from "./icons/FaLinux";
-import FaMobile from "./icons/FaMobile";
-import FaWindows from "./icons/FaWindows";
 
 window.saveAs = saveAs;
 
 const dappnodeVpnDocsUrl =
   "https://docs.dappnode.io/docs/user/access-your-dappnode/vpn/openvpn";
+const docsClientSectionUrl = "#3-openvpn-installation";
 
 const adminUiUrl = "http://my.dappnode/";
-
-const options = [
-  {
-    name: "MacOS",
-    route: "macos",
-    component: MacOS,
-    icon: FaApple,
-    link: `https://openvpn.net/client/`,
-  },
-  {
-    name: "iOS",
-    route: "ios",
-    component: iOS,
-    icon: FaMobile,
-    link: `https://apps.apple.com/us/app/openvpn-connect/id590379981`,
-  },
-  {
-    name: "Windows",
-    route: "windows",
-    component: Windows,
-    icon: FaWindows,
-    link: `https://openvpn.net/client/`,
-  },
-  {
-    name: "Android",
-    route: "android",
-    component: Android,
-    icon: FaAndroid,
-    link: `https://play.google.com/store/apps/details?id=net.openvpn.openvpn`,
-  },
-  {
-    name: "Linux",
-    route: "linux",
-    component: Linux,
-    icon: FaLinux,
-    link: `https://openvpn.net/community-docs/openvpn-client-for-linux.html`,
-  },
-  {
-    name: "Chromebook",
-    route: "chromebook",
-    component: Chromebook,
-    icon: FaChrome,
-    link: `https://play.google.com/store/apps/details?id=net.openvpn.openvpn`,
-  },
-];
 
 const ovpnType = "application/x-openvpn-profile";
 const fileExtension = "ovpn";
@@ -205,27 +147,16 @@ export default class App extends Component {
           <div className="section-divider">
             <div className="container">
               <h2>Haven't installed an OpenVPN client already?</h2>
-              <p>Choose your OS below</p>
-            </div>
-          </div>
+              <p>Follow the official docs to choose and install a client</p>
 
-          <div className="container instructions-section">
-            <div className="instructions-row">
-              {options.map((option, i) => (
-                <div key={i} className="instructions-card">
-                  <a
-                    className="instructions-link"
-                    href={option.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <div className="nav-icon">
-                      <option.icon />
-                    </div>
-                    <div className="nav-text">{option.name}</div>
-                  </a>
-                </div>
-              ))}
+              <a
+                className="btn btn-primary dappnode-background-color"
+                href={dappnodeVpnDocsUrl + docsClientSectionUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Client installation guide
+              </a>
             </div>
           </div>
 

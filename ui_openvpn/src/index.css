@@ -205,7 +205,7 @@ a:hover {
 
 /* ===== OS instructions grid ===== */
 .section-divider {
-  padding: 36px 0;
+  padding: 28px 0;
   margin-top: 40px;
   background: var(--primary-subtle);
   border-top: 1px solid var(--border);
@@ -223,51 +223,8 @@ a:hover {
   margin: 0;
 }
 
-.instructions-section {
-  padding: 24px 0 48px;
-}
-
-.instructions-row {
-  max-width: 780px;
-  margin: 0 auto;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 16px;
-}
-
-.instructions-card {
-  flex: 0 0 110px;
-}
-
-.instructions-link {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 16px 10px;
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-  box-shadow: var(--shadow);
-  transition: transform 160ms ease, box-shadow 160ms ease;
-  text-decoration: none;
-}
-.instructions-link:hover {
-  color: var(--text);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(30, 35, 48, 0.12);
-  text-decoration: none;
-}
-
-.nav-icon {
-  opacity: 0.85;
-}
-
-.nav-text {
-  font-size: 0.85rem;
-  font-weight: 500;
+.section-divider .btn {
+  margin-top: 14px;
 }
 
 /* ===== Instruction sub-pages (used by MacOS.js, Instructions.js, etc.) ===== */
@@ -293,7 +250,7 @@ ol li {
 /* ===== Responsive ===== */
 .help-section {
   text-align: center;
-  /* padding: 28px 0 40px; */
+  padding: 18px 0 28px;
   color: var(--muted);
 }
 
@@ -317,13 +274,5 @@ ol li {
 
   .hero-actions {
     justify-content: center;
-  }
-
-  .instructions-card {
-    flex: 0 0 90px;
-  }
-
-  .instructions-link {
-    padding: 12px 8px;
   }
 }
