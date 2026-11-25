@@ -20,8 +20,9 @@ const apiUrl = url.format({
 got
   .post(apiUrl, { json: process.env })
   .then(
-    () => console.log(`Posted client-connect data to ${url}`),
-    e => console.error(`Error posting client-connect env to ${url}: ${e.stack}`)
+    () => console.log(`Posted client-connect data to ${apiUrl}`),
+    e =>
+      console.error(`Error posting client-connect env to ${apiUrl}: ${e.stack}`)
   )
   // client-connect script must exit with code 0, otherwise OpenVPN will refuse to connect to the client
   .then(() => process.exit(0));

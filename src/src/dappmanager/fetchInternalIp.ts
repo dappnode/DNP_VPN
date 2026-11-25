@@ -1,13 +1,17 @@
 import ip from "ip";
 import got from "got";
 import { logs } from "../logs";
-import { dappmanagerApiUrlGlobalEnvs, GLOBAL_ENVS_KEYS } from "../params";
+import {
+  dappmanagerApiUrlGlobalEnvs,
+  GLOBAL_ENVS,
+  GLOBAL_ENVS_KEYS
+} from "../params";
 import { config } from "../config";
 
 export async function getInternalIpCached(): Promise<string> {
   // internal IP is an optional feature for when NAT-Loopback is off
 
-  const envInternalIp = process.env[GLOBAL_ENVS_KEYS.INTERNAL_IP];
+  const envInternalIp = process.env[GLOBAL_ENVS.INTERNAL_IP];
 
   if (envInternalIp && ip.isV4Format(envInternalIp)) {
 

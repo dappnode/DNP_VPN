@@ -40,7 +40,7 @@ export function startCredentialsWebserver(port: number): void {
             return res.end(credFile, "utf-8");
           } catch (e) {
             res.writeHead(500, { "Content-Type": "text/plain" });
-            res.end(e.message);
+            return res.end(e.message);
           }
 
         default:
