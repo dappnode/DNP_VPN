@@ -17,7 +17,11 @@ describe("utils > deviceId", () => {
     "my phone",
     "x\ny",
     "x\0y",
-    "a;b c"
+    "a;b c",
+    "*",
+    "phone?",
+    "[ab]",
+    "a,b"
   ];
 
   for (const id of valid) {

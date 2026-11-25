@@ -1,6 +1,7 @@
 import { getInternalIpCached } from "../dappmanager/fetchInternalIp";
 import { shell } from "../utils/shell";
 import { assertValidDeviceId } from "../utils/deviceId";
+import { assertDeviceExists } from "./getUserList";
 
 const fetchCredsCommand = "/usr/local/bin/ovpn_getclient";
 
@@ -10,6 +11,7 @@ const fetchCredsCommand = "/usr/local/bin/ovpn_getclient";
  */
 export async function getClient(id: string): Promise<string> {
   assertValidDeviceId(id);
+  await assertDeviceExists(id);
   const DAPPNODE_INTERNAL_IP = await getInternalIpCached();
 
   try {

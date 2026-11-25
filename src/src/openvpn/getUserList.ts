@@ -20,3 +20,13 @@ export async function getUserList(): Promise<string[]> {
     .filter(line => line && !line.startsWith("name,"))
     .map(line => line.split(",")[0]);
 }
+
+/**
+ * Throws if `id` is not an existing device.
+ * The PKI also holds the CA and server keys under the same directories,
+ * so commands that take a device id must only run for listed devices.
+ */
+export async function assertDeviceExists(id: string): Promise<void> {
+  const users = await getUserList();
+  if (!users.includes(id)) throw Error(`Device name not found: ${id}`);
+}
