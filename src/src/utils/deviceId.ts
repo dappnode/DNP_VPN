@@ -16,8 +16,6 @@ export function assertValidDeviceId(id: unknown): asserts id is string {
   // eslint-disable-next-line no-control-regex
   if (/[/\\\s\x00-\x1f\x7f]/.test(id))
     throw Error(
-      `Device name cannot contain slashes, whitespace or control characters: ${JSON.stringify(
-        id
-      )}`
+      `Device name cannot contain slashes, whitespace or control characters: ${JSON.stringify(id)}`
     );
 }
