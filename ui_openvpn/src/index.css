@@ -35,9 +35,17 @@ h2 {
 a {
   color: var(--primary);
   transition: color 120ms ease;
+  /* Bootstrap 5 underlines links by default, keep the Bootstrap 4 look */
+  text-decoration: none;
 }
 a:hover {
   color: var(--primary-hover);
+  text-decoration: underline;
+}
+
+/* Bootstrap 5 narrowed the container gutter, keep the Bootstrap 4 width */
+.container {
+  --bs-gutter-x: 30px;
 }
 
 /* ===== Navbar ===== */
@@ -123,7 +131,10 @@ a:hover {
   padding: 0.55rem 1.2rem;
   font-weight: 600;
   box-shadow: 0 4px 14px rgba(97, 45, 203, 0.25);
-  transition: background 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+  transition:
+    background 140ms ease,
+    transform 140ms ease,
+    box-shadow 140ms ease;
 }
 .btn-primary.dappnode-background-color:hover {
   background: var(--primary-hover);

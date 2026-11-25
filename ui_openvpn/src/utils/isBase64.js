@@ -2,7 +2,7 @@ export default function isBase64(s) {
   try {
     window.atob(s);
     return true;
-  } catch (e) {
+  } catch {
     return false;
     // something failed
     // if you want to be specific and only catch the error which means
