@@ -9,6 +9,10 @@ export default defineConfig({
   plugins: [react(), viteSingleFile()],
   build: {
     outDir: "build",
+    // Share links are opened on whatever phone or laptop the user has, so
+    // do not rely on recent syntax. es2017 is the oldest target that still
+    // supports the inline module script the page is delivered as.
+    target: "es2017",
   },
   test: {
     environment: "jsdom",
