@@ -1,5 +1,6 @@
 import { buildClient, getUserList } from "../openvpn";
 import { USER_LIMIT } from "../params";
+import { assertValidDeviceId } from "../utils/deviceId";
 
 /**
  * Creates a new device with the provided id.
@@ -8,6 +9,7 @@ import { USER_LIMIT } from "../params";
  */
 export async function addDevice({ id }: { id: string }): Promise<void> {
   if (id === "") throw Error("The new device name cannot be empty");
+  assertValidDeviceId(id);
   if (
     (id || "").toLowerCase() === "guests" ||
     (id || "").toLowerCase() === "guest"

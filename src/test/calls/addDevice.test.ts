@@ -28,4 +28,18 @@ describe("Call function: addDevice", () => {
     }
     expect(error).to.equal(`Device name exists: ${id}`);
   });
+
+  it("should reject device names that could inject shell arguments", async () => {
+    buildClient.resetHistory();
+    for (const id of ["a; rm -rf /", "../../evil", "--help"]) {
+      let error = "--- addDevice did not throw ---";
+      try {
+        await addDevice({ id });
+      } catch (e) {
+        error = (e as Error).message;
+      }
+      expect(error).to.not.equal("--- addDevice did not throw ---");
+    }
+    expect(buildClient.called).to.equal(false);
+  });
 });

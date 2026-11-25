@@ -1,5 +1,6 @@
 import { getInternalIpCached } from "../dappmanager/fetchInternalIp";
 import { shell } from "../utils/shell";
+import { assertValidDeviceId } from "../utils/deviceId";
 
 const fetchCredsCommand = "/usr/local/bin/ovpn_getclient";
 
@@ -8,13 +9,14 @@ const fetchCredsCommand = "/usr/local/bin/ovpn_getclient";
  * @param id "new-device"
  */
 export async function getClient(id: string): Promise<string> {
+  assertValidDeviceId(id);
   const DAPPNODE_INTERNAL_IP = await getInternalIpCached();
 
   try {
-    return await shell(`${fetchCredsCommand} ${id}`, {
+    return await shell(fetchCredsCommand, [id], {
       env: { ...process.env, DAPPNODE_INTERNAL_IP }
     });
   } catch (err) {
-    throw Error(`Error retrieving client ${id}: ${err.message}`);
+    throw Error(`Error retrieving client ${id}: ${(err as Error).message}`);
   }
 }

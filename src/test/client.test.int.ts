@@ -23,10 +23,19 @@ describe.skip("Integration test", () => {
       throw Error("OpenVPN binaries were not found in /usr/local/bin/");
     }
     try {
-      await shell("ovpn_genconfig -c -d -u udp://test -s 10.20.0.240/28");
-      await shell("EASYRSA_REQ_CN=test ovpn_initpki nopass");
-      await shell("easyrsa build-client-full dappnode_admin nopass");
-      await shell("easyrsa build-client-full luser nopass");
+      await shell("ovpn_genconfig", [
+        "-c",
+        "-d",
+        "-u",
+        "udp://test",
+        "-s",
+        "10.20.0.240/28"
+      ]);
+      await shell("ovpn_initpki", ["nopass"], {
+        env: { ...process.env, EASYRSA_REQ_CN: "test" }
+      });
+      await shell("easyrsa", ["build-client-full", "dappnode_admin", "nopass"]);
+      await shell("easyrsa", ["build-client-full", "luser", "nopass"]);
     } catch (e) {
       throw Error(`Cannot initalize: ${e}`);
     }

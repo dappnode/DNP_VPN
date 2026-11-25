@@ -1,6 +1,7 @@
 import fs from "fs";
 import { deleteTokenForId } from "../credentials";
 import { shell } from "../utils/shell";
+import { assertValidDeviceId } from "../utils/deviceId";
 
 const revokeCommand = "/usr/local/bin/ovpn_revokeclient";
 
@@ -8,9 +9,10 @@ const revokeCommand = "/usr/local/bin/ovpn_revokeclient";
  * @param id "new-device"
  */
 export async function removeClient(id: string): Promise<void> {
+  assertValidDeviceId(id);
   try {
     // Revoke first to save in CRL
-    await shell(`${revokeCommand} ${id}`);
+    await shell(revokeCommand, [id]);
     for (const file of [
       `${process.env.OPENVPN}/pki/private/${id}.key`,
       `${process.env.OPENVPN}/pki/reqs/${id}.req`,
