@@ -17,6 +17,8 @@ export async function getClient(id: string): Promise<string> {
       env: { ...process.env, DAPPNODE_INTERNAL_IP }
     });
   } catch (err) {
-    throw Error(`Error retrieving client ${id}: ${(err as Error).message}`);
+    throw Error(`Error retrieving client ${id}: ${(err as Error).message}`, {
+      cause: err
+    });
   }
 }

@@ -1,14 +1,13 @@
 #!/usr/bin/env node
 
 import yargs, { CommandBuilder } from "yargs";
+import { hideBin } from "yargs/helpers";
 import url from "url";
-import chalk from "chalk";
+import { styleText } from "util";
 import prettyjson from "prettyjson";
 import { getRpcCall } from "./api/getRpcCall";
 import { API_PORT } from "./params";
 import { withHostname } from "./utils/withHostname";
-
-/* eslint-disable no-console */
 
 const vpnRpcApiUrl = url.format({
   protocol: "http",
@@ -19,21 +18,28 @@ const vpnRpcApiUrl = url.format({
 // Initialize an RPC client connecting to the VPN RPC server
 const api = getRpcCall(vpnRpcApiUrl);
 
-const idArg: CommandBuilder<{}, { id: string }> = yargs =>
+const green = (text: string): string => styleText("green", text);
+
+const idArg: CommandBuilder<object, { id: string }> = yargs =>
   yargs.positional("id", {
     describe: "Device id",
     type: "string",
     demandOption: true
   });
 
-const getArg: CommandBuilder<{}, { id: string; localhost: boolean }> = yargs =>
+const getArg: CommandBuilder<
+  object,
+  { id: string; localhost: boolean }
+> = yargs =>
   idArg(yargs).option("localhost", {
     describe: "Print URL using localhost instead of the configured hostname",
     type: "boolean",
     default: false
   });
 
-yargs
+const cli = yargs(hideBin(process.argv));
+
+cli
   .usage(`Usage: vpncli <command> [options]`)
   .alias("h", "help")
   .alias("v", "version")
@@ -46,7 +52,7 @@ yargs
   .fail((msg, err) => {
     // Show command help message when no command is provided
     if (msg && msg.includes("Not enough non-option arguments")) {
-      yargs.showHelp();
+      cli.showHelp();
       console.log("\n");
     }
 
@@ -69,9 +75,7 @@ yargs
     handler: async ({ id, localhost }) => {
       const { url } = await api.getDeviceCredentials({ id });
       const outputUrl = localhost ? withHostname(url, "localhost") : url;
-      console.log(
-        chalk.green(`Credentials generated for ${id}:\n${outputUrl}`)
-      );
+      console.log(green(`Credentials generated for ${id}:\n${outputUrl}`));
     }
   })
   .command({
@@ -89,7 +93,7 @@ yargs
     builder: idArg,
     handler: async ({ id }) => {
       await api.addDevice({ id });
-      console.log(chalk.green(`Added device ${id}`));
+      console.log(green(`Added device ${id}`));
     }
   })
   .command({
@@ -98,7 +102,7 @@ yargs
     builder: idArg,
     handler: async ({ id }) => {
       await api.removeDevice({ id });
-      console.log(chalk.green(`Removed device ${id}`));
+      console.log(green(`Removed device ${id}`));
     }
   })
   .command({
@@ -107,7 +111,7 @@ yargs
     builder: idArg,
     handler: async ({ id }) => {
       await api.resetDevice({ id });
-      console.log(chalk.green(`Reset device ${id}`));
+      console.log(green(`Reset device ${id}`));
     }
   })
   // Run CLI

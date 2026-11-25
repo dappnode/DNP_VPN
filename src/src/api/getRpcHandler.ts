@@ -35,8 +35,9 @@ export const getRpcHandler = (
       } else {
         // Unexpected error, log and send more details
         const { method, params } = tryToParseRpcRequest(body);
-        if (onError) onError(method || "unknown-method", e, params || []);
-        res.send({ error: { message: e.message, data: e.stack } });
+        const error = e as Error;
+        if (onError) onError(method || "unknown-method", error, params || []);
+        res.send({ error: { message: error.message, data: error.stack } });
       }
     }
   };
@@ -46,9 +47,10 @@ export const getRpcHandler = (
  * Parse RPC request, to be used in the server
  * @param body
  */
-function parseRpcRequest(
-  body: RpcRequest
-): { method: keyof Routes; params: RpcRequest["params"] } {
+function parseRpcRequest(body: RpcRequest): {
+  method: keyof Routes;
+  params: RpcRequest["params"];
+} {
   if (typeof body !== "object")
     throw Error(`body request must be an object, ${typeof body}`);
   const { method, params } = body;

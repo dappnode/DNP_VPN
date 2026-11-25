@@ -1,17 +1,16 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "lib": ["es6"],
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "target": "es2023",
+    "lib": ["es2023"],
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "allowJs": true,
     "strict": true,
-    "types": ["mocha", "node"],
+    "types": ["node"],
+    "rootDir": "src",
     "outDir": "dist",
     "sourceMap": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "test/**/*"]
+  "include": ["src/**/*"]
 }

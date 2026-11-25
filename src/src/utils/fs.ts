@@ -9,7 +9,8 @@ export function directoryIsEmptyOrEnoent(dirPath: string): boolean {
     const files = fs.readdirSync(dirPath);
     return files.length === 0;
   } catch (e) {
-    if (e.code === "ENOENT" || e.code === "ENOTDIR") return true;
+    const code = (e as NodeJS.ErrnoException).code;
+    if (code === "ENOENT" || code === "ENOTDIR") return true;
     throw e;
   }
 }

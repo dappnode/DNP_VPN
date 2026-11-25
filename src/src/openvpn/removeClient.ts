@@ -29,6 +29,8 @@ export async function removeClient(id: string): Promise<void> {
 
     deleteTokenForId(id);
   } catch (err) {
-    throw Error(`Error removing device ${id}: ${err.message}`);
+    throw Error(`Error removing device ${id}: ${(err as Error).message}`, {
+      cause: err
+    });
   }
 }

@@ -20,7 +20,7 @@ export async function getMasterAdminCred(): Promise<VpnDeviceCredentials> {
       await addDevice({ id: MAIN_ADMIN_NAME });
     }
   } catch (e) {
-    if (!e.message.includes("exist"))
+    if (!(e as Error).message.includes("exist"))
       logs.error(`Error creating ${MAIN_ADMIN_NAME} device`, e);
   }
 

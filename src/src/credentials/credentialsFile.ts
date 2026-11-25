@@ -54,8 +54,8 @@ function loadPersistedTokens(): void {
       tokens.set(token, tokenData);
     }
   } catch (e) {
-    if (e.code !== "ENOENT")
-      logs.error(`Error loading tokensData: ${e.message}`);
+    if ((e as NodeJS.ErrnoException).code !== "ENOENT")
+      logs.error(`Error loading tokensData: ${(e as Error).message}`);
   }
 }
 
@@ -64,7 +64,7 @@ function persistTokens(): void {
     const jsonText = JSON.stringify(Array.from(tokens.entries()), null, 2);
     fs.writeFileSync(TOKENS_DB_PATH, jsonText);
   } catch (e) {
-    logs.error(`Error persisting tokens: ${e.message}`);
+    logs.error(`Error persisting tokens: ${(e as Error).message}`);
   }
 }
 
@@ -73,7 +73,7 @@ function garbageCollectTokens(): void {
     for (const [token, tokenData] of tokens)
       if (Date.now() - tokenData.created > tokenDeleteMs) tokens.delete(token);
   } catch (e) {
-    logs.error(`Error garbage collecting tokens: ${e.message}`);
+    logs.error(`Error garbage collecting tokens: ${(e as Error).message}`);
   }
 }
 

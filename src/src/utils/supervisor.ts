@@ -15,7 +15,7 @@ const signalsToPass: NodeJS.Signals[] = [
  * @param args
  * @param options
  */
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+
 export function Supervisor(
   command: string,
   args: string[],
@@ -32,12 +32,12 @@ export function Supervisor(
 
   // Pass kill signals through to child
   for (const signal of signalsToPass) {
-    process.on(signal, function() {
+    process.on(signal, function () {
       killChild(signal);
       process.exit();
     });
   }
-  process.on("exit", function() {
+  process.on("exit", function () {
     killChild("SIGTERM");
   });
 
@@ -59,7 +59,7 @@ export function Supervisor(
     if (child.stdout) child.stdout.pipe(process.stdout);
     if (child.stderr) child.stderr.pipe(process.stderr);
 
-    child.addListener("exit", function(code) {
+    child.addListener("exit", function (code) {
       if (!crashQueued) {
         log(`Program ${command} ${args.join(" ")} exited with code ${code}`);
         child = null;
@@ -72,13 +72,9 @@ export function Supervisor(
     if (crashQueued) return;
 
     crashQueued = true;
-    setTimeout(function() {
+    setTimeout(function () {
       if (!child) return startChild();
-      if (instantKill) {
-        process.kill(child.pid, "SIGKILL");
-      } else {
-        process.kill(child.pid, "SIGTERM");
-      }
+      child.kill(instantKill ? "SIGKILL" : "SIGTERM");
     }, 50);
   }
 

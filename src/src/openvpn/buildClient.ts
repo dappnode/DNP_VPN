@@ -9,6 +9,8 @@ export async function buildClient(id: string): Promise<void> {
   try {
     await shell("easyrsa", ["build-client-full", id, "nopass"]);
   } catch (err) {
-    throw Error(`Error building client: ${(err as Error).message}`);
+    throw Error(`Error building client: ${(err as Error).message}`, {
+      cause: err
+    });
   }
 }

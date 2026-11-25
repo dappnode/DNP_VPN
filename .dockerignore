@@ -1,20 +1,8 @@
-# Prevent Dockerfile modifications to trigger layer recomputation
-build/Dockerfile
-
-# Acelerate ADD build/src . command
-build/*/node_modules/
-build/*/vpndb.json
-build/*/test_files/
-build/*/test_files/*
-build/*/npm-debug.log
-build_*
-
-# Build artifacts
-build/src/dist
-build/ui_openvpn/build
-
-# Ignore tests
-build/src/test
+# Local dependencies and build artifacts, rebuilt inside the image
+src/node_modules
+src/dist
+ui_openvpn/node_modules
+ui_openvpn/build
 
 # Version data file
 .version.json

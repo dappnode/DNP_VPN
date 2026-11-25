@@ -19,7 +19,7 @@ export function wrapHandler(
     try {
       await handler(req, res, next);
     } catch (e) {
-      const error = { message: e.message, data: e.stack };
+      const error = { message: (e as Error).message, data: (e as Error).stack };
       if (e instanceof HttpError) {
         res.status(e.code).send({ error });
       } else {

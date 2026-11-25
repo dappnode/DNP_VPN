@@ -1,5 +1,4 @@
-import got from "got";
-import ip from "ip";
+import net from "net";
 import retry from "async-retry";
 import {
   dappmanagerApiUrlGlobalEnvs,
@@ -8,6 +7,7 @@ import {
   NO_HOSTNAME_RETURNED_ERROR
 } from "../params";
 import { isDomain } from "../utils/domain";
+import { fetchText } from "../utils/fetch";
 import { logs } from "../logs";
 
 /**
@@ -29,35 +29,23 @@ export async function fetchHostname({
     return hostNameFromEnv;
   }
 
-  logs.info(`Fetching hostname from DAPPMANAGER: ${dappmanagerApiUrlGlobalEnvs}`);
+  const url = `${dappmanagerApiUrlGlobalEnvs}/${GLOBAL_ENVS_KEYS.HOSTNAME}`;
+  logs.info(`Fetching hostname from DAPPMANAGER: ${url}`);
 
-  // Add async-retry in case the DAPPMANAGER returns an 200 code with empty hostname
+  // Retries both network / HTTP errors and a 200 response with an empty hostname
+  // 10 retries with exponential backoff (1s, 2s, 4s, ...) is about 15 minutes
   return await retry(
-    () =>
-      got(GLOBAL_ENVS_KEYS.HOSTNAME, {
-        throwHttpErrors: true,
-        prefixUrl: dappmanagerApiUrlGlobalEnvs,
-        retry: 10, // Should be about 15 minutes
-        hooks: {
-          beforeRetry: [
-            (_0, e, retryCount = 0): void => {
-              onRetry(e ? `${e.code} ${e.message}` : "", retryCount);
-            }
-          ]
-        }
-      })
-        .text()
-        .then(res => res.trim())
-        .then(data => {
-          if (!data) throw Error(NO_HOSTNAME_RETURNED_ERROR);
-          if (!ip.isV4Format(data) && !isDomain(data))
-            throw Error(`Invalid hostname returned: ${data}`);
-          return data;
-        }),
+    async () => {
+      const data = (await fetchText(url)).trim();
+      if (!data) throw Error(NO_HOSTNAME_RETURNED_ERROR);
+      if (!net.isIPv4(data) && !isDomain(data))
+        throw Error(`Invalid hostname returned: ${data}`);
+      return data;
+    },
     {
       retries: 10,
       onRetry: (e, retryCount) => {
-        onRetry(e.message, retryCount);
+        onRetry((e as Error).message, retryCount);
       }
     }
   );

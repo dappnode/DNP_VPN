@@ -14,14 +14,9 @@ const ovpnListCommand = "/usr/local/bin/ovpn_listclients";
  */
 export async function getUserList(): Promise<string[]> {
   const output = await shell(ovpnListCommand);
-  const users: string[] = [];
   // Select users from first field.
-  output
-    .toString()
+  return output
     .split("\n")
-    .filter(line => !line.startsWith("name,"))
-    .map(element => {
-      if (element) users.push(element.split(",")[0]);
-    });
-  return users;
+    .filter(line => line && !line.startsWith("name,"))
+    .map(line => line.split(",")[0]);
 }

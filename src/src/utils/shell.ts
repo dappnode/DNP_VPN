@@ -1,4 +1,4 @@
-import { execFile, ExecFileOptions } from "child_process";
+import { execFile, ExecFileException, ExecFileOptions } from "child_process";
 
 /**
  * If timeout is greater than 0, the parent will send the signal
@@ -23,20 +23,23 @@ export async function shell(
   const opts: ExecFileOptions = {
     ...options,
     timeout: options.timeout || defaultTimeout,
-    maxBuffer: options.maxBuffer || defaultMaxBuffer
+    maxBuffer: options.maxBuffer || defaultMaxBuffer,
+    encoding: "utf8"
   };
   const cmd = [command, ...args].join(" ");
 
   return new Promise((resolve, reject): void => {
     execFile(command, args, opts, (err, stdout, stderr) => {
+      const out = String(stdout);
+      const errOut = String(stderr);
       if (err) {
         // Rethrow a typed error, and ignore the internal NodeJS stack trace
-        const e = Object.assign(err, { stdout, stderr });
+        const e = Object.assign(err, { stdout: out, stderr: errOut });
         if (err.signal === "SIGTERM")
           reject(new ShellError(e, `cmd timeout ${opts.timeout}: ${cmd}`));
         else reject(new ShellError(e));
       } else {
-        resolve(stdout.trim() || stderr);
+        resolve(out.trim() || errOut);
       }
     });
   });
@@ -46,29 +49,22 @@ export async function shell(
  * Typed error implementing the native node child exception error
  * Can be rethrow to ignore the internal NodeJS stack trace
  */
-export class ShellError extends Error {
+export class ShellError extends Error implements ExecFileException {
   cmd?: string;
   killed?: boolean;
   code?: string | number | null;
-  signal?: NodeJS.Signals | null;
+  signal?: NodeJS.Signals;
   stdout?: string;
   stderr?: string;
   constructor(
-    e: Error & {
-      cmd?: string;
-      killed?: boolean;
-      code?: string | number | null;
-      signal?: NodeJS.Signals | null;
-      stdout?: string;
-      stderr?: string;
-    },
+    e: ExecFileException & { stdout?: string; stderr?: string },
     message?: string
   ) {
     super(message || e.message);
     this.cmd = e.cmd;
     this.killed = e.killed;
     this.code = e.code;
-    this.signal = e.signal;
+    this.signal = e.signal ?? undefined;
     this.stdout = e.stdout;
     this.stderr = e.stderr;
   }

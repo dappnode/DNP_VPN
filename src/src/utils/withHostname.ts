@@ -3,7 +3,7 @@ export function withHostname(rawUrl: string, hostname: string): string {
     const parsed = new URL(rawUrl);
     parsed.hostname = hostname;
     return parsed.toString();
-  } catch (e) {
+  } catch {
     return rawUrl;
   }
 }

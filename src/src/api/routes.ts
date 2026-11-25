@@ -55,7 +55,7 @@ export interface Routes {
   listDevices: () => Promise<VpnDevice[]>;
 }
 
-export const routesData: { [P in keyof Routes]: {} } = {
+export const routesData: { [P in keyof Routes]: object } = {
   addDevice: {},
   getCredFile: {},
   getDeviceCredentials: {},
@@ -82,6 +82,5 @@ export type ResolvedType<T extends (...args: any) => Promise<any>> = T extends (
 ) => Promise<infer R>
   ? R
   : never;
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 export type ReplaceVoidWithNull<T> = T extends void ? null : T;
