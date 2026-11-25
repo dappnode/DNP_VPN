@@ -22,7 +22,7 @@ export default function getParamsFromUrl() {
 
 function parseUrlParams(str) {
   var obj = {};
-  str.replace(/([^=&]+)=([^&]*)/g, function(m, key, value) {
+  str.replace(/([^=&]+)=([^&]*)/g, function (m, key, value) {
     obj[decodeURIComponent(key)] = decodeURIComponent(value);
   });
   return obj;
@@ -30,9 +30,5 @@ function parseUrlParams(str) {
 
 function clean(s) {
   if (!s) return s;
-  return s
-    .trim()
-    .replace("/", "")
-    .replace("#", "")
-    .replace("?", "");
+  return s.trim().replace("/", "").replace("#", "").replace("?", "");
 }

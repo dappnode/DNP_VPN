@@ -20,8 +20,6 @@ import { renderQrCode } from "./utils/renderQrCode";
 import { withHostname } from "./utils/withHostname";
 import { VpnStatus } from "./types";
 
-/* eslint-disable no-console */
-
 const vpnRpcApiUrl = url.format({
   protocol: "http",
   hostname: "127.0.0.1",
@@ -46,7 +44,7 @@ class NotReadyError extends Error {
   }
 }
 
-(async function(): Promise<void> {
+(async function (): Promise<void> {
   try {
     const localhost = process.argv.includes("--localhost");
 
@@ -70,7 +68,7 @@ class NotReadyError extends Error {
             e instanceof NotReadyError &&
             e.status.msg === NO_HOSTNAME_RETURNED_ERROR
               ? "Initializing DAppNode..."
-              : e.message;
+              : (e as Error).message;
 
           // Don't log errors for the first 3 seconds
           if (Date.now() - fetchStartTime < 3000) return;

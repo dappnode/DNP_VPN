@@ -5,9 +5,9 @@
 // - common_name: The X509 common name of an authenticated client
 // - trusted_ip: Actual IP address of connecting client or peer which has been authenticated
 
-import got from "got";
 import url from "url";
 import { API_PORT, CLIENT_CONNECT_PATHNAME } from "./params";
+import { fetchText } from "./utils/fetch";
 
 //"http://127.0.0.1:3000/client-connect";
 const apiUrl = url.format({
@@ -17,11 +17,15 @@ const apiUrl = url.format({
   pathname: CLIENT_CONNECT_PATHNAME
 });
 
-got
-  .post(apiUrl, { json: process.env })
+fetchText(apiUrl, {
+  method: "POST",
+  headers: { "content-type": "application/json" },
+  body: JSON.stringify(process.env)
+})
   .then(
-    () => console.log(`Posted client-connect data to ${url}`),
-    e => console.error(`Error posting client-connect env to ${url}: ${e.stack}`)
+    () => console.log(`Posted client-connect data to ${apiUrl}`),
+    e =>
+      console.error(`Error posting client-connect env to ${apiUrl}: ${e.stack}`)
   )
   // client-connect script must exit with code 0, otherwise OpenVPN will refuse to connect to the client
   .then(() => process.exit(0));

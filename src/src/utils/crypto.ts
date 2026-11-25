@@ -5,10 +5,7 @@ import crypto from "crypto";
  * @param data
  */
 export function sha256(data: string): string {
-  return crypto
-    .createHash("sha256")
-    .update(data)
-    .digest("hex");
+  return crypto.createHash("sha256").update(data).digest("hex");
 }
 
 /**

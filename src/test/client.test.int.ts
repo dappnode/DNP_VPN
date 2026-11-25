@@ -23,12 +23,21 @@ describe.skip("Integration test", () => {
       throw Error("OpenVPN binaries were not found in /usr/local/bin/");
     }
     try {
-      await shell("ovpn_genconfig -c -d -u udp://test -s 10.20.0.240/28");
-      await shell("EASYRSA_REQ_CN=test ovpn_initpki nopass");
-      await shell("easyrsa build-client-full dappnode_admin nopass");
-      await shell("easyrsa build-client-full luser nopass");
+      await shell("ovpn_genconfig", [
+        "-c",
+        "-d",
+        "-u",
+        "udp://test",
+        "-s",
+        "10.20.0.240/28"
+      ]);
+      await shell("ovpn_initpki", ["nopass"], {
+        env: { ...process.env, EASYRSA_REQ_CN: "test" }
+      });
+      await shell("easyrsa", ["build-client-full", "dappnode_admin", "nopass"]);
+      await shell("easyrsa", ["build-client-full", "luser", "nopass"]);
     } catch (e) {
-      throw Error(`Cannot initalize: ${e}`);
+      throw Error(`Cannot initalize: ${e}`, { cause: e });
     }
   });
 
@@ -45,7 +54,7 @@ describe.skip("Integration test", () => {
       if (!user) throw Error(`user ${id0} does not exist`);
 
       const CcdFile = fs.existsSync(`/etc/openvpn/ccd/${user.id}`);
-      expect(CcdFile).to.not.be.ok;
+      expect(CcdFile).to.equal(false);
     });
   });
 
@@ -82,7 +91,7 @@ describe.skip("Integration test", () => {
     it("should actually be deleted", async () => {
       const devices = await listDevices();
       const user = devices.find(d => d.id == id0);
-      expect(user).to.not.be.ok;
+      expect(user).to.equal(undefined);
     });
   });
 });

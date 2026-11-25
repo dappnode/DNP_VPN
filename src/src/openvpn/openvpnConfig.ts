@@ -1,19 +1,15 @@
 import fs from "fs";
-import { shell, shellArgs } from "../utils/shell";
+import { shell } from "../utils/shell";
 import { directoryIsEmptyOrEnoent } from "../utils/fs";
 import { PKI_PATH, PROXY_ARP_PATH } from "../params";
 import { logs } from "../logs";
 import { getContainerIP } from "../utils/getDockerContainerIp";
 
-type OvpnGenConfigFlags = {
-  c: string; // Enable traffic among the clients connected to the VPN (Boolean, no value)
-  d: string; // Disable default route (disables NAT without '-N'). Only specific traffic will go through the VPN (Boolean, no value)
-  u: string; // Hostname the clients will use to connect to the VPN
-  s: string; // Subnet the server will use to assign IPs to the clients
-  p: string; // Route to push to the client
-  n: string; // DNS server (BIND)
-  // There are more flags available, but we don't need them here
-};
+interface OvpnGenConfigOptions {
+  subnet: string; // -s Subnet the server will use to assign IPs to the clients
+  route: string; // -p Route to push to the client
+  dns: string; // -n DNS server (BIND)
+}
 
 /**
  * Initializes the OpenVPN configuration
@@ -26,7 +22,7 @@ export async function initalizeOpenVpnConfig(hostname: string): Promise<void> {
     OVPN_CN: hostname,
     EASYRSA_REQ_CN: hostname
   };
-  let genConfigFlags: OvpnGenConfigFlags;
+  let genConfig: OvpnGenConfigOptions;
 
   logs.info("Initializing OpenVPN configuration");
 
@@ -36,32 +32,37 @@ export async function initalizeOpenVpnConfig(hostname: string): Promise<void> {
   // If container IP is inside 172.33.0.0/16 --> generate credentials A
   if (containerIp && containerIp.startsWith("172.33.")) {
     logs.info("Generating credentials for IP range 172.33.0.0/16");
-    genConfigFlags = {
-      c: "",
-      d: "",
-      u: `udp://"${hostname}"`,
-      s: "172.33.8.0/22",
-      p: `"route 172.33.0.0 255.255.0.0"`,
-      n: `"172.33.1.2"`
+    genConfig = {
+      subnet: "172.33.8.0/22",
+      route: "route 172.33.0.0 255.255.0.0",
+      dns: "172.33.1.2"
     };
 
     // Else (default, but it should be 10.20.0.0/24) --> generate credentials B
   } else {
     logs.info("Generating credentials for IP range 10.20.0.0/24");
-    genConfigFlags = {
-      c: "",
-      d: "",
-      u: `udp://"${hostname}"`,
-      s: "10.20.0.240/28",
-      p: `"route 10.20.0.0 255.255.255.0"`,
-      n: `"10.20.0.2"`
+    genConfig = {
+      subnet: "10.20.0.240/28",
+      route: "route 10.20.0.0 255.255.255.0",
+      dns: "10.20.0.2"
     };
   }
 
   // Initialize config and PKI
-  const output = await shellArgs(
+  const output = await shell(
     "ovpn_genconfig",
-    genConfigFlags,
+    [
+      "-c", // Enable traffic among the clients connected to the VPN
+      "-d", // Disable default route. Only specific traffic will go through the VPN
+      "-u", // Hostname the clients will use to connect to the VPN
+      `udp://${hostname}`,
+      "-s",
+      genConfig.subnet,
+      "-p",
+      genConfig.route,
+      "-n",
+      genConfig.dns
+    ],
     { env: { ...process.env, ...openVpnEnv } }
   );
 
@@ -69,7 +70,7 @@ export async function initalizeOpenVpnConfig(hostname: string): Promise<void> {
 
   // Check if PKI is initalized already, if not use hostname as CN
   if (directoryIsEmptyOrEnoent(PKI_PATH))
-    await shell("ovpn_initpki nopass", {
+    await shell("ovpn_initpki", ["nopass"], {
       env: { ...process.env, ...openVpnEnv }
     });
 

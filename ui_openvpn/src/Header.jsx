@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import dappnodeLogo from "./img/dappnode-logo.png";
 
 class Header extends Component {

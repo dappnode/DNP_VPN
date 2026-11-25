@@ -1,9 +1,5 @@
 import React, { Component } from "react";
-// import { Route, NavLink as Link } from "react-router-dom";
 import saveAs from "file-saver";
-// General components
-import HiddenRedirector from "./HiddenRedirector";
-// Platform dedicated components
 // Utils
 import getParamsFromUrl from "./utils/getParamsFromUrl";
 import isBase64 from "./utils/isBase64";
@@ -42,8 +38,8 @@ export default class App extends Component {
       const { key, id, name, dev } = getParamsFromUrl();
       // Construct url to request cred file with common ENVs on the webserver
       const urlObj = new URL(window.location.origin);
-      urlObj.pathname = process.env.REACT_APP_CRED_URL_PATHNAME;
-      urlObj.searchParams.set(process.env.REACT_APP_CRED_URL_QUERY_PARAM, id);
+      urlObj.pathname = import.meta.env.VITE_CRED_URL_PATHNAME;
+      urlObj.searchParams.set(import.meta.env.VITE_CRED_URL_QUERY_PARAM, id);
       const url = urlObj.toString();
 
       // Dev param to be able to work on the UI
@@ -175,8 +171,6 @@ export default class App extends Component {
               </p>
             </div>
           </div>
-
-          <HiddenRedirector />
         </React.Fragment>
       );
     }

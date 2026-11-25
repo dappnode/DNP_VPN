@@ -1,5 +1,4 @@
 import http from "http";
-import url from "url";
 import fs from "fs";
 import path from "path";
 import { isTokenKnown, generateCredFileFromToken } from "./credentialsFile";
@@ -23,8 +22,9 @@ export function startCredentialsWebserver(port: number): void {
   const server = http.createServer(async (req, res) => {
     try {
       if (!req.url) throw Error("No URL");
-      const { pathname, query } = url.parse(req.url, true);
-      const token = query[CRED_URL_QUERY_PARAM];
+      // Base is only used to parse the relative request URL
+      const { pathname, searchParams } = new URL(req.url, "http://localhost");
+      const token = searchParams.get(CRED_URL_QUERY_PARAM);
       if (typeof token !== "string") throw Error("Invalid token");
       if (!isTokenKnown(token)) throw Error("Unknown token");
 
@@ -40,13 +40,13 @@ export function startCredentialsWebserver(port: number): void {
             return res.end(credFile, "utf-8");
           } catch (e) {
             res.writeHead(500, { "Content-Type": "text/plain" });
-            res.end(e.message);
+            return res.end((e as Error).message);
           }
 
         default:
           throw Error("Bye");
       }
-    } catch (e) {
+    } catch {
       // res.destroy() achieves the same effect ass NGINX 444 = CONNECTION CLOSED WITHOUT RESPONSE
       // curl http://localhost:$port -vv
       // > * Empty reply from server

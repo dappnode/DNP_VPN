@@ -1,5 +1,5 @@
 import path from "path";
-import stackTrace from "stack-trace";
+import { parse as parseStackTrace } from "stack-trace";
 // "source-map-support" MUST be imported for stack traces to work properly after Typescript transpile
 import "source-map-support/register";
 import { inspect } from "util";
@@ -20,8 +20,6 @@ const tags = {
   error: "ERROR"
 };
 
-/* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable no-console */
 export const logs = {
   /**
    * Allows to log any type of data. Strings will be shown first.
@@ -54,18 +52,12 @@ export const logs = {
    */
   error: formatLogger(tags.error, console.error)
 };
-/* eslint-enable @typescript-eslint/no-empty-function */
-/* eslint-enable no-console */
 
 export class ErrorNoStack extends Error {}
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function formatLogger(tag: string, logger: (...args: any[]) => void) {
-  return function log(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ...items: (string | Error | { [key: string]: any })[]
-  ): void {
+  return function log(...items: unknown[]): void {
     try {
       const caller = getLocation(Error(), 1) || "??";
       const data = items
@@ -94,7 +86,6 @@ function formatLogger(tag: string, logger: (...args: any[]) => void) {
         });
       logger(tag, `[${caller}]`, ...data);
     } catch (e) {
-      /* eslint-disable-next-line no-console */
       console.error("ERROR LOGGING ITEMS", e);
       logger(items);
     }
@@ -107,12 +98,13 @@ function formatLogger(tag: string, logger: (...args: any[]) => void) {
  * REQUIRES import "source-map-support/register";
  */
 export function getLocation(error: Error, stackCount: number): string | null {
-  const parsed = stackTrace.parse(error);
+  const parsed = parseStackTrace(error);
   const firstOutsideRow = parsed[stackCount];
   if (!firstOutsideRow) return null;
 
   const fileName = firstOutsideRow.getFileName();
   const lineNumber = firstOutsideRow.getLineNumber();
+  if (!fileName) return null;
   let relativePath = fileName.includes("webpack:")
     ? fileName.replace("/usr/src/app/webpack:/src/", "")
     : path.relative(rootDir, fileName);
